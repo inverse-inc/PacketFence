@@ -191,6 +191,7 @@ sub new {
         '_networks'                     => undef,
         '_networks_from'                => undef,
         '_interfaces'                   => undef,
+        '_useSNMP'                      => 'enabled',
         map { "_".$_ => $argv->{$_} } keys %$argv,
     }, $class;
     return $self;
