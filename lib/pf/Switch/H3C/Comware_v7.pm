@@ -13,6 +13,8 @@ This module is currently only a placeholder, see L<pf::Switch::H3C>.
 use strict;
 use warnings;
 
+use POSIX;
+
 use base ('pf::Switch::H3C::Comware_v5');
 
 
