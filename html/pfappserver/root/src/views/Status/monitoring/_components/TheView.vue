@@ -1,5 +1,5 @@
 <template>
-  <b-container class="my-3" fluid>
+  <b-container fluid>
     <b-alert variant="danger" :show="chartsError" fade>
       <h4 class="alert-heading" v-t="'Error'"></h4>
       <p>{{ $t('The charts on the dashboard are currently not available.') }}</p>
@@ -22,7 +22,15 @@
             <b-button v-for="period in periods" :key="period.text"
               :variant="(showAfter == period.value) ? 'primary' : 'light'" @click="showAfter = period.value" v-b-tooltip.hover.bottom.d300 :title="period.title">{{ period.text }}</b-button>
           </b-button-group>
-          <b-button :href="`http://${location.hostname}:19999`" target="_blank" size="sm" variant="success">Netdata <icon name="external-link-alt" class="ml-1" /></b-button>
+          <b-button-group size="sm">
+            <b-dropdown right variant="success" size="sm">
+              <template v-slot:button-content>
+                Netdata <icon name="external-link-alt" class="mx-1" />
+              </template>
+              <b-dropdown-item v-for="({ management_ip, host}) in cluster" :key="management_ip"
+                :href="`/netdata/${management_ip}`" target="_blank">{{ host }}</b-dropdown-item>
+            </b-dropdown>
+          </b-button-group>
         </b-row>
         <b-row align-h="center" align-v="center" :key="`${showChart.metric}-${showAfter}`">
           <b-col md="12" v-for="({ management_ip, host}) in cluster" :key="management_ip">
@@ -37,16 +45,27 @@
         </b-row>
       </template>
     </b-modal>
-    <b-tabs nav-class="nav-fill" v-model="tabIndex" lazy :key="$i18n.locale">
-      <b-tab v-for="(section, sectionIndex) in filteredSections" :title="$i18n.t(section.name)" :key="`${section.name}-${sectionIndex}-${showAfter}`">
-        <b-row class="align-items-center mt-3 mx-3" align-h="end">
+
+        <b-row class="align-items-center mb-3 mx-3" align-h="end">
           <small class="mx-3">{{ $t('Show Last') }}</small>
           <b-button-group size="sm" class="mr-3">
             <b-button v-for="period in periods" :key="period.text"
               :variant="(showAfter == period.value) ? 'primary' : 'light'" @click="showAfter = period.value" v-b-tooltip.hover.bottom.d300 :title="period.title">{{ period.text }}</b-button>
           </b-button-group>
-          <b-button :href="`http://${location.hostname}:19999`" target="_blank" size="sm" variant="success">Netdata <icon name="external-link-alt" class="ml-1" /></b-button>
+          <b-button-group size="sm">
+            <b-dropdown right variant="success" size="sm">
+              <template v-slot:button-content>
+                Netdata <icon name="external-link-alt" class="mx-1" />
+              </template>
+              <b-dropdown-item v-for="({ management_ip, host: memberHost }) in cluster" :key="management_ip"
+                :href="`/netdata/${management_ip}`" target="_blank"
+                :active="memberHost == host">{{ host }}</b-dropdown-item>
+            </b-dropdown>
+          </b-button-group>
         </b-row>
+
+    <b-tabs nav-class="nav-fill" v-model="tabIndex" lazy :key="$i18n.locale">
+      <b-tab v-for="(section, sectionIndex) in filteredSections" :title="$i18n.t(section.name)" :key="`${section.name}-${sectionIndex}-${showAfter}`">
         <template v-for="(group, groupIndex) in section.groups">
           <!-- Named groups are rendered inside a card -->
           <component :is="group.name ? 'b-card' : 'div'" class="mt-3" :key="`${group.name}-${groupIndex}`" :title="$i18n.t(group.name)">

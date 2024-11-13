@@ -24,7 +24,6 @@
                   <div class="mt-2">
                     <chart :definition="chart" host="/netdata/127.0.0.1" :data-colors="palette(0)"></chart>
                   </div>
-
                 </b-col>
               </b-row>
             </component>
