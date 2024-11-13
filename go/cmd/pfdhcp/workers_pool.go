@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	_ "expvar"
 	"net"
 	"strconv"
@@ -18,11 +19,12 @@ type job struct {
 	clientAddr net.Addr //remote client ip
 	srvAddr    net.IP
 	localCtx   context.Context
+	db         *sql.DB
 }
 
 func doWork(id int, element job) {
 	var ans Answer
-	if ans = element.handler.ServeDHCP(element.localCtx, element.DHCPpacket, element.msgType, element.clientAddr, element.srvAddr); ans.D != nil {
+	if ans = element.handler.ServeDHCP(element.localCtx, element.DHCPpacket, element.msgType, element.clientAddr, element.srvAddr, element.db); ans.D != nil {
 		ipStr, portStr, _ := net.SplitHostPort(element.clientAddr.String())
 		ctx = log.AddToLogContext(ctx, "mac", ans.MAC.String())
 		log.LoggerWContext(ctx).Debug("Giaddr " + element.DHCPpacket.GIAddr().String())
