@@ -59,7 +59,7 @@ sub generateConfig {
     } else {
          $tags{'os_path'} = '/usr/share/haproxy/';
     }
-    
+
     my $backend_static_uri = URI->new($Config{services_url}{'httpd_admin_dispatcher_static'});
     $tags{backend_static} = $backend_static_uri->host . ":" . $backend_static_uri->port;
 
@@ -105,7 +105,7 @@ backend 127.0.0.1-netdata
         http-request lua.admin
         http-request set-header Host $netdata_service_host
         http-request set-dst-port int($netdata_service_port)
-        server service $netdata_service_host:$netdata_service_port
+        server $netdata_service_host $netdata_service_host:$netdata_service_port weight 1 maxconn 100
         http-request set-uri %[var(req.path)]?%[query] if paramsquery
         http-request set-uri %[var(req.path)] unless paramsquery
         http-response add-header X-Frame-Options SAMEORIGIN
@@ -138,7 +138,7 @@ backend $mgmt_back_ip-netdata
         http-request lua.admin
         http-request set-header Host $mgmt_back_ip
         http-request set-dst-port int(19999)
-        server service $mgmt_back_ip:19999
+        server $mgmt_back_ip $mgmt_back_ip:19999 weight 1 maxconn 100
         http-request set-uri %[var(req.path)]?%[query] if paramsquery
         http-request set-uri %[var(req.path)] unless paramsquery
         http-response add-header X-Frame-Options SAMEORIGIN
