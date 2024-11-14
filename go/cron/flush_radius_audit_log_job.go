@@ -482,12 +482,12 @@ func(a AKMSuite) String() string {
 }
 
 func mapAKMSuite(akmSuiteInt int) string {
-	akmSuiteSelector: = akmSuiteInt & 0x000000FF
+	akmSuiteSelector: = akmSuiteInt & 0x0000000F
 	return AKMSuite(akmSuiteSelector).String()
 }
 
 func mapCipherSuite(cipherSuiteInt int) string {
-	cipherSuiteSelector: = cipherSuiteInt & 0x000000FF
+	cipherSuiteSelector: = cipherSuiteInt & 0x0000000F
 	return CipherSuite(cipherSuiteSelector).String()
 }
 
