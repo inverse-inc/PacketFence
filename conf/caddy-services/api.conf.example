@@ -92,6 +92,10 @@
 		# doh forward
 		reverse_proxy /dns-query/* {$PF_SERVICES_URL_PFDNS_DOH} {
 		}
+
+		# netdata forward
+		reverse_proxy /monitoring/* {$PF_SERVICES_URL_NETDATA} {
+		}
 	}
 }
 

@@ -16,6 +16,7 @@ var apiPrefix = "/api/v1"
 var apiPrefixV1_1 = "/api/v1.1"
 var configApiPrefix = apiPrefix + "/config"
 var configNamespaceRe = regexp.MustCompile("^" + regexp.QuoteMeta(configApiPrefix))
+var netdataPrefix = "/monitoring"
 
 type adminRoleMapping struct {
 	prefix     string
@@ -133,6 +134,8 @@ var pathAdminRolesMap = []adminRoleMapping{
 	adminRoleMapping{prefix: configApiPrefix + "/syslog_forwarders", role: "SYSLOG"},
 	adminRoleMapping{prefix: configApiPrefix + "/event_handler/", role: "PFDETECT"},
 	adminRoleMapping{prefix: configApiPrefix + "/event_handlers", role: "PFDETECT"},
+
+	adminRoleMapping{prefix: netdataPrefix, role: "SYSTEM"},
 }
 
 var methodSuffixMap = map[string]string{
