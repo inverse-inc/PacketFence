@@ -1,0 +1,16 @@
+# Needed By system
+[docker0]
+short=Docker Interface
+masquerade=yes
+target=ACCEPT
+interface=docker0
+version=0.1
+forward=yes
+
+[lo]
+short=Localhost Interface
+masquerade=yes
+target=ACCEPT
+interface=lo
+version=0.1
+forward=yes

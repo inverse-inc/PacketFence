@@ -1,0 +1,4 @@
+#[eth0]
+#masquerade=yes
+#based_on=external
+#services=pf-admin,ssh,http,https

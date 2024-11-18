@@ -1,25 +1,49 @@
-package pf::cmd::pf::generatedockeriptables;
+package pf::cmd::pf::generatefirewalldconfig;
 
 =head1 NAME
 
-pf::cmd::pf::generatedockeriptables
+pf::cmd::pf::generatefirewalldconfig
 
 =head1 SYNOPSIS
 
-  pfcmd generatedockeriptables
+ pfcmd generatefirewalldconfig  [soft|hard]
 
-Generates and apply the docker iptables rules
+  Commands:
+
+    soft   | reload services configuration rules
+    hard   | remove all configurations and restart all config
+
+  defaults to soft
+
+=head1 DESCRIPTION
+
+Generates and apply firewalld rules
 
 =cut
 
 use strict;
 use warnings;
+use pf::firewalld;
+use pf::constants::exit_code qw($EXIT_SUCCESS);
 
-use base qw(pf::cmd);
+use base qw(pf::base::cmd::action_cmd);
 
-sub _run {
-    my ($self) = @_;
-    return system("/usr/local/pf/containers/docker_iptables.sh");
+sub default_action { 'soft' }
+
+sub action_soft {
+  my ($self) = @_;
+  $self->configreload(0);
+}
+
+sub action_hard {
+  my ($self) = @_;
+  $self->configreload(1);
+}
+
+sub configreload {
+  my ($self,$force)  = @_;
+  pf::firewalld::fd_configreload($force);
+  return $EXIT_SUCCESS;
 }
 
 =head1 AUTHOR
