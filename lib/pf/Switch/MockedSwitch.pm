@@ -3467,6 +3467,21 @@ sub implicit_acl {
     return $FALSE;
 }
 
+=item populateAccessPointMACIP
+
+Fetch all the AP on the controller and cache it
+
+=cut
+
+
+sub populateAccessPointMACIP {
+    my ($self) = @_;
+    my $logger = $self->logger;
+    $logger->warn("populateAccessPointMACIP not implemented for this switch module");
+
+    return $false;
+}
+
 =back
 
 =head1 AUTHOR
