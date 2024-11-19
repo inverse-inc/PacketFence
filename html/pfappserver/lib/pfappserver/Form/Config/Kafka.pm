@@ -36,51 +36,43 @@ has_field 'iptables.cluster_ips.contains' => (
    type => 'IPAddress',
 );
 
-has_field 'iptables.admin' => (
-   type => 'Compound',
-);
-
-has_field 'iptables.admin.user' => (
-   type => 'Text',
-);
-
-has_field 'iptables.admin.pass' => (
-   type => 'ObfuscatedText',
-);
-
-has_field 'iptables.auths' => (
-   type => 'Repeatable',
-);
-
-has_field 'iptables.auths.contains' => (
+has_field 'admin' => (
    type => 'UserPass',
 );
 
-has_field 'iptables.auths.contains' => (
-   type => 'UserPass',
-);
-
-has_field 'iptables.host_configs' => (
-   type => 'Compound',
-);
-
-has_field 'iptables.host_configs.host' => (
-   type => 'Text',
-);
-
-has_field 'iptables.host_configs.config' => (
+has_field 'auths' => (
    type => 'Repeatable',
 );
 
-has_field 'iptables.host_configs.config.contains' => (
+has_field 'auths.contains' => (
+   type => 'UserPass',
+);
+
+has_field 'host_configs' => (
+   type => 'Repeatable',
+);
+
+has_field 'host_configs.contains' => (
+   type => 'Compound',
+);
+
+has_field 'host_configs.contains.config' => (
+   type => 'Repeatable',
+);
+
+has_field 'host_configs.contains.config.contains' => (
    type => 'NameVal',
 );
 
-has_field 'iptables.cluster' => (
+has_field 'host_configs.contains.host' => (
+   type => 'Text',
+);
+
+has_field 'cluster' => (
    type => 'Repeatable',
 );
 
-has_field 'iptables.cluster.contains' => (
+has_field 'cluster.contains' => (
    type => 'NameVal',
 );
 
