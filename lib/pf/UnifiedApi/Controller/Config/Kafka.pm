@@ -17,9 +17,15 @@ use pf::UnifiedApi::OpenAPI::Generator::Config;
 use pf::UnifiedApi::Controller::Config;
 use pfappserver::Form::Config::Kafka;
 use pf::ConfigStore::Kafka;
+use pf::UnifiedApi::OpenAPI::Generator::Config;
+has 'config_store_class' => 'pf::ConfigStore::Kafka';
+has 'form_class' => 'pfappserver::Form::Config::Kafka';
+has 'openapi_generator_class' => 'pf::UnifiedApi::OpenAPI::Generator::Config';
 
 sub get {
     my ($self) = @_;
+    my $item = $self->item;
+    return $self->render(json => {item => $item}, status => 200);
 }
 
 sub options {
@@ -28,6 +34,65 @@ sub options {
 
 sub update {
     my ($self) = @_;
+}
+
+sub form {
+}
+
+sub config_store {
+    my ($self) = @_;
+    $self->config_store_class->new;
+}
+
+our %fields = (
+    iptables => undef,
+    admin => undef,
+);
+
+sub item {
+    my ($self) = @_;
+    my $cs = $self->config_store;
+    my @auth;
+    my @cluster;
+    my %host_configs;
+    my %item = (
+        auth => \@auth,
+        cluster => \@cluster,
+        host_configs => \%host_configs,
+    );
+
+    for my $id ($cs->_Sections()) {
+        if (exists $fields{$id}) {
+            $item{$id} = $cs->read($id);
+            next;
+        }
+
+        if ($id =~ /^auth (.*)$/) {
+            my $user = $1;
+            my $d = $cs->read($id);
+            $d->{user} = $user;
+            push @auth, $d;
+            next;
+        }
+
+        if ($id eq 'cluster') {
+            my $d = $cs->read($id);
+            while (my ($k,$v) = each %$d) {
+                push @cluster, { name => $k, value => $v};
+            }
+            next;
+        }
+
+        my @host_config;
+        my $d = $cs->read($id);
+        while (my ($k,$v) = each %$d) {
+            push @host_config, { name => $k, value => $v};
+        }
+
+        $host_configs{$id} = \@host_config;
+    }
+
+    return \%item;
 }
 
 =head1 AUTHOR
