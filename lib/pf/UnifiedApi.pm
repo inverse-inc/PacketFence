@@ -361,6 +361,7 @@ sub setup_api_v1_config_routes {
     $self->setup_api_v1_config_clouds_routes($root);
     $self->setup_api_v1_config_firewalls_routes($root);
     $self->setup_api_v1_config_floating_devices_routes($root);
+    $self->setup_api_v1_config_kafka_routes($root);
     $self->setup_api_v1_config_maintenance_tasks_routes($root);
     $self->setup_api_v1_config_network_behavior_policies_routes($root);
     $self->setup_api_v1_config_misc_routes($root);
@@ -2365,6 +2366,14 @@ sub setup_api_v1_emails_route {
     $resource_route->register_sub_action({ method => 'POST', action => 'send_email', path => 'send'});
     $resource_route->register_sub_action({ method => 'POST', action => 'pfmailer', path => 'pfmailer'});
     return ;
+}
+
+sub setup_api_v1_config_kafka_routes {
+    my ($self, $root) = @_;
+    my $resource_route = $root->any("kafka")->to(controller => "Config::Kafka" )->name("api.v1.Config.Kafka");
+    $resource_route->register_sub_action({ method => 'PATCH', action => 'update', path => ''});
+    $resource_route->register_sub_action({ method => 'GET', action => 'get', path => ''});
+    $resource_route->register_sub_action({ method => 'OPTIONS', action => 'options', path => ''});
 }
 
 =head1 AUTHOR
