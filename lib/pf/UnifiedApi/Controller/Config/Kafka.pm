@@ -12,6 +12,7 @@ pf::UnifiedApi::Controller::Config::Kafka
 
 use strict;
 use warnings;
+use pf::error qw(is_error is_success);
 use Mojo::Base 'pf::UnifiedApi::Controller::RestRoute';
 use pf::UnifiedApi::OpenAPI::Generator::Config;
 use pf::UnifiedApi::Controller::Config;
@@ -34,9 +35,65 @@ sub options {
 
 sub update {
     my ($self) = @_;
+    my ($error, $data) = $self->get_json;
+    if (defined $error) {
+        return $self->render_error(400, "Bad Request : $error");
+    }
+    my ($status, $new_data, $form) = $self->validate_item($data);
+    if (is_error($status)) {
+        return $self->render(status => $status, json => $new_data);
+    }
+    $self->render(status => 200, json => {});
+}
+
+sub validate_item {
+    my ($self, $item) = @_;
+    $item = $self->cleanupItemForValidate($item);
+    my ($status, $form) = $self->form($item);
+    if (is_error($status)) {
+        return $status, { message => $form }, undef;
+    }
+
+    $form->process($self->form_process_parameters_for_validation($item));
+    if (!$form->has_errors) {
+        return 200, $form->value, $form;
+    }
+
+    return 422, { message => "Unable to validate", errors => $self->format_form_errors($form) }, undef;
+}
+
+=head2 format_form_errors
+
+format_form_errors
+
+=cut
+
+sub format_form_errors {
+    my ($self, $form) = @_;
+    my $field_errors = $form->field_errors;
+    my @errors;
+    while (my ($k,$v) = each %$field_errors) {
+        push @errors, {field => $k, message => $v};
+    }
+
+    return \@errors;
+}
+
+
+sub form_process_parameters_for_validation {
+    my ($self, $item) = @_;
+    return (posted => 1, params => $item);
+}
+
+sub cleanupItemForValidate {
+    my ($self, $item) = @_;
+    return $item;
 }
 
 sub form {
+    my ($self, $item, @args) = @_;
+    my $form = $self->form_class->new(@args, user_roles => $self->stash->{'admin_roles'});
+    return 200, $form;
 }
 
 sub config_store {
@@ -54,16 +111,22 @@ sub item {
     my $cs = $self->config_store;
     my @auth;
     my @cluster;
-    my %host_configs;
+    my @host_configs;
     my %item = (
-        auth => \@auth,
+        auths => \@auth,
         cluster => \@cluster,
-        host_configs => \%host_configs,
+        host_configs => \@host_configs,
     );
 
     for my $id ($cs->_Sections()) {
         if (exists $fields{$id}) {
-            $item{$id} = $cs->read($id);
+            my $d = $cs->read($id);
+            if ($id eq 'iptables') {
+                for my $f (qw(clients cluster_ips)) {
+                    $d->{$f} = [split /\s*,\s*/, $d->{$f}];
+                }
+            }
+            $item{$id} = $d;
             next;
         }
 
@@ -89,9 +152,9 @@ sub item {
             push @host_config, { name => $k, value => $v};
         }
 
-        $host_configs{$id} = \@host_config;
+        @host_configs = { config => \@host_config, host => $id };
     }
-
+    @host_configs = sort { $a->{host} <=> $b->{host} } @host_configs;
     return \%item;
 }
 
