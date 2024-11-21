@@ -35,6 +35,11 @@ my $base_url = '/api/v1/config/kafka';
 $t->get_ok($base_url)
   ->status_is(200);
 
+$t->options_ok($base_url)
+  ->status_is(200)
+  ->json_is({});
+
+
 my $config = {
    "iptables" =>  {
      "clients" =>  [],
@@ -44,7 +49,7 @@ my $config = {
      "user" =>  "admin",
      "pass" =>  "admin-pass"
    },
-   "auth" =>  [
+   "auths" =>  [
      {
        "user" =>  "guardicore",
        "pass" =>  "guardicore-pass"
