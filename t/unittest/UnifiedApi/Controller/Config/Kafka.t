@@ -20,7 +20,7 @@ BEGIN {
     use setup_test_config;
 }
 
-use Test::More tests => 4;
+use Test::More tests => 7;
 use Test::Mojo;
 use Test2::Tools::Compare qw(bag end item subset);
 use pf::UnifiedApi::Controller::Config::Kafka;
@@ -36,9 +36,187 @@ $t->get_ok($base_url)
   ->status_is(200);
 
 $t->options_ok($base_url)
-  ->status_is(200)
-  ->json_is({});
-
+    ->status_is(200)
+    ->json_is(
+        {
+            "meta" => {
+                "admin" => {
+                    "default"     => undef,
+                    "implied"     => undef,
+                    "placeholder" => undef,
+                    "properties"  => {
+                        "pass" => {
+                            "default"     => undef,
+                            "implied"     => undef,
+                            "placeholder" => "**************",
+                            "required"    => 0,
+                            "type"        => "string"
+                        },
+                        "user" => {
+                            "default"     => undef,
+                            "implied"     => undef,
+                            "placeholder" => undef,
+                            "required"    => 0,
+                            "type"        => "string"
+                        }
+                    },
+                    "required" => 0,
+                    "type"     => "object"
+                },
+                "auths" => {
+                    "default" => [],
+                    "implied" => undef,
+                    "item"    => {
+                        "default"     => undef,
+                        "implied"     => undef,
+                        "placeholder" => undef,
+                        "properties"  => {
+                            "pass" => {
+                                "default"     => undef,
+                                "implied"     => undef,
+                                "placeholder" => "**************",
+                                "required"    => 0,
+                                "type"        => "string"
+                            },
+                            "user" => {
+                                "default"     => undef,
+                                "implied"     => undef,
+                                "placeholder" => undef,
+                                "required"    => 0,
+                                "type"        => "string"
+                            }
+                        },
+                        "required" => 0,
+                        "type"     => "object"
+                    },
+                    "placeholder" => undef,
+                    "required"    => 0,
+                    "type"        => "array"
+                },
+                "cluster" => {
+                    "default" => [],
+                    "implied" => undef,
+                    "item"    => {
+                        "default"     => undef,
+                        "implied"     => undef,
+                        "placeholder" => undef,
+                        "properties"  => {
+                            "name" => {
+                                "default"     => undef,
+                                "implied"     => undef,
+                                "placeholder" => undef,
+                                "required"    => 0,
+                                "type"        => "string"
+                            },
+                            "value" => {
+                                "default"     => undef,
+                                "implied"     => undef,
+                                "placeholder" => undef,
+                                "required"    => 0,
+                                "type"        => "string"
+                            }
+                        },
+                        "required" => 0,
+                        "type"     => "object"
+                    },
+                    "placeholder" => undef,
+                    "required"    => 0,
+                    "type"        => "array"
+                },
+                "host_configs" => {
+                    "default" => [],
+                    "implied" => undef,
+                    "item"    => {
+                        "default"     => undef,
+                        "implied"     => undef,
+                        "placeholder" => undef,
+                        "properties"  => {
+                            "config" => {
+                                "default" => [],
+                                "implied" => undef,
+                                "item"    => {
+                                    "default"     => undef,
+                                    "implied"     => undef,
+                                    "placeholder" => undef,
+                                    "properties"  => {
+                                        "name" => {
+                                            "default"     => undef,
+                                            "implied"     => undef,
+                                            "placeholder" => undef,
+                                            "required"    => 0,
+                                            "type"        => "string"
+                                        },
+                                        "value" => {
+                                            "default"     => undef,
+                                            "implied"     => undef,
+                                            "placeholder" => undef,
+                                            "required"    => 0,
+                                            "type"        => "string"
+                                        }
+                                    },
+                                    "required" => 0,
+                                    "type"     => "object"
+                                },
+                                "placeholder" => undef,
+                                "required"    => 0,
+                                "type"        => "array"
+                            },
+                            "host" => {
+                                "default"     => undef,
+                                "implied"     => undef,
+                                "placeholder" => undef,
+                                "required"    => 0,
+                                "type"        => "string"
+                            }
+                        },
+                        "required" => 0,
+                        "type"     => "object"
+                    },
+                    "placeholder" => undef,
+                    "required"    => 0,
+                    "type"        => "array"
+                },
+                "iptables" => {
+                    "default"     => undef,
+                    "implied"     => undef,
+                    "placeholder" => undef,
+                    "properties"  => {
+                        "clients" => {
+                            "default" => [],
+                            "implied" => undef,
+                            "item"    => {
+                                "default"     => undef,
+                                "implied"     => undef,
+                                "placeholder" => undef,
+                                "required"    => 0,
+                                "type"        => "string"
+                            },
+                            "placeholder" => undef,
+                            "required"    => 0,
+                            "type"        => "array"
+                        },
+                        "cluster_ips" => {
+                            "default" => [],
+                            "implied" => undef,
+                            "item"    => {
+                                "default"     => undef,
+                                "implied"     => undef,
+                                "placeholder" => undef,
+                                "required"    => 0,
+                                "type"        => "string"
+                            },
+                            "placeholder" => undef,
+                            "required"    => 0,
+                            "type"        => "array"
+                        }
+                    },
+                    "required" => 0,
+                    "type"     => "object"
+                }
+            },
+            status => 200,
+        }
+);
 
 my $config = {
    "iptables" =>  {
