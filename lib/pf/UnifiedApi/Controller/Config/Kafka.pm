@@ -13,6 +13,8 @@ pf::UnifiedApi::Controller::Config::Kafka
 use strict;
 use warnings;
 use pf::error qw(is_error is_success);
+use pf::util qw(listify);
+use pf::constants qw($TRUE);
 use Mojo::Base 'pf::UnifiedApi::Controller::RestRoute';
 use pf::UnifiedApi::OpenAPI::Generator::Config;
 use pf::UnifiedApi::Controller::Config;
@@ -43,7 +45,37 @@ sub update {
     if (is_error($status)) {
         return $self->render(status => $status, json => $new_data);
     }
-    $self->render(status => 200, json => {});
+
+    if ($self->save_in_config_store($new_data)) {
+        $self->render(status => 200, json => {});
+    }
+}
+
+sub save_in_config_store {
+    my ($self, $data) = @_;
+    my $items = flatten_item($data);
+    my $cs = $self->config_store;
+    for my $item (@$items) {
+         my $section = $item->{section};
+         $cs->update($item->{section}, $item->{params});
+    }
+
+    return $self->commit($cs);
+}
+
+sub commit {
+    my ($self, $cs) = @_;
+    my ($res, $msg) = $cs->commit();
+
+    if($ENV{PF_UID} && $ENV{PF_GID}) {
+        chown($ENV{PF_UID}, $ENV{PF_GID}, $cs->configFile);
+    }
+
+    unless($res) {
+        $self->render_error(500, $msg);
+        return undef;
+    }
+    return $TRUE;
 }
 
 sub validate_item {
@@ -156,6 +188,68 @@ sub item {
     }
     @host_configs = sort { $a->{host} <=> $b->{host} } @host_configs;
     return \%item;
+}
+
+sub flatten_name_val {
+    my ($config) = @_;
+    my %params;
+    for my $e (@$config) {
+        $params{$e->{name}} = $e->{value};
+    }
+    return \%params;
+}
+
+sub flatten_host_config {
+    my ($config) = @_;
+    return { section => $config->{host}, params => flatten_name_val($config->{config}) };
+}
+
+sub flatten_auth {
+    my ($config) = @_;
+    return { section => "auth $config->{user}", params => {pass => $config->{pass}} };
+}
+
+sub flatten_iptables {
+    my ($config) = @_;
+    my %params;
+    while ( my ($k, $v) = each %$config ) {
+       $params{$k} = join(",", @{listify($v)});
+    }
+
+    return { section => "iptables", params => \%params };
+}
+
+sub flatten_item {
+    my ($data) = @_;
+    my @flatten_items;
+    while (my ($k, $value) = each %$data) {
+        if ($k eq 'host_configs') {
+            for my $e (@$value) {
+                push @flatten_items, flatten_host_config($e);
+            }
+            next;
+        }
+        if ($k eq 'cluster') {
+            push @flatten_items, { section => $k, params => flatten_name_val($value)};
+            next;
+        }
+
+        if ($k eq 'auth') {
+            foreach my $element ( @$value ) {
+                push @flatten_items, flatten_auth($element);
+            }
+            next;
+        }
+
+        if ($k eq 'iptables') {
+            push @flatten_items, flatten_iptables($value);
+            next;
+        }
+
+        push @flatten_items, {section => $k, params => $value};
+    }
+
+    return \@flatten_items;
 }
 
 =head1 AUTHOR
