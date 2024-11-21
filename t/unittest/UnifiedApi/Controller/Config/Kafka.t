@@ -20,8 +20,11 @@ BEGIN {
     use setup_test_config;
 }
 
-use Test::More tests => 3;
+use Test::More tests => 4;
 use Test::Mojo;
+use Test2::Tools::Compare qw(bag end item subset);
+use pf::UnifiedApi::Controller::Config::Kafka;
+use pf::util qw(listify);
 
 #This test will running last
 use Test::NoWarnings;
@@ -32,6 +35,55 @@ my $base_url = '/api/v1/config/kafka';
 $t->get_ok($base_url)
   ->status_is(200);
 
+my $config = {
+   "iptables" =>  {
+     "clients" =>  [],
+     "cluster_ips" =>  []
+   },
+   "admin" =>  {
+     "user" =>  "admin",
+     "pass" =>  "admin-pass"
+   },
+   "auth" =>  [
+     {
+       "user" =>  "guardicore",
+       "pass" =>  "guardicore-pass"
+     }
+   ],
+   "cluster" =>  [
+     {
+       "name" =>  "CLUSTER_ID",
+       "value" =>  ""
+     }
+   ],
+  "host_configs" =>  [
+    {
+      "host" =>  "172-105-101-170.ip.linodeusercontent.com",
+      "config" =>  [
+        {
+          "name" =>  "KAFKA_NODE_ID",
+          "value" =>  "1"
+        },
+        {
+          "name" =>  "KAFKA_ADVERTISED_LISTENERS",
+          "value" =>  "INTERNAL://172.105.101.170:29092,EXTERNAL://172.105.101.170:9092"
+        }
+      ]
+    }
+  ]
+};
+
+Test2::Tools::Compare::is(
+    pf::UnifiedApi::Controller::Config::Kafka::flatten_item($config),
+    bag {
+        item {section => "iptables", params => {clients => "", cluster_ips => ''} };
+        item {section => "admin", params => {user => "admin", pass => 'admin-pass'} };
+        item {section => "auth guardicore", params => { pass => 'guardicore-pass'} };
+        item {section => "cluster", params => { CLUSTER_ID => ''} };
+        item {section => "172-105-101-170.ip.linodeusercontent.com", params => { KAFKA_NODE_ID => '1', KAFKA_ADVERTISED_LISTENERS => 'INTERNAL://172.105.101.170:29092,EXTERNAL://172.105.101.170:9092'} };
+        end();
+    },
+);
 
 =head1 AUTHOR
 
