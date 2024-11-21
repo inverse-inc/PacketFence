@@ -55,9 +55,10 @@ sub save_in_config_store {
     my ($self, $data) = @_;
     my $items = flatten_item($data);
     my $cs = $self->config_store;
+    my $ini = $cs->cachedConfig();
+    $ini->Delete();
     for my $item (@$items) {
-         my $section = $item->{section};
-         $cs->update($item->{section}, $item->{params});
+         $cs->update_or_create($item->{section}, $item->{params} // {});
     }
 
     return $self->commit($cs);
@@ -186,6 +187,7 @@ sub item {
 
         @host_configs = { config => \@host_config, host => $id };
     }
+
     @host_configs = sort { $a->{host} <=> $b->{host} } @host_configs;
     return \%item;
 }
@@ -234,7 +236,7 @@ sub flatten_item {
             next;
         }
 
-        if ($k eq 'auth') {
+        if ($k eq 'auths') {
             foreach my $element ( @$value ) {
                 push @flatten_items, flatten_auth($element);
             }
