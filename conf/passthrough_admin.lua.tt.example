@@ -33,10 +33,6 @@ core.register_action("admin", { "http-req" }, function(txn)
         txn:set_var("req.action","static")
     elseif ( string.match(txn.sf:path(), '^/common') ) then
         txn:set_var("req.action","static")
-    elseif ( string.match(txn.sf:path(), '^/monitoring') ) then
-        local path = txn.sf:path():match("/monitoring/(.*)")
-        txn:set_var("req.path", "/" .. path)
-        txn:set_var("req.action","127.0.0.1-netdata")
     elseif ( string.match(txn.sf:path(), '^/netdata') ) then
         local ip = txn.sf:path():match("(%d+%.%d+%.%d+%.%d+)")
         local path = txn.sf:path():match("/netdata/%d+%.%d+%.%d+%.%d+(.*)")
