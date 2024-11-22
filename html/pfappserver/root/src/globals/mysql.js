@@ -84,11 +84,6 @@ export const MysqlDatabase = {
       format: 'YYYY-MM-DD HH:mm:ss',
       default: '0000-00-00 00:00:00'
     },
-    lastskip: {
-      type: MysqlDatetime,
-      format: 'YYYY-MM-DD HH:mm:ss',
-      default: '0000-00-00 00:00:00'
-    },
     time_balance: Object.assign(
       MysqlLimits.uint,
       {
@@ -185,7 +180,7 @@ export const MysqlDatabase = {
     },
     bypass_acls: {
       type: MysqlString,
-      maxLength: 255,
+      maxLength: 16777215,
       default: null
     },
     voip: {

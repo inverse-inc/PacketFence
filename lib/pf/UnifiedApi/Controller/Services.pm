@@ -19,6 +19,8 @@ use pf::services;
 use pf::error qw(is_error);
 use pf::pfqueue::status_updater::redis;
 use pf::util::pfqueue qw(consumer_redis_client);
+use POSIX qw(setsid);
+use pf::file_paths qw($pfperl_api_restart_task);
 
 sub resource {
     my ($self) = @_;
@@ -132,14 +134,22 @@ sub do_action {
         return $self->render(json => $data, status => $status);
     }
 
+    my $subprocess = Mojo::IOLoop->subprocess;
     if ($data->{async}) {
         my $task_id = $self->task_id;
-        my $subprocess = Mojo::IOLoop->subprocess;
         $subprocess->run(
             sub {
                 my ($subprocess) = @_;
                 my $updater = pf::pfqueue::status_updater::redis->new( connection => consumer_redis_client(), task_id => $task_id );
                 $updater->start;
+                my $service_id = $self->param('service_id');
+                # Marking the restart of pfperl-api as complete since it will be complete when running in a container
+                if ($action eq 'do_restart' && $service_id eq 'pfperl-api') {
+                    if (open(my $fh, ">", $pfperl_api_restart_task)) {
+                        print $fh $task_id;
+                        close($fh);
+                    }
+                }
                 my $data = $self->$action();
                 $updater->completed($data);
             },
@@ -149,8 +159,17 @@ sub do_action {
         return $self->render( json => {status => 202, task_id => $task_id }, status => 202);
     }
 
-    my $results = $self->$action();
-    return $self->render(json => $results);
+    $subprocess->run(
+        sub {
+            my ($subprocess) = @_;
+            my $results = $self->$action();
+            return $results;
+        },
+        sub {
+            my ($subprocess, $err, $results) = @_;
+            return $self->render(json => $results);
+         },
+    );
 }
 
 sub do_start {
@@ -212,7 +231,7 @@ Inverse inc. <info@inverse.ca>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005-2023 Inverse inc.
+Copyright (C) 2005-2024 Inverse inc.
 
 =head1 LICENSE
 

@@ -86,7 +86,7 @@ else{
   print "Please re-run the script again or configure the domain directly through the admin UI in 'Configuration->Domain' \n";
 }
 
-pf_run("chown pf.pf $domain_config_file");
+pf_run("chown pf:pf $domain_config_file");
 
 =head1 AUTHOR
 
@@ -95,7 +95,7 @@ Inverse inc. <info@inverse.ca>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005-2023 Inverse inc.
+Copyright (C) 2005-2024 Inverse inc.
 
 =head1 LICENSE
 

@@ -27,9 +27,11 @@
       :options="inputOptions"
       :value="inputValue"
       :label="text"
+      :taggable="taggable"
       :track-by="text"
       :single-label="singleLabel"
       :on-select="onSelect"
+      :on-tag="onTag"
       :on-open="onOpen"
       :on-remove="onRemove"
       :on-close="onClose"
@@ -75,11 +77,11 @@ import {BaseInputChosenOneSearchableProps} from '@/components/new'
 import {getFormNamespace, setFormNamespace} from '@/composables/useInputValue'
 import {computed, inject, ref, unref} from '@vue/composition-api'
 import MultiselectFacade
-  from '@/views/Configuration/sources/_components/ldapCondition/MultiselectFacade.vue'
+  from '@/views/Configuration/sources/_components/ldapCondition/MultiselectFacade'
 import {valueToSelectValue} from '@/utils/convert'
 import _ from 'lodash'
 import ProvidedKeys from '@/views/Configuration/sources/_components/ldapCondition/ProvidedKeys';
-import BaseFormGroup from '@/components/new/BaseFormGroup.vue';
+import BaseFormGroup from '@/components/new/BaseFormGroup';
 
 
 export const props = {
@@ -179,6 +181,10 @@ function setup(props, context) { // eslint-disable-line
     }
   }
 
+  function onTag(value) {
+    onSelect(valueToSelectValue(value))
+  }
+
   function onOpen() {
     if (selectedValue.value !== null) {
       inputOptions.value = [selectedValue.value]
@@ -206,6 +212,7 @@ function setup(props, context) { // eslint-disable-line
     isConnected,
     onSearch,
     onSelect,
+    onTag,
     onOpen,
     onClose,
     onRemove,

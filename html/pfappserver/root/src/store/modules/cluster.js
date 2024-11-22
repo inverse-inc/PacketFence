@@ -65,45 +65,24 @@ const api = (state, server = store.state.system.hostname) => {
       return apiCall.postQuiet(['service', id, 'restart'], { async: true }, { headers })
         .then(response => {
           const { data: { task_id } = {} } = response
-          return store.dispatch('pfqueue/pollTaskStatus', { task_id, headers }).then(response => {
-            const { restart } = response
-            if (parseInt(restart) > 0) {
-              return response
-            }
-            else {
-              throw new Error(i18n.t(`Could not restart {id} on {server}.`, { server, id }))
-            }
-          })
+          const expect = ({ item: { restart = 0 } = {} }) => (+restart > 0)
+          return store.dispatch('pfqueue/pollTaskStatus', { task_id, headers, expect })
         })
     },
     start: id => {
       return apiCall.postQuiet(['service', id, 'start'], { async: true }, { headers })
         .then(response => {
           const { data: { task_id } = {} } = response
-          return store.dispatch('pfqueue/pollTaskStatus', { task_id, headers }).then(response => {
-            const { start } = response
-            if (parseInt(start) > 0) {
-              return response
-            }
-            else {
-              throw new Error(i18n.t(`Could not start {id} on {server}.`, { server, id }))
-            }
-          })
+          const expect = ({ item: { start = 0 } = {} }) => (+start > 0)
+          return store.dispatch('pfqueue/pollTaskStatus', { task_id, headers, expect })
         })
     },
     stop: id => {
       return apiCall.postQuiet(['service', id, 'stop'], { async: true }, { headers })
         .then(response => {
           const { data: { task_id } = {} } = response
-          return store.dispatch('pfqueue/pollTaskStatus', { task_id, headers }).then(response => {
-            const { stop } = response
-            if (parseInt(stop) > 0) {
-              return response
-            }
-            else {
-              throw new Error(i18n.t(`Could not stop {id} on {server}.`, { server, id }))
-            }
-          })
+          const expect = ({ item: { stop = 0 } = {} }) => (+stop > 0)
+          return store.dispatch('pfqueue/pollTaskStatus', { task_id, headers, expect })
         })
     },
     systemService: id => {

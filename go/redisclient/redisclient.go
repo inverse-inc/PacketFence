@@ -18,15 +18,9 @@ type PfqueueConsumerConfig struct {
 }
 
 type RedisArgsConfig struct {
-	Reconnect int    `json:"reconnect"`
-	Every     int    `json:"every"`
-	Server    string `json:"server"`
-}
-
-var Config = PfqueueConsumerConfig{
-	PfconfigNS:     "config::Pfqueue",
-	PfconfigHashNS: "consumer",
-	PfconfigMethod: "hash_element",
+	Reconnect pfconfigdriver.PfInt `json:"reconnect"`
+	Every     pfconfigdriver.PfInt `json:"every"`
+	Server    string               `json:"server"`
 }
 
 func dial(network, addr string) (*redis.Client, error) {
@@ -42,12 +36,12 @@ var clientPool *pool.Pool
 
 func GetPfQueueRedisClient(ctx context.Context) (*redis.Client, error) {
 	poolOnce.Do(func() {
-		pfconfigdriver.PfconfigPool.AddStruct(ctx, &Config)
+		config := pfconfigdriver.GetType[PfqueueConsumerConfig](context.Background())
 		var network string = "tcp"
-		if Config.RedisArgs.Server[0] == '/' {
+		if config.RedisArgs.Server[0] == '/' {
 			network = "unix"
 		}
-		clientPool, _ = pool.NewCustom(network, Config.RedisArgs.Server, 100, dial)
+		clientPool, _ = pool.NewCustom(network, config.RedisArgs.Server, 100, dial)
 	})
 
 	return clientPool.Get()

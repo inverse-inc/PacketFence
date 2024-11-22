@@ -87,7 +87,7 @@ function find_latest_stable() {
   if is_rpm_based; then
     OS="RHEL-8"
   elif is_deb_based; then
-    OS="Debian-11"
+    OS="Debian-12"
   fi
   curl https://www.packetfence.org/downloads/PacketFence/latest-stable-$OS.txt
 }
@@ -107,7 +107,7 @@ function set_upgrade_to() {
 
 function apt_upgrade_packetfence_package() {
   set_upgrade_to
-  echo "deb http://inverse.ca/downloads/PacketFence/debian/$UPGRADE_TO bullseye bullseye" > /etc/apt/sources.list.d/packetfence.list
+  echo "deb http://inverse.ca/downloads/PacketFence/debian/$UPGRADE_TO bookworm bookworm" > /etc/apt/sources.list.d/packetfence.list
   apt update
   if is_enabled $1; then
     apt-mark hold packetfence-upgrade
@@ -177,9 +177,9 @@ function handle_pkgnew_file() {
   cp -a $pkgnew_file $non_pkgnew_file
   echo "Attempting a dry-run of the patch on $non_pkgnew_file"
   if ! patch -p1 -f --dry-run < $patch_file; then
-    echo "Patching $non_pkgnew_file failed. Will put the $suffix file in place. This should be addressed manually after the upgrade is completed. Press enter to continue..."
+    echo "Patching $non_pkgnew_file failed. You will keep the current configuration file ($non_pkgnew_file) BUT, please, check $pkgnew_file file if some modifications are needed in your config file $non_pkgnew_file.\nThis should be addressed manually after the upgrade is completed. Previous configuration is restored. Press enter to continue..."
+    cp -a $backup_file $non_pkgnew_file
     read
-    cp -a $pkgnew_file $non_pkgnew_file
   else
     echo "Dry-run completed successfully, applying the patch"
     patch -p1 -f < $patch_file
@@ -232,8 +232,7 @@ echo "Stopping the PacketFence services"
 main_splitter
 export_to="/root/packetfence-pre-upgrade-backup-`date '+%s'`.tgz"
 echo "Generating full pre-upgrade backup to $export_to"
-/usr/local/pf/addons/backup-and-maintenance.sh
-/usr/local/pf/addons/full-import/export.sh $export_to
+/usr/local/pf/addons/exportable-backup.sh -f $export_to
 
 main_splitter
 INCLUDE_OS_UPDATE="${INCLUDE_OS_UPDATE:-}"

@@ -93,7 +93,7 @@ sub is_lost_stolen {
 sub userIsAuthenticated : Private {
     my ( $self, $c ) = @_;
     my $pid     = $c->user_session->{"username"} // $c->{_session}->{username};
-    my @person_nodes = person_nodes($pid);
+    my @person_nodes = person_reg_nodes($pid);
     my @nodes;
     foreach my $person_node (@person_nodes) {
         my $node = node_view($person_node->{mac});
@@ -241,7 +241,7 @@ Inverse inc. <info@inverse.ca>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005-2023 Inverse inc.
+Copyright (C) 2005-2024 Inverse inc.
 
 =head1 LICENSE
 

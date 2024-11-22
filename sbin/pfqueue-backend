@@ -148,6 +148,10 @@ sub handle_socket {
         }
 
         if ($data eq 'ping') {
+            if ($TASKS > 0) {
+                $TASKS++;
+            }
+
             $len = send_data_with_length($socket, 'true');
         } else {
             my $results = process_data($data);
@@ -202,6 +206,7 @@ sub process_data {
     my $task = "pf::task::$type"->new;
 
     my ( $err, $result ) = eval {
+        $logger->info("Running task $type");
         $task->doTask($args);
     };
 
@@ -262,7 +267,7 @@ Inverse inc. <info@inverse.ca>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005-2023 Inverse inc.
+Copyright (C) 2005-2024 Inverse inc.
 
 =head1 LICENSE
 

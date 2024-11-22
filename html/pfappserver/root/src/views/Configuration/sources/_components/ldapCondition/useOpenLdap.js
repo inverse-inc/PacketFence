@@ -10,7 +10,7 @@ import {
 function useOpenLdap(form) {
 
   const performSearch = (filter, scope, attributes, base_dn) => {
-    return sendLdapSearchRequest({...form.value}, filter, scope, attributes, base_dn)
+    return sendLdapSearchRequest({...form.value}, filter, scope, attributes, base_dn, 1000)
       .then((result) => {
           return {results: parseLdapResponseToAttributeArray(result, extractAttributeFromFilter(filter)), success: true}
         }
@@ -18,20 +18,36 @@ function useOpenLdap(form) {
   }
 
   const getSubSchemaDN = () => {
-    return sendLdapSearchRequest({...form.value}, null, 'base', ['subSchemaSubEntry'], form.value.basedn)
+    return sendLdapSearchRequest({...form.value}, null, 'base', ['subSchemaSubEntry'], '', 1)
       .then((response) => {
-        let firstAttribute = response[Object.keys(response)[0]]
-        return firstAttribute['subschemaSubentry']
+        const keys = Object.keys(response)
+        if (keys.length) {
+          const firstAttribute = response[keys[0]]
+          const lowerCaseKeys = Object.keys(firstAttribute).map(key => key.toLowerCase())
+          const subSchemaSubEntryIndex = lowerCaseKeys.indexOf('subschemasubentry')
+          if (subSchemaSubEntryIndex !== -1) {
+            const subSchemaSubEntryKey = Object.keys(firstAttribute)[subSchemaSubEntryIndex]
+            return firstAttribute[subSchemaSubEntryKey]
+          }
+        }
+        return []
       })
   }
 
   const fetchAttributeTypes = (subSchemaDN) => {
-    return sendLdapSearchRequest({...form.value}, '(objectclass=subschema)',
-      'base',
-      ['attributeTypes'],
-      subSchemaDN)
+    return sendLdapSearchRequest({...form.value}, '(objectClass=subSchema)', 'base', ['attributeTypes'], subSchemaDN, 1000)
       .then((response) => {
-        return response[Object.keys(response)[0]]['attributeTypes']
+        const keys = Object.keys(response)
+        if (keys.length) {
+          const firstAttribute = response[keys[0]]
+          const lowerCaseKeys = Object.keys(firstAttribute).map(key => key.toLowerCase())
+          const attributeTypesIndex = lowerCaseKeys.indexOf('attributetypes')
+          if (attributeTypesIndex !== -1) {
+            const attributeTypesKey = Object.keys(firstAttribute)[attributeTypesIndex]
+            return firstAttribute[attributeTypesKey]
+          }
+        }
+        return []
       })
   }
 

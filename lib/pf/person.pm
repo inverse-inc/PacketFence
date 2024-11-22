@@ -37,6 +37,7 @@ BEGIN {
         person_view_simple
         person_modify
         person_nodes
+        person_reg_nodes
         person_security_events
         person_cleanup
         persons_without_nodes
@@ -270,10 +271,31 @@ sub person_nodes {
         -where => {
             pid => $pid,
         },
-        -columns => [qw(mac pid notes regdate unregdate lastskip status user_agent computername device_class time_balance bandwidth_balance)],
+        -columns => [qw(mac pid notes regdate unregdate status user_agent computername device_class time_balance bandwidth_balance)],
         #To avoid join
         -from => pf::dal::node->table,
         -with_class => undef,
+    );
+    if (is_error($status)) {
+        return;
+    }
+
+    return @{$iter->all // []};
+}
+
+sub person_reg_nodes {
+    my ($pid) = @_;
+    my ($status, $iter) = pf::dal::node->search(
+        -where => {
+            pid => $pid,
+        },
+        -columns => [qw(mac pid notes regdate unregdate status user_agent computername device_class time_balance bandwidth_balance)],
+        #To avoid join
+        -from => pf::dal::node->table,
+        -with_class => undef,
+        -where => {
+            status => "reg",
+        },
     );
     if (is_error($status)) {
         return;
@@ -385,7 +407,7 @@ Minor parts of this file may have been contributed. See CREDITS.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005-2023 Inverse inc.
+Copyright (C) 2005-2024 Inverse inc.
 
 Copyright (C) 2005 Kevin Amorin
 

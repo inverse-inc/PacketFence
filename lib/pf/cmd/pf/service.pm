@@ -31,6 +31,7 @@ Services managed by PacketFence:
   keepalived             | Virtual IP management
   mysql-probe            | MySQL probe service
   netdata                | Monitoring service
+  ntlm-auth-api          | ntlm auth backend API used to authenticate a user on Windows AD
   pfacct                 | Netflow and Radius Accounting service
   pf                     | all services that should be running based on your config
   pfcron                 | PF Cron daemon
@@ -45,6 +46,7 @@ Services managed by PacketFence:
   pfpki                  | PKI daemon
   pfqueue-go             | PF queueing service
   pfqueue-backend        | PF queueing backend service
+  pfsetacls              | ACL service daemon
   pfsso                  | Firewall SSO daemon
   pfstats                | PF statistics daemon
   proxysql               | proxysql daemon
@@ -54,7 +56,6 @@ Services managed by PacketFence:
   redis_queue            | Redis for pfqueue
   snmptrapd              | SNMP trap receiver daemon
   tracking-config        | Tracking configuration change
-  winbindd               | Winbind daemon
 
 =head1 DESCRIPTION
 
@@ -420,7 +421,7 @@ Minor parts of this file may have been contributed. See CREDITS.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005-2023 Inverse inc.
+Copyright (C) 2005-2024 Inverse inc.
 
 =head1 LICENSE
 

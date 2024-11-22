@@ -17,12 +17,16 @@ use pf::file_paths qw(
     $generated_conf_dir
     $conf_dir
     $kafka_config_file
+    $kafka_config_dir
 );
 
 use pf::IniFiles;
 use Sys::Hostname;
 
 use Template;
+use pf::constants qw($TRUE $FALSE);
+use pfconfig::cached_hash;
+tie our %ConfigKafka, 'pfconfig::cached_hash', "config::Kafka";
 
 use Moo;
 extends 'pf::services::manager';
@@ -33,6 +37,22 @@ sub generateConfig {
     my $tt = Template->new(
         ABSOLUTE => 1,
     );
+    $self->generateEnvFile($tt);
+    $self->generateAuthFile($tt);
+    return 1;
+}
+
+sub generateAuthFile {
+    my ($self, $tt) = @_;
+    $tt->process(
+        "${kafka_config_dir}/kafka_server_jaas.conf.tt",
+        \%ConfigKafka,
+        "${kafka_config_dir}/kafka_server_jaas.conf",
+    ) or die $tt->error();
+}
+
+sub generateEnvFile {
+    my ($self, $tt) = @_;
     my $vars = {
        env_dict => $self->env_vars,
     };
@@ -41,16 +61,14 @@ sub generateConfig {
         $vars,
         $generated_conf_dir . "/" . $self->name . ".env"
     ) or die $tt->error();
-    return 1;
 }
 
 sub env_vars {
     my ($self) = @_;
     my %env;
-    my $config = $self->config();
     my $hostname = hostname();
     for my $top ('cluster', $hostname) {
-        while (my ($k, $v) = each %{$config->{$top}}) {
+        while (my ($k, $v) = each %{$ConfigKafka{$top}}) {
             $env{$k} = $v;
         }
     }
@@ -58,14 +76,11 @@ sub env_vars {
     return \%env;
 }
 
-
-
-
-sub config {
-    tie my %ini, 'pf::IniFiles', (-file=> $kafka_config_file) or die "Cannot open config file $kafka_config_file";
-    return {%ini}
+sub isManaged {
+    my ($self) = @_;
+    my $hostname = hostname();
+    ($self->SUPER::isManaged && exists $ConfigKafka{$hostname}) ? $TRUE : $FALSE
 }
-
 
 =head1 AUTHOR
 
@@ -73,7 +88,7 @@ Inverse inc. <info@inverse.ca>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005-2023 Inverse inc.
+Copyright (C) 2005-2024 Inverse inc.
 
 =head1 LICENSE
 
