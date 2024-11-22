@@ -91,24 +91,19 @@ sub generateConfig {
         my $mgmt_ip = $tags{'management_ip'};
         my $mgmt_backend_ip_config;
         my $mgmt_backend_ip_api_config;
-        my $netdata_service_uri = URI->new($Config{services_url}{netdata});
-        my $netdata_service_host = $netdata_service_uri->host;
-        my $netdata_service_port = $netdata_service_uri->port;
         my $mgmt_srv_netdata .= <<"EOT";
 
 backend 127.0.0.1-netdata
         option httpclose
         option forwardfor
-        #errorfile 502 /usr/local/pf/html/pfappserver/root/errors/502.json.http
-        #errorfile 503 /usr/local/pf/html/pfappserver/root/errors/503.json.http
         acl paramsquery query -m found
         http-request lua.admin
-        http-request set-header Host $netdata_service_host
-        http-request set-dst-port int($netdata_service_port)
-        server $netdata_service_host $netdata_service_host:$netdata_service_port weight 1 maxconn 100
-        http-request set-uri %[var(req.path)]?%[query] if paramsquery
-        http-request set-uri %[var(req.path)] unless paramsquery
+        http-request set-header Host $api_frontend_service_host
+        http-request set-dst-port int($api_frontend_service_port)
+        http-request set-uri /api/v1/monitoring%[var(req.path)]?%[query] if paramsquery
+        http-request set-uri /api/v1/monitoring%[var(req.path)] unless paramsquery
         http-response add-header X-Frame-Options SAMEORIGIN
+        server $api_frontend_service_host $api_frontend_service_host:$api_frontend_service_port weight 1 maxconn 100 ssl verify none
 EOT
 
         my $mgmt_api_backend;
@@ -126,24 +121,21 @@ EOT
 EOT
             $check = 'backup';
 
-            if ($mgmt_back_ip ne $netdata_service_host) {
-                $mgmt_srv_netdata .= <<"EOT";
+            $mgmt_srv_netdata .= <<"EOT";
 
 backend $mgmt_back_ip-netdata
         option httpclose
         option forwardfor
-        #errorfile 502 /usr/local/pf/html/pfappserver/root/errors/502.json.http
-        #errorfile 503 /usr/local/pf/html/pfappserver/root/errors/503.json.http
         acl paramsquery query -m found
         http-request lua.admin
         http-request set-header Host $mgmt_back_ip
         http-request set-dst-port int(19999)
-        server $mgmt_back_ip $mgmt_back_ip:19999 weight 1 maxconn 100
-        http-request set-uri %[var(req.path)]?%[query] if paramsquery
-        http-request set-uri %[var(req.path)] unless paramsquery
+        http-request set-uri /api/v1/monitoring%[var(req.path)]?%[query] if paramsquery
+        http-request set-uri /api/v1/monitoring%[var(req.path)] unless paramsquery
         http-response add-header X-Frame-Options SAMEORIGIN
+        server $mgmt_back_ip $mgmt_back_ip:19999 weight 1 maxconn 100 ssl verify none
 EOT
-            }
+
             $mgmt_api_backend .= <<"EOT";
 
 backend $mgmt_back_ip-api

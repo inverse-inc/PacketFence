@@ -16,7 +16,6 @@ var apiPrefix = "/api/v1"
 var apiPrefixV1_1 = "/api/v1.1"
 var configApiPrefix = apiPrefix + "/config"
 var configNamespaceRe = regexp.MustCompile("^" + regexp.QuoteMeta(configApiPrefix))
-var netdataPrefix = "/monitoring"
 
 type adminRoleMapping struct {
 	prefix     string
@@ -59,6 +58,7 @@ var pathAdminRolesMap = []adminRoleMapping{
 	adminRoleMapping{prefix: apiPrefix + "/services", role: "SERVICES"},
 
 	adminRoleMapping{prefix: apiPrefix + "/reports/", role: "REPORTS"},
+	adminRoleMapping{prefix: apiPrefix + "/monitoring/", role: "SYSTEM"},
 
 	adminRoleMapping{prefix: apiPrefixV1_1 + "/reports", role: "REPORTS"},
 	adminRoleMapping{prefix: apiPrefixV1_1 + "/report/", role: "REPORTS"},
@@ -134,8 +134,6 @@ var pathAdminRolesMap = []adminRoleMapping{
 	adminRoleMapping{prefix: configApiPrefix + "/syslog_forwarders", role: "SYSLOG"},
 	adminRoleMapping{prefix: configApiPrefix + "/event_handler/", role: "PFDETECT"},
 	adminRoleMapping{prefix: configApiPrefix + "/event_handlers", role: "PFDETECT"},
-
-	adminRoleMapping{prefix: netdataPrefix, role: "SYSTEM"},
 }
 
 var methodSuffixMap = map[string]string{
@@ -160,10 +158,12 @@ func NewTokenAuthorizationMiddleware(tb TokenBackend) *TokenAuthorizationMiddlew
 }
 
 func (tam *TokenAuthorizationMiddleware) TokenFromBearerRequest(ctx context.Context, r *http.Request) string {
+	authCookie, err := r.Cookie("token")
+	if err == nil {
+		return authCookie.Value
+	}
 	authHeader := r.Header.Get("Authorization")
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-
-	return token
+	return strings.TrimPrefix(authHeader, "Bearer ")
 }
 
 // Checks whether or not that request is authorized based on the path and method

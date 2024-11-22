@@ -38,9 +38,10 @@ before generateConfig => sub {
            PF_SERVICES_URL_PFSSO => $Config{services_url}{pfsso},
            PF_SERVICES_URL_PFLDAPEXPLORER => $Config{services_url}{pfldapexplorer},
            PF_SERVICES_URL_PFCONNECTOR_SERVER => $Config{services_url}{'pfconnector-server'},
+           PF_SERVICES_URL_NETDATA =>  $Config{services_url}{netdata},
            STATSD_ADDRESS => $Config{advanced}{statsd_listen_host}.":".$Config{advanced}{statsd_listen_port},
            PFCONNECTOR_SERVER_DYN_REVERSE_HOST => $management_network ? $management_network->{Tip} : '',
-       }, 
+       },
     };
     $tt->process("/usr/local/pf/containers/environment.template", $vars, "/usr/local/pf/var/conf/".$self->name.".env") or die $tt->error();
 };

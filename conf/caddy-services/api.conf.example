@@ -79,6 +79,11 @@
 		reverse_proxy /api/v1/pki/* {$PF_SERVICES_URL_PFPKI} {
 		}
 
+		# netdata forward
+		handle_path /api/v1/monitoring/* {
+			reverse_proxy {$PF_SERVICES_URL_NETDATA}
+		}
+
 		import api.conf.d/*.conf
 
 		# Everything else goes to the Perl API
@@ -91,10 +96,6 @@
 
 		# doh forward
 		reverse_proxy /dns-query/* {$PF_SERVICES_URL_PFDNS_DOH} {
-		}
-
-		# netdata forward
-		reverse_proxy /monitoring/* {$PF_SERVICES_URL_NETDATA} {
 		}
 	}
 }

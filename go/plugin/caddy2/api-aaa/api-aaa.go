@@ -229,6 +229,9 @@ func (h ApiAAAHandler) handleLogin(w http.ResponseWriter, r *http.Request, p htt
 	w.Header().Set("Content-Type", "application/json")
 
 	if auth {
+		expire := time.Now().Add(15 * time.Minute)
+		cookie := http.Cookie{Name: "token", Value: token, Path: "/", Expires: expire, MaxAge: 90000}
+		http.SetCookie(w, &cookie)
 		w.WriteHeader(http.StatusOK)
 		res, _ := json.Marshal(map[string]string{
 			"token": token,
@@ -249,7 +252,7 @@ func (h ApiAAAHandler) handleTokenInfo(w http.ResponseWriter, r *http.Request, p
 	defer statsd.NewStatsDTiming(ctx).Send("api-aaa.token_info")
 
 	if r.URL.Query().Get("no-expiration-extension") == "" {
-		h.authentication.TouchTokenInfo(ctx, r)
+		h.authentication.TouchTokenInfo(ctx, w, r)
 	}
 	info, expiration := h.authorization.GetTokenInfoFromBearerRequest(ctx, r)
 
@@ -341,7 +344,7 @@ func (h ApiAAAHandler) HandleAAA(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 
-	h.authentication.TouchTokenInfo(ctx, r)
+	h.authentication.TouchTokenInfo(ctx, w, r)
 
 	auth, err = h.authorization.BearerRequestIsAuthorized(ctx, r)
 
