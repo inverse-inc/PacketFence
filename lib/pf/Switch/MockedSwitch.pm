@@ -3479,7 +3479,7 @@ sub populateAccessPointMACIP {
     my $logger = $self->logger;
     $logger->warn("populateAccessPointMACIP not implemented for this switch module");
 
-    return $false;
+    return $FALSE;
 }
 
 =back
