@@ -179,8 +179,6 @@ EOT
     $tags{'statsd_listen_port'} = $Config{'advanced'}{'statsd_listen_port'};
 
     parse_template( \%tags, "$conf_dir/monitoring/netdata.conf", "$generated_conf_dir/monitoring/netdata.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/apps_groups.conf", "$generated_conf_dir/monitoring/apps_groups.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/fping.conf", "$generated_conf_dir/monitoring/fping.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/health.d/bcache.conf", "$generated_conf_dir/monitoring/health.d/bcache.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/health.d/cgroups.conf", "$generated_conf_dir/monitoring/health.d/cgroups.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/health.d/cpu.conf", "$generated_conf_dir/monitoring/health.d/cpu.conf" );
@@ -209,44 +207,15 @@ EOT
     parse_template( \%tags, "$conf_dir/monitoring/health.d/timex.conf", "$generated_conf_dir/monitoring/health.d/timex.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/health.d/udp_errors.conf", "$generated_conf_dir/monitoring/health.d/udp_errors.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/health.d/web_log.conf", "$generated_conf_dir/monitoring/health.d/web_log.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/health_alarm_notify.conf", "$generated_conf_dir/monitoring/health_alarm_notify.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/health_email_recipients.conf", "$generated_conf_dir/monitoring/health_email_recipients.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/node.d.conf", "$generated_conf_dir/monitoring/node.d.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/node.d/README.md", "$generated_conf_dir/monitoring/node.d/README.md" );
-    # parse_template( \%tags, "$conf_dir/monitoring/node.d/fronius.conf.md", "$generated_conf_dir/monitoring/node.d/fronius.conf.md" );
-    # parse_template( \%tags, "$conf_dir/monitoring/node.d/named.conf.md", "$generated_conf_dir/monitoring/node.d/named.conf.md" );
-    # parse_template( \%tags, "$conf_dir/monitoring/node.d/sma_webbox.conf.md", "$generated_conf_dir/monitoring/node.d/sma_webbox.conf.md" );
-    # parse_template( \%tags, "$conf_dir/monitoring/node.d/snmp.conf.md", "$generated_conf_dir/monitoring/node.d/snmp.conf.md" );
-    # parse_template( \%tags, "$conf_dir/monitoring/node.d/stiebeleltron.conf.md", "$generated_conf_dir/monitoring/node.d/stiebeleltron.conf.md" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d.conf", "$generated_conf_dir/monitoring/python.d.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/apache.conf", "$generated_conf_dir/monitoring/python.d/apache.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/chrony.conf", "$generated_conf_dir/monitoring/python.d/chrony.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/cpufreq.conf", "$generated_conf_dir/monitoring/python.d/cpufreq.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/dns_query_time.conf", "$generated_conf_dir/monitoring/python.d/dns_query_time.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/example.conf", "$generated_conf_dir/monitoring/python.d/example.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/freeradius.conf", "$generated_conf_dir/monitoring/python.d/freeradius.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/go_expvar.conf", "$generated_conf_dir/monitoring/python.d/go_expvar.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/haproxy.conf", "$generated_conf_dir/monitoring/python.d/haproxy.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/mysql.conf", "$generated_conf_dir/monitoring/python.d/mysql.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/postfix.conf", "$generated_conf_dir/monitoring/python.d/postfix.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/redis.conf", "$generated_conf_dir/monitoring/python.d/redis.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/python.d/web_log.conf", "$generated_conf_dir/monitoring/python.d/web_log.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/statsd.d/packetfence.conf", "$generated_conf_dir/monitoring/statsd.d/packetfence.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/stream.conf", "$generated_conf_dir/monitoring/stream.conf" );
-
     parse_template( \%tags, "$conf_dir/monitoring/go.d.conf", "$generated_conf_dir/monitoring/go.d.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/go.d/apache.conf", "$generated_conf_dir/monitoring/go.d/apache.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/go.d/chrony.conf", "$generated_conf_dir/monitoring/go.d/chrony.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/docker.conf", "$generated_conf_dir/monitoring/go.d/docker.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/go.d/docker_engine.conf", "$generated_conf_dir/monitoring/go.d/docker_engine.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/go.d/dns_query.conf", "$generated_conf_dir/monitoring/go.d/dns_query.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/freeradius.conf", "$generated_conf_dir/monitoring/go.d/freeradius.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/haproxy.conf", "$generated_conf_dir/monitoring/go.d/haproxy.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/mysql.conf", "$generated_conf_dir/monitoring/go.d/mysql.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/ping.conf", "$generated_conf_dir/monitoring/go.d/ping.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/proxysql.conf", "$generated_conf_dir/monitoring/go.d/proxysql.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/redis.conf", "$generated_conf_dir/monitoring/go.d/redis.conf" );
-    # parse_template( \%tags, "$conf_dir/monitoring/go.d/systemdunits.conf", "$generated_conf_dir/monitoring/go.d/systemdunits.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/web_log.conf", "$generated_conf_dir/monitoring/go.d/web_log.conf" );
     return 1;
 }
