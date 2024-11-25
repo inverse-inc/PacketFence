@@ -913,7 +913,7 @@ sub vpn {
 
     my $return = $self->mfa_pre_auth($args, $options, $sources, $extra, $otp, $password);
     return $return if (ref($return) eq 'ARRAY');
-
+    $args->{'message'} = $return;
     if (defined($mac)) {
         Log::Log4perl::MDC->put( 'mac', $mac );
         my $role_obj = new pf::role::custom();
@@ -979,7 +979,7 @@ sub vpn {
     }
     $return = $self->mfa_post_auth($args, $options, $sources, $source_id, $extra ,$otp, $password);
     return $return if (ref($return) eq 'ARRAY');
-
+    $args->{'message'} = $return;
     return $self->returnRadiusVpn($args, $options, $sources, $source_id, $extra);
 }
 
@@ -994,8 +994,8 @@ sub cli {
     my $source_id = \@$sources;
     my $return = $self->mfa_pre_auth($args, $options, $sources, $extra, $otp, $password);
     return $return if (ref($return) eq 'ARRAY');
-
-    return $self->returnRadiusCli($args, $options, $sources, $source_id, $extra) if $return eq $TRUE;
+    $args->{'message'} = $return;
+    return $self->returnRadiusCli($args, $options, $sources, $source_id, $extra) if $return;
 
     if (!defined($args->{'radius_request'}->{'MS-CHAP-Challenge'}) && ( !exists($args->{'radius_request'}->{"EAP-Type"}) || ( exists($args->{'radius_request'}->{"EAP-Type"}) && $args->{'radius_request'}->{"EAP-Type"} != $EAP_TLS && $args->{'radius_request'}->{"EAP-Type"} != $MS_EAP_AUTHENTICATION ) ) ) {
         my $return = $self->authenticate($args, $sources, \$source_id, $extra, $otp, $password);
@@ -1004,7 +1004,7 @@ sub cli {
 
     $return = $self->mfa_post_auth($args, $options, $sources, $source_id, $extra ,$otp, $password);
     return $return if (ref($return) eq 'ARRAY');
-
+    $args->{'message'} = $return;
     return $self->returnRadiusCli($args, $options, $sources, $source_id, $extra);
 }
 
@@ -1081,12 +1081,14 @@ sub mfa_post_auth {
             my $cache = pf::mfa->cache;
             if (!$cache->get($args->{'radius_request'}->{'User-Name'}." authenticated")) {
                 $cache->set($args->{'radius_request'}->{'User-Name'}." authenticated", $TRUE, normalize_time($mfa->cache_duration));
+                return "Authenticated, waiting for the OTP code";
             }
         } else {
             my ($result, $message) = $mfa->check_user($args->{'radius_request'}->{'User-Name'}, $$otp);
             if ($result != $TRUE) {
                 return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => $message) ];
             }
+            return $message;
         }
     }
 }
@@ -1135,9 +1137,10 @@ sub mfa_pre_auth {
                     return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => $message) ];
                 } else {
                     if ($caller eq "pf::radius::vpn") {
+                        $args->{'message'} = $message;
                         return $self->returnRadiusVpn($args, $options, $sources, $source_id, $extra);
                 } else {
-                        return $TRUE;
+                        return $message;
                     }
                 }
             }
@@ -1152,9 +1155,10 @@ sub mfa_pre_auth {
                         return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => $message)];
                     } else {
                         if ($caller eq "pf::radius::vpn") {
+                            $args->{'message'} = $message;
                             return $self->returnRadiusVpn($args, $options, $sources, $source_id, $extra);
                         } else {
-                            return $TRUE;
+                            return $message;
                         }
                     }
                 } else {
@@ -1164,9 +1168,10 @@ sub mfa_pre_auth {
                         return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => $message) ];
                     } else {
                         if ($caller eq "pf::radius::vpn") {
+                            $args->{'message'} = $message;
                             return $self->returnRadiusVpn($args, $options, $sources, $source_id, $extra);
                         } else {
-                            return $TRUE;
+                            return $message;
                         }
                     }
                 }

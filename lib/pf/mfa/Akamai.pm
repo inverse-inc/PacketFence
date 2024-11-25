@@ -339,17 +339,23 @@ check_auth
 sub check_auth {
     my ($self, $device, $username, $otp, $devices) = @_;
     my $logger = get_logger();
+    my $message;
     if (my $infos = cache->get($username)) {
         my $post_fields = encode_json({tx => $infos->{'tx'}, user_input => $otp});
         my ($return, $error) = $self->_get_curl("/api/v1/verify/check_auth?tx=".$infos->{'tx'}."&user_input=".$otp);
         if ($error) {
-            return $FALSE, "Error trying to verify the OTP code for user $username";
+            $message = "Error trying to verify the OTP code for user $username"
+            $logger->error($message);
+            return $FALSE, $message;
         }
         if ($return->{'result'} eq 'allow') {
-            $logger->info("Authentication successfull");
-            return $TRUE ,"Authentication successful for $username";
+            $message = "Authentication successfull for user $username";
+            $logger->info($message);
+            return $TRUE, $message;
         } else {
-            return $FALSE, "Authentication failed for $username";
+            $message = "Authentication failed for user $username";
+            $logger->error($message);
+            return $FALSE, $message;
         }
     } else {
         foreach my $device (@{$devices->{'result'}->{'devices'}}) {
