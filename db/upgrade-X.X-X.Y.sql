@@ -91,7 +91,7 @@ CREATE TABLE node_tls (
   `TLS-Client-Cert-X509v3-Extended-Key-Usage` varchar(255) default NULL,
   `TLS-Client-Cert-X509v3-Subject-Key-Identifier` varchar(255) default NULL,
   `TLS-Client-Cert-X509v3-Authority-Key-Identifier` varchar(255) default NULL,
-  `TLS-Client-Cert-X509v3-Extended-Key-Usage-OID` varchar(255) default NULL,
+  `TLS-Client-Cert-X509v3-Extended-Key-Usage-OID` varchar(255) default NULL
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_general_ci';
 
 \! echo "Incrementing PacketFence schema version...";
