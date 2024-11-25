@@ -81,6 +81,10 @@
 
 		# netdata forward
 		handle_path /api/v1/monitoring/* {
+			@isCss {
+				path *.css
+			}
+			header @isCss >Content-Type "text/css; charset=utf-8"
 			reverse_proxy {$PF_SERVICES_URL_NETDATA}
 		}
 
