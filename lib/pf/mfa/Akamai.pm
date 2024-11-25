@@ -146,12 +146,11 @@ sub check_user {
         }
     }
 
-
     my @default_device;
     if (defined($device)) {
-       @default_device = grep { $_->{'device'} eq $device } @{$devices->{'result'}->{'devices'}};
+        @default_device = grep { $_->{'device'} eq $device } @{$devices->{'result'}->{'devices'}};
     } else {
-	my @default_device = $self->select_phone($devices->{'result'}->{'devices'}, $self->radius_mfa_method, undef);
+        @default_device = $self->select_phone($devices->{'result'}->{'devices'}, $self->radius_mfa_method, undef);
     }
 
     if ($self->radius_mfa_method eq 'push') {
