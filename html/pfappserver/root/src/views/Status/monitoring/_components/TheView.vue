@@ -77,7 +77,7 @@
                 </small>
                 <div class="mt-2">
                   <chart :definition="chart" :host="`/netdata/${ip}`" :data-colors="palette(0)"
-                    :data-after="-showAfter" />
+                    :data-after="-showAfter" :data-before="0" />
                 </div>
               </b-col>
             </b-row>
