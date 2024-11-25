@@ -64,7 +64,7 @@ sub update_config_controller{
             print "$section.$param\n";
             my $val = $ini->val($section, $param);
             $val = pf::config::crypt::pf_encrypt($val);
-            $ini->set($section, $val);
+            $ini->setval($section, $val);
             $changed |= 1;
         }
     }
