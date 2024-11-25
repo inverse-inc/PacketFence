@@ -1083,9 +1083,9 @@ sub mfa_post_auth {
                 $cache->set($args->{'radius_request'}->{'User-Name'}." authenticated", $TRUE, normalize_time($mfa->cache_duration));
             }
         } else {
-            my $result = $mfa->check_user($args->{'radius_request'}->{'User-Name'}, $$otp);
+            my ($result, $message) = $mfa->check_user($args->{'radius_request'}->{'User-Name'}, $$otp);
             if ($result != $TRUE) {
-                return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "Multi-Factor Authentication failed or triggered") ];
+                return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => $message) ];
             }
         }
     }
@@ -1130,9 +1130,9 @@ sub mfa_pre_auth {
         if ($mfa->radius_mfa_method eq 'strip-otp' || $mfa->radius_mfa_method eq 'sms' || $mfa->radius_mfa_method eq 'phone') {
             # Previously did a authentication request ?
             if (my $infos = $cache->get($args->{'radius_request'}->{'User-Name'})) {
-                my $result = $mfa->check_user($args->{'radius_request'}->{'User-Name'}, $$password, $infos->{'device'});
+                my ($result, $message)= $mfa->check_user($args->{'radius_request'}->{'User-Name'}, $$password, $infos->{'device'});
                 if ($result != $TRUE) {
-                    return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "MFA verification failed") ];
+                    return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => $message) ];
                 } else {
                     if ($caller eq "pf::radius::vpn") {
                         return $self->returnRadiusVpn($args, $options, $sources, $source_id, $extra);
@@ -1147,9 +1147,9 @@ sub mfa_pre_auth {
         } elsif ($mfa->radius_mfa_method eq 'second-password') {
             if (my $authenticated = $cache->get($args->{'radius_request'}->{'User-Name'}." authenticated")) {
                 if ($authenticated) {
-                    my $result = $mfa->check_user($args->{'radius_request'}->{'User-Name'}, $$password);
+                    my ($result, $message) = $mfa->check_user($args->{'radius_request'}->{'User-Name'}, $$password);
                     if ($result != $TRUE) {
-                        return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "MFA verification failed")];
+                        return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => $message)];
                     } else {
                         if ($caller eq "pf::radius::vpn") {
                             return $self->returnRadiusVpn($args, $options, $sources, $source_id, $extra);
@@ -1159,9 +1159,9 @@ sub mfa_pre_auth {
                     }
                 } else {
                     my $device = $cache->get($args->{'radius_request'}->{'User-Name'});
-                    my $result = $mfa->check_user($args->{'radius_request'}->{'User-Name'}, $$password, $device);
+                    my ($result, $message) = $mfa->check_user($args->{'radius_request'}->{'User-Name'}, $$password, $device);
                     if ($result != $TRUE) {
-                        return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => "MFA verification failed") ];
+                        return [ $RADIUS::RLM_MODULE_FAIL, ('Reply-Message' => $message) ];
                     } else {
                         if ($caller eq "pf::radius::vpn") {
                             return $self->returnRadiusVpn($args, $options, $sources, $source_id, $extra);

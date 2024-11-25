@@ -127,19 +127,22 @@ sub check_user {
     my ($self, $username, $otp, $device) = @_;
     my $logger = get_logger();
     my ($devices, $error) = $self->_get_curl("/api/v1/verify/check_user?username=$username");
-
+    my $message;
     if ($error == 1) {
-       $logger->error("Not able to fetch the devices");
-       return $FALSE;
+       $message = "Not able to fetch the devices for user $username";
+       $logger->error($message);
+       return $FALSE, $message;
     }
     if (exists($devices->{'result'}->{'policy_decision'})) {
         if ($devices->{'result'}->{'policy_decision'} eq "bypass") {
-            $logger->info("Policy decision is bypass, allow access");
-            return $TRUE;
+            $message = "Policy decision is bypass, allow access for user $username";
+            $logger->info($message);
+            return $TRUE, $message;
         }
         if ($devices->{'result'}->{'policy_decision'} ne "authenticate_user") {
-            $logger->error($devices->{'result'}->{'policy_decision'});
-            return $FALSE;
+            $message = $devices->{'result'}->{'policy_decision'}." for user ".$username;
+            $logger->error($message);
+            return $FALSE, $message;
         }
     }
 
@@ -164,8 +167,9 @@ sub check_user {
                 } else {
                     @default_device = $self->select_phone($devices->{'result'}->{'devices'}, 'totp', undef);
                     if (!@default_device) {
-                        $logger->info("No totp support method on device any devices");
-                        return $FALSE;
+                        $message = "No totp support method on device any devices for user $username";
+                        $logger->info($username);
+                        return $FALSE, $message;
                     }
                     return $ACTIONS{'totp'}->($self,$default_device[0]->{'device'},$username,$otp,$devices);
                 }
@@ -179,13 +183,15 @@ sub check_user {
                     if ( grep $_ =~ $METHOD_ALIAS{$method}, @{$device->{'methods'}}) {
                         return $ACTIONS{$method}->($self,$device->{'device'},$username,$1,$devices);
                     } else {
-                        $logger->info("Unsupported method on device ".$device->{'name'});
-                        return $FALSE;
+                        $message = "Unsupported method on device ".$device->{'name'}." for user ".$username;
+                        $logger->info($message);
+                        return $FALSE, $message;
                     }
                 }
             } else {
-                $logger->info("Method not supported");
-                return $FALSE;
+                $message = "Method not supported for user $username";
+                $logger->info($message);
+                return $FALSE, $message;
             }
         } elsif ($self->radius_mfa_method eq 'sms' || $self->radius_mfa_method eq 'phone') {
             my @device = $self->select_phone($devices->{'result'}->{'devices'}, $self->radius_mfa_method, undef);
@@ -193,13 +199,16 @@ sub check_user {
                 if ( grep $_ =~ $METHOD_ALIAS{$self->radius_mfa_method}, @{$device->{'methods'}}) {
                     return $ACTIONS{$self->radius_mfa_method}->($self,$device->{'device'},$username,$self->radius_mfa_method);
                 } else {
-                    $logger->info("Unsupported method on device ".$device->{'name'});
-                    return $FALSE;
+                    $message = "Unsupported method on device ".$device->{'name'}." for user ".$username;
+                    $logger->info($message);
+                    return $FALSE, $message;
                 }
             }
         } else {
-            $logger->error("OTP is empty");
-            return $FALSE;
+            $message = "OTP is empty for user ".$username;
+            $logger->error($message);
+
+            return $FALSE, $message;
         }
     }
 }
@@ -236,6 +245,7 @@ totp method
 sub totp {
     my ($self, $device, $username, $otp, $devices) = @_;
     my $logger = get_logger();
+    my $message;
     my $method = "offline_otp";
     if (length($otp) == 16) {
         $method = "bypass_code";
@@ -244,14 +254,17 @@ sub totp {
     my $post_fields = encode_json({device => $device, method => { $method => {"code" => $otp} } , username => $username});
     my ($auth, $error) = $self->_post_curl("/api/v1/verify/start_auth", $post_fields);
     if ($error) {
-        return $FALSE;
+        $message = "Error trigger $method for user $username on $device";
+        return $FALSE, $message;
     }
     if ($auth->{'result'}->{'status'} eq 'allow') {
-        $logger->info("Authentication sucessfull on Akamai MFA");
-        return $TRUE;
+        $message = "Authentication sucessfull on Akamai MFA for $username";
+        $logger->info($message);
+        return $TRUE, $message;
     }
-    $logger->info("Authentication denied on Akamai MFA, reason: ". $auth->{'result'}->{'status'}->{'deny'}->{'reason'});
-    return $FALSE;
+    $message = "Authentication denied on Akamai MFA, reason: ". $auth->{'result'}->{'status'}->{'deny'}->{'reason'};
+    $logger->info($message);
+    return $FALSE, $message;
 }
 
 =head2 generic_method
@@ -263,6 +276,7 @@ generic method
 sub generic_method {
     my ($self, $device, $username, $method) =@_;
     my $logger = get_logger();
+    my $message;
     $logger->info("Trigger $method for user $username");
     my $post_fields = encode_json({device => $device, method => $METHOD_LOOKUP{$method}, username => $username});
     my ($auth, $error)= cache->compute($device.$METHOD_LOOKUP{$method}, {expires_in => normalize_time($self->cache_duration)}, sub {
@@ -270,7 +284,8 @@ sub generic_method {
         }
     );
     if ($error) {
-        return $FALSE;
+        $message = "Error triggering $method for user $username";
+        return $FALSE, $message;
     }
     # Cache the method to fetch it on the 2nd radius request (TODO: cache expiration should be in config).
     if (!cache->get($username)) {
@@ -282,7 +297,7 @@ sub generic_method {
     }
     # Remove the authenticated status of the user since the next radius requests will use OTP
     cache->remove($username." authenticated");
-    return $FALSE;
+    return $FALSE, "Authentication rejected for user $username, expect a new request with OTP";
 }
 
 =head2 push
@@ -301,19 +316,19 @@ sub push {
         }
     );
     if ($error) {
-        return
+        return $FALSE, "Error trigerring the push for user $username";
     }
     my $i = 0;
     while($TRUE) {
         my ($answer, $error) = $self->_get_curl("/api/v1/verify/check_auth?tx=".$auth->{'result'}->{'tx'});
         return $FALSE if $error;
         if ($answer->{'result'} eq 'allow') {
-            return $TRUE;
+            return $TRUE, "Push succeeded for user $username";
         }
         sleep(5);
         last if ($i++ == 6);
     }
-    return $FALSE;
+    return $FALSE , "Push failed for user $username";
 }
 
 =head2
@@ -328,12 +343,14 @@ sub check_auth {
     if (my $infos = cache->get($username)) {
         my $post_fields = encode_json({tx => $infos->{'tx'}, user_input => $otp});
         my ($return, $error) = $self->_get_curl("/api/v1/verify/check_auth?tx=".$infos->{'tx'}."&user_input=".$otp);
-        return $FALSE if $error;
+        if ($error) {
+            return $FALSE, "Error trying to verify the OTP code for user $username";
+        }
         if ($return->{'result'} eq 'allow') {
             $logger->info("Authentication successfull");
-            return $TRUE;
+            return $TRUE ,"Authentication successful for $username";
         } else {
-            return $FALSE;
+            return $FALSE, "Authentication failed for $username";
         }
     } else {
         foreach my $device (@{$devices->{'result'}->{'devices'}}) {
