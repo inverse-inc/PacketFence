@@ -113,7 +113,7 @@ our %METHOD_ALIAS =(
 
 our %METHOD_LOOKUP =(
     "push"  => "push",
-    "sms"   => "sms_otp",
+    "sms"   => "text_otp",
     "phone" => "call_otp"
 );
 
@@ -148,7 +148,7 @@ sub check_user {
     if (defined($device)) {
        @default_device = grep { $_->{'device'} eq $device } @{$devices->{'result'}->{'devices'}};
     } else {
-       @default_device = grep { $_->{'default'} eq "true" } @{$devices->{'result'}->{'devices'}};
+	my @default_device = $self->select_phone($devices->{'result'}->{'devices'}, $self->radius_mfa_method, undef);
     }
 
     if ($self->radius_mfa_method eq 'push') {
@@ -162,15 +162,19 @@ sub check_user {
                 if ( grep $_ eq 'totp', @{$default_device[0]->{'methods'}}) {
                     return $ACTIONS{'totp'}->($self,$default_device[0]->{'device'},$username,$otp,$devices);
                 } else {
-                    $logger->info("Unsupported method totp on device ".$default_device[0]->{'name'});
-                    return $FALSE;
+                    @default_device = $self->select_phone($devices->{'result'}->{'devices'}, 'totp', undef);
+                    if (!@default_device) {
+                        $logger->info("No totp support method on device any devices");
+                        return $FALSE;
+                    }
+                    return $ACTIONS{'totp'}->($self,$default_device[0]->{'device'},$username,$otp,$devices);
                 }
             } elsif ($otp =~ /^\d{8,8}$/) {
                 $logger->info("OTP Verification");
                 return $ACTIONS{'check_auth'}->($self,$default_device[0]->{'device'},$username,$otp,$devices);
             } elsif ($otp =~ /^(sms|push|phone)(\d?)$/i) {
-                my @device = $self->select_phone($devices->{'result'}->{'devices'}, $2);
                 my $method = $1;
+                my @device = $self->select_phone($devices->{'result'}->{'devices'}, $method, $2);
                 foreach my $device (@device) {
                     if ( grep $_ =~ $METHOD_ALIAS{$method}, @{$device->{'methods'}}) {
                         return $ACTIONS{$method}->($self,$device->{'device'},$username,$1,$devices);
@@ -184,7 +188,7 @@ sub check_user {
                 return $FALSE;
             }
         } elsif ($self->radius_mfa_method eq 'sms' || $self->radius_mfa_method eq 'phone') {
-            my @device = $self->select_phone($devices->{'result'}->{'devices'}, undef);
+            my @device = $self->select_phone($devices->{'result'}->{'devices'}, $self->radius_mfa_method, undef);
             foreach my $device (@device) {
                 if ( grep $_ =~ $METHOD_ALIAS{$self->radius_mfa_method}, @{$device->{'methods'}}) {
                     return $ACTIONS{$self->radius_mfa_method}->($self,$device->{'device'},$username,$self->radius_mfa_method);
@@ -207,7 +211,7 @@ Select the phone to trigger the MFA
 =cut
 
 sub select_phone {
-    my ($self, $devices, $phone_id) = @_;
+    my ($self, $devices, $method, $phone_id) = @_;
     my $logger = get_logger();
     my @device;
     if (defined($phone_id) && $phone_id ne "") {
@@ -218,8 +222,7 @@ sub select_phone {
         # Return the n-1 phone
         @device = @{$devices}[$phone_id-1];
     } else {
-        # Return the default phone
-        @device = grep { $_->{'default'} == 1 } @{$devices};
+        @device = grep { grep { $_ eq $METHOD_LOOKUP{$method} } @{$_->{'methods'}} } @{$devices};
     }
     return @device;
 }
