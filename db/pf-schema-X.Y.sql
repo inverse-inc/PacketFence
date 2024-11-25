@@ -1619,6 +1619,33 @@ CREATE FUNCTION ROUND_TO_MONTH (d DATETIME)
     RETURNS DATETIME DETERMINISTIC
         RETURN DATE_ADD(DATE(d),interval -DAY(d)+1 DAY);
 
+
+--
+-- Create table node_tls
+--
+
+CREATE TABLE node_tls (
+  `mac` varchar(17) NOT NULL PRIMARY KEY,
+  `TLS-Cert-Serial` varchar(255) default NULL,
+  `TLS-Cert-Expiration` varchar(255) default NULL,
+  `TLS-Cert-Valid-Since` varchar(255) default NULL,
+  `TLS-Cert-Subject` varchar(255) default NULL,
+  `TLS-Cert-Issuer` varchar(255) default NULL,
+  `TLS-Cert-Common-Name` varchar(255) default NULL,
+  `TLS-Cert-Subject-Alt-Name-Email` varchar(255) default NULL,
+  `TLS-Client-Cert-Serial` varchar(255) default NULL,
+  `TLS-Client-Cert-Expiration` varchar(255) default NULL,
+  `TLS-Client-Cert-Valid-Since` varchar(255) default NULL,
+  `TLS-Client-Cert-Subject` varchar(255) default NULL,
+  `TLS-Client-Cert-Issuer` varchar(255) default NULL,
+  `TLS-Client-Cert-Common-Name` varchar(255) default NULL,
+  `TLS-Client-Cert-Subject-Alt-Name-Email` varchar(255) default NULL,
+  `TLS-Client-Cert-X509v3-Extended-Key-Usage` varchar(255) default NULL,
+  `TLS-Client-Cert-X509v3-Subject-Key-Identifier` varchar(255) default NULL,
+  `TLS-Client-Cert-X509v3-Authority-Key-Identifier` varchar(255) default NULL,
+  `TLS-Client-Cert-X509v3-Extended-Key-Usage-OID` varchar(255) default NULL,
+) ENGINE=InnoDB DEFAULT CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_general_ci';
+
 --
 -- Updating to current version
 --

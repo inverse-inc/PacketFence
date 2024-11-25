@@ -70,6 +70,30 @@ ALTER TABLE radius_audit_log MODIFY created_at TIMESTAMP NOT NULL DEFAULT CURREN
 \! echo "Make psk unique";
 ALTER TABLE person ADD CONSTRAINT UNIQUE person_psk (`psk`);
 
+\! echo "Create table node_tls"
+
+CREATE TABLE node_tls (
+  `mac` varchar(17) NOT NULL PRIMARY KEY,
+  `TLS-Cert-Serial` varchar(255) default NULL,
+  `TLS-Cert-Expiration` varchar(255) default NULL,
+  `TLS-Cert-Valid-Since` varchar(255) default NULL,
+  `TLS-Cert-Subject` varchar(255) default NULL,
+  `TLS-Cert-Issuer` varchar(255) default NULL,
+  `TLS-Cert-Common-Name` varchar(255) default NULL,
+  `TLS-Cert-Subject-Alt-Name-Email` varchar(255) default NULL,
+  `TLS-Client-Cert-Serial` varchar(255) default NULL,
+  `TLS-Client-Cert-Expiration` varchar(255) default NULL,
+  `TLS-Client-Cert-Valid-Since` varchar(255) default NULL,
+  `TLS-Client-Cert-Subject` varchar(255) default NULL,
+  `TLS-Client-Cert-Issuer` varchar(255) default NULL,
+  `TLS-Client-Cert-Common-Name` varchar(255) default NULL,
+  `TLS-Client-Cert-Subject-Alt-Name-Email` varchar(255) default NULL,
+  `TLS-Client-Cert-X509v3-Extended-Key-Usage` varchar(255) default NULL,
+  `TLS-Client-Cert-X509v3-Subject-Key-Identifier` varchar(255) default NULL,
+  `TLS-Client-Cert-X509v3-Authority-Key-Identifier` varchar(255) default NULL,
+  `TLS-Client-Cert-X509v3-Extended-Key-Usage-OID` varchar(255) default NULL,
+) ENGINE=InnoDB DEFAULT CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_general_ci';
+
 \! echo "Incrementing PacketFence schema version...";
 INSERT IGNORE INTO pf_version (id, version, created_at) VALUES (@VERSION_INT, CONCAT_WS('.', @MAJOR_VERSION, @MINOR_VERSION), NOW());
 
