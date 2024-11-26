@@ -121,11 +121,33 @@ func (j *FlushRadiusAuditLogJob) flushLogs(entries [][]interface{}) error {
 		return err
 	}
 
+	// REPLACE in node_tls
+	sqlTLS, argsTLS, err := j.buildQuery(entries)
+	if err != nil {
+		return err
+	}
+
+	res, err = db.ExecContext(
+		ctx,
+		sqlTLS,
+		argsTLS...,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
 	log.LogInfo(ctx, fmt.Sprintf("Flushed %d radius_audit_log", rows))
 	return nil
 }
 
 const RADIUS_AUDIT_LOG_COLUMN_COUNT = 37
+const NODE_TLS_COLUMN_COUNT = 19
 
 /*
    query = "INSERT INTO radius_audit_log \
@@ -229,6 +251,65 @@ func (j *FlushRadiusAuditLogJob) argsFromEntry(entry []interface{}) []interface{
 	args[34] = formatRequest(reply)
 	args[35] = formatRequestValue(control["PacketFence-Request-Time"], "")
 	args[36] = formatRequestValue(request["PacketFence-Radius-Ip"], "")
+	return args
+}
+
+func (j *FlushRadiusAuditLogJob) buildQueryTLS(entries [][]interface{}) (string, []interface{}, error) {
+	sql := `
+REPLACE INTO node_tls
+	(
+		mac, TLS-Cert-Serial, TLS-Cert-Expiration,TLS-Cert-Valid-Since,
+		TLS-Cert-Subject,TLS-Cert-Issuer, TLS-Cert-Common-Name,
+		TLS-Cert-Subject-Alt-Name-Email, TLS-Client-Cert-Serial,
+		TLS-Client-Cert-Expiration, TLS-Client-Cert-Valid-Since,
+		TLS-Client-Cert-Subject, TLS-Client-Cert-Issuer,
+		TLS-Client-Cert-Common-Name, TLS-Client-Cert-Subject-Alt-Name-Email,
+		TLS-Client-Cert-X509v3-Extended-Key-Usage,
+		TLS-Client-Cert-X509v3-Subject-Key-Identifier,
+		TLS-Client-Cert-X509v3-Authority-Key-Identifier,
+		TLS-Client-Cert-X509v3-Extended-Key-Usage-OID
+   )
+VALUES `
+	bind := "( ?" + strings.Repeat(",?", NODE_TLS_COLUMN_COUNT-1) + ")"
+	sql += bind + strings.Repeat(","+bind, len(entries)-1)
+	args := make([]interface{}, 0, len(entries)*NODE_TLS_COLUMN_COUNT)
+	for _, e := range entries {
+		if keyExists(e[1].(map[string]interface{}), "Calling-Station-Id") && keyExists(e[1].(map[string]interface{}), "TLS-Client-Cert-Common-Name") {
+			args = append(args, j.argsFromEntryForTLS(e)...)
+		}
+	}
+
+	return sql, args, nil
+}
+
+func keyExists(myMap map[string]interface{}, key string) bool {
+	_, exists := myMap[key]
+	return exists
+}
+
+func (j *FlushRadiusAuditLogJob) argsFromEntryForTLS(entry []interface{}) []interface{} {
+	args := make([]interface{}, RADIUS_AUDIT_LOG_COLUMN_COUNT)
+	var request map[string]interface{}
+	request = entry[1].(map[string]interface{})
+	args[0] = formatRequestValue(request["Calling-Station-Id"], "")
+	args[1] = formatRequestValue(request["TLS-Cert-Serial"], "N/A")
+	args[2] = formatRequestValue(request["TLS-Cert-Expiration"], "N/A")
+	args[3] = formatRequestValue(request["TLS-Cert-Valid-Since"], "N/A")
+	args[4] = formatRequestValue(request["TLS-Cert-Subject"], "N/A")
+	args[5] = formatRequestValue(request["TLS-Cert-Issuer"], "N/A")
+	args[6] = formatRequestValue(request["TLS-Cert-Common-Name"], "N/A")
+	args[7] = formatRequestValue(request["TLS-Cert-Subject-Alt-Name-Email"], "N/A")
+	args[8] = formatRequestValue(request["TLS-Client-Cert-Serial"], "N/A")
+	args[9] = formatRequestValue(request["TLS-Client-Cert-Expiration"], "N/A")
+	args[10] = formatRequestValue(request["TLS-Client-Cert-Valid-Since"], "N/A")
+	args[11] = formatRequestValue(request["TLS-Client-Cert-Subject"], "N/A")
+	args[12] = formatRequestValue(request["TLS-Client-Cert-Issuer"], "N/A")
+	args[13] = formatRequestValue(request["TLS-Client-Cert-Common-Name"], "N/A")
+	args[14] = formatRequestValue(request["TLS-Client-Cert-Subject-Alt-Name-Email"], "N/A")
+	args[15] = formatRequestValue(request["TLS-Client-Cert-X509v3-Extended-Key-Usage"], "N/A")
+	args[16] = formatRequestValue(request["TLS-Client-Cert-X509v3-Subject-Key-Identifier"], "N/A")
+	args[17] = formatRequestValue(request["TLS-Client-Cert-X509v3-Authority-Key-Identifier"], "N/A")
+	args[18] = formatRequestValue(request["TLS-Client-Cert-X509v3-Extended-Key-Usage-OID"], "N/A")
 	return args
 }
 
