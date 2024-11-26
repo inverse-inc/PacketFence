@@ -1626,24 +1626,24 @@ CREATE FUNCTION ROUND_TO_MONTH (d DATETIME)
 
 CREATE TABLE node_tls (
   `mac` varchar(17) NOT NULL PRIMARY KEY,
-  `TLS-Cert-Serial` varchar(255) default NULL,
-  `TLS-Cert-Expiration` varchar(255) default NULL,
-  `TLS-Cert-Valid-Since` varchar(255) default NULL,
-  `TLS-Cert-Subject` varchar(255) default NULL,
-  `TLS-Cert-Issuer` varchar(255) default NULL,
-  `TLS-Cert-Common-Name` varchar(255) default NULL,
-  `TLS-Cert-Subject-Alt-Name-Email` varchar(255) default NULL,
-  `TLS-Client-Cert-Serial` varchar(255) default NULL,
-  `TLS-Client-Cert-Expiration` varchar(255) default NULL,
-  `TLS-Client-Cert-Valid-Since` varchar(255) default NULL,
-  `TLS-Client-Cert-Subject` varchar(255) default NULL,
-  `TLS-Client-Cert-Issuer` varchar(255) default NULL,
-  `TLS-Client-Cert-Common-Name` varchar(255) default NULL,
-  `TLS-Client-Cert-Subject-Alt-Name-Email` varchar(255) default NULL,
-  `TLS-Client-Cert-X509v3-Extended-Key-Usage` varchar(255) default NULL,
-  `TLS-Client-Cert-X509v3-Subject-Key-Identifier` varchar(255) default NULL,
-  `TLS-Client-Cert-X509v3-Authority-Key-Identifier` varchar(255) default NULL,
-  `TLS-Client-Cert-X509v3-Extended-Key-Usage-OID` varchar(255) default NULL
+  `TLSCertSerial` varchar(255) default NULL,
+  `TLSCertExpiration` varchar(255) default NULL,
+  `TLSCertValidSince` varchar(255) default NULL,
+  `TLSCertSubject` varchar(255) default NULL,
+  `TLSCertIssuer` varchar(255) default NULL,
+  `TLSCertCommonName` varchar(255) default NULL,
+  `TLSCertSubjectAltNameEmail` varchar(255) default NULL,
+  `TLSClientCertSerial` varchar(255) default NULL,
+  `TLSClientCertExpiration` varchar(255) default NULL,
+  `TLSClientCertValidSince` varchar(255) default NULL,
+  `TLSClientCertSubject` varchar(255) default NULL,
+  `TLSClientCertIssuer` varchar(255) default NULL,
+  `TLSClientCertCommonName` varchar(255) default NULL,
+  `TLSClientCertSubjectAltNameEmail` varchar(255) default NULL,
+  `TLSClientCertX509v3ExtendedKeyUsage` varchar(255) default NULL,
+  `TLSClientCertX509v3SubjectKeyIdentifier` varchar(255) default NULL,
+  `TLSClientCertX509v3AuthorityKeyIdentifier` varchar(255) default NULL,
+  `TLSClientCertX509v3ExtendedKeyUsageOID` varchar(255) default NULL
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_general_ci';
 
 --
