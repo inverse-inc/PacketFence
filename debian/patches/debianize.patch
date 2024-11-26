@@ -1,18 +1,18 @@
 diff --git a/conf/monitoring/netdata.conf.example b/conf/monitoring/netdata.conf.example
-index 64f5e73f3d..90319cfc09 100644
+index 7d5fb2c58b..5f03b84bef 100644
 --- a/conf/monitoring/netdata.conf.example
 +++ b/conf/monitoring/netdata.conf.example
 @@ -8,7 +8,7 @@
  [global]
- 	run as user = netdata
- 	web files owner = root
--	web files group = netdata
-+	web files group = root
-         config directory = /usr/local/pf/var/conf/monitoring
-         # Netdata is not designed to be exposed to potentially hostile networks
-         # See https://github.com/firehol/netdata/issues/164
+ 	# run as user = netdata
+ 	# web files owner = root
+-	# web files group = netdata
++	# web files group = root
+ 	# config directory = /usr/local/pf/var/conf/monitoring
+ 	# Netdata is not designed to be exposed to potentially hostile networks
+ 	# See https://github.com/firehol/netdata/issues/164
 diff --git a/conf/pf.conf.defaults b/conf/pf.conf.defaults
-index f3173abcf2..b625c35bc6 100644
+index ac7975cbbd..6601d93350 100644
 --- a/conf/pf.conf.defaults
 +++ b/conf/pf.conf.defaults
 @@ -479,7 +479,7 @@ radiusd=enabled
@@ -33,7 +33,7 @@ index f3173abcf2..b625c35bc6 100644
  #
  # services.snmptrapd
  #
-@@ -643,7 +643,7 @@ openssl_binary=/usr/bin/openssl
+@@ -648,7 +648,7 @@ openssl_binary=/usr/bin/openssl
  # services.arp_binary
  # 
  # location of the arp binary. only necessary to change if you are not running the rpmed version.
@@ -218,19 +218,6 @@ index 98a2a340d3..9605ef030a 100644
  ExecStart=/usr/sbin/keepalived -f /usr/local/pf/var/conf/keepalived.conf --pid=/usr/local/pf/var/run/keepalived.pid
  ExecReload=/bin/kill -HUP $MAINPID
  Restart=on-failure
-diff --git a/conf/systemd/packetfence-netdata.service b/conf/systemd/packetfence-netdata.service
-index eea70993c2..3876e340cb 100644
---- a/conf/systemd/packetfence-netdata.service
-+++ b/conf/systemd/packetfence-netdata.service
-@@ -13,7 +13,7 @@ RuntimeDirectoryMode=0775
- ExecStart=/usr/sbin/netdata -P /run/netdata/netdata.pid -D -c /usr/local/pf/var/conf/monitoring/netdata.conf 
- ExecStartPre=/bin/mkdir -p /var/cache/netdata
- ExecStartPre=/bin/chown -R netdata:netdata /var/cache/netdata
--ExecStartPre=/bin/perl -I/usr/local/pf/lib -I/usr/local/pf/lib_perl/lib/perl5 '-Mpf::services::manager::netdata' -e 'pf::services::manager::netdata->new()->generateConfig()'
-+ExecStartPre=/usr/bin/perl -I/usr/local/pf/lib -I/usr/local/pf/lib_perl/lib/perl5 '-Mpf::services::manager::netdata' -e 'pf::services::manager::netdata->new()->generateConfig()'
- PermissionsStartOnly=true
- 
- TimeoutSec=60
 diff --git a/conf/systemd/packetfence-ntlm-auth-api.service b/conf/systemd/packetfence-ntlm-auth-api.service
 index bf33a84a51..8a97755d92 100644
 --- a/conf/systemd/packetfence-ntlm-auth-api.service
