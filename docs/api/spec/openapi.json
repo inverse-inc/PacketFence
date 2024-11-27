@@ -3523,37 +3523,7 @@
             "properties" : {
                "meta" : {
                   "properties" : {
-                     "emailaddr" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
-                     "fromaddr" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
                      "id" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
-                     "smtp_encryption" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
-                     "smtp_password" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
-                     "smtp_port" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
-                     "smtp_timeout" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
-                     "smtp_username" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
-                     "smtp_verifyssl" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
-                     "smtpserver" : {
-                        "$ref" : "#/components/schemas/Meta"
-                     },
-                     "subjectprefix" : {
                         "$ref" : "#/components/schemas/Meta"
                      }
                   },
@@ -4555,6 +4525,10 @@
                   "description" : "The IPv4 of the Active Directory server",
                   "type" : "string"
                },
+               "additional_machine_accounts" : {
+                  "description" : "How many additional machine accounts should be created and used to parallel NTLM authentication",
+                  "type" : "integer"
+               },
                "bind_dn" : {
                   "description" : "The username of a Domain Admin to use to join the server to the domain",
                   "type" : "string"
@@ -4693,6 +4667,9 @@
                      "ad_server" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
+                     "additional_machine_accounts" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "bind_dn" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -4813,22 +4790,22 @@
                   "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeSecurityOnion"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeSnort"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeSuricataMd5"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeRegex"
-               },
-               {
                   "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeNexpose"
                },
                {
                   "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeDhcp"
                },
                {
+                  "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeSuricataMd5"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeSnort"
+               },
+               {
                   "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeFortianalyser"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigEventHandlerMetaSubTypeRegex"
                }
             ]
          },
@@ -4915,6 +4892,9 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "path" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "rate_limit" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "rules" : {
@@ -5164,6 +5144,20 @@
                "path" : {
                   "description" : "Alert pipe",
                   "type" : "string"
+               },
+               "rate_limit" : {
+                  "description" : "Rate limit requests.",
+                  "properties" : {
+                     "interval" : {
+                        "description" : "Interval",
+                        "type" : "integer"
+                     },
+                     "unit" : {
+                        "description" : "Unit",
+                        "type" : "string"
+                     }
+                  },
+                  "type" : "object"
                },
                "rules" : {
                   "description" : "Rules",
@@ -5849,10 +5843,19 @@
                   "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeDeny"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeMobileconfig"
+                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeWindows"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeLookup"
                },
                {
                   "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAccept"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeDpsk"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeMobileiron"
                },
                {
                   "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeIntune"
@@ -5861,31 +5864,22 @@
                   "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeJamf"
                },
                {
+                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeKandji"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAndroid"
+               },
+               {
                   "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAirwatch"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeWindows"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeLookup"
+                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeMobileconfig"
                },
                {
                   "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeGoogleWorkspaceChromebook"
                },
                {
                   "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeSentinelone"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAndroid"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeMobileiron"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeDpsk"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeKandji"
                }
             ]
          },
@@ -8294,37 +8288,37 @@
                   "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeJunipersrx"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeContentkeeper"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeFortigate"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeBarracudang"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeSmoothwall"
+                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeJsonrpc"
                },
                {
                   "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypePaloalto"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeJsonrpc"
+                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeContentkeeper"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeCheckpoint"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeFamilyzone"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeLightspeedrocket"
+                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeSmoothwall"
                },
                {
                   "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeWatchguard"
                },
                {
+                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeLightspeedrocket"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeFamilyzone"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeBarracudang"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeCheckpoint"
+               },
+               {
                   "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeIboss"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigFirewallMetaSubTypeFortigate"
                }
             ]
          },
@@ -8332,6 +8326,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8354,6 +8351,15 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "port" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "type" : {
@@ -8378,6 +8384,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8400,6 +8409,15 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "port" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "type" : {
@@ -8427,6 +8445,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8449,6 +8470,15 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "port" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "type" : {
@@ -8473,6 +8503,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8497,6 +8530,15 @@
                      "port" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "type" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8519,6 +8561,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8546,6 +8591,15 @@
                      "port" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "type" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8568,6 +8622,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8592,6 +8649,15 @@
                      "port" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "type" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8614,6 +8680,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8641,6 +8710,15 @@
                      "port" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "type" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8663,6 +8741,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8685,6 +8766,15 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "port" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "type" : {
@@ -8712,6 +8802,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8734,6 +8827,15 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "port" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "type" : {
@@ -8761,6 +8863,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8783,6 +8888,15 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "port" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "type" : {
@@ -8807,6 +8921,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8829,6 +8946,15 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "port" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "transport" : {
@@ -8859,6 +8985,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8881,6 +9010,15 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "port" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "type" : {
@@ -8905,6 +9043,9 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "act_on_accounting_stop" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "cache_timeout" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8929,6 +9070,15 @@
                      "port" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
+                     "sso_on_access_reevaluation" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_accounting" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "sso_on_dhcp" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "type" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
@@ -8949,6 +9099,10 @@
          },
          "ConfigFirewallSubTypeBarracudang" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -8985,6 +9139,18 @@
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
                },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
+               },
                "type" : {
                   "default" : "BarracudaNG",
                   "description" : "Discriminator `BarracudaNG`",
@@ -9016,6 +9182,10 @@
          },
          "ConfigFirewallSubTypeCheckpoint" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9052,6 +9222,18 @@
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
                },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
+               },
                "type" : {
                   "default" : "Checkpoint",
                   "description" : "Discriminator `Checkpoint`",
@@ -9078,6 +9260,10 @@
          },
          "ConfigFirewallSubTypeContentkeeper" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9114,6 +9300,18 @@
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
                },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
+               },
                "type" : {
                   "default" : "ContentKeeper",
                   "description" : "Discriminator `ContentKeeper`",
@@ -9140,6 +9338,10 @@
          },
          "ConfigFirewallSubTypeFamilyzone" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9180,6 +9382,18 @@
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
                },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
+               },
                "type" : {
                   "default" : "FamilyZone",
                   "description" : "Discriminator `FamilyZone`",
@@ -9205,6 +9419,10 @@
          },
          "ConfigFirewallSubTypeFortigate" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9241,6 +9459,18 @@
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
                },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
+               },
                "type" : {
                   "default" : "FortiGate",
                   "description" : "Discriminator `FortiGate`",
@@ -9267,6 +9497,10 @@
          },
          "ConfigFirewallSubTypeIboss" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9307,6 +9541,18 @@
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
                },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
+               },
                "type" : {
                   "default" : "Iboss",
                   "description" : "Discriminator `Iboss`",
@@ -9333,6 +9579,10 @@
          },
          "ConfigFirewallSubTypeJsonrpc" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9368,6 +9618,18 @@
                "port" : {
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
+               },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
                },
                "type" : {
                   "default" : "JSONRPC",
@@ -9400,6 +9662,10 @@
          },
          "ConfigFirewallSubTypeJunipersrx" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9436,6 +9702,18 @@
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
                },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
+               },
                "type" : {
                   "default" : "JuniperSRX",
                   "description" : "Discriminator `JuniperSRX`",
@@ -9467,6 +9745,10 @@
          },
          "ConfigFirewallSubTypeLightspeedrocket" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9503,6 +9785,18 @@
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
                },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
+               },
                "type" : {
                   "default" : "LightSpeedRocket",
                   "description" : "Discriminator `LightSpeedRocket`",
@@ -9529,6 +9823,10 @@
          },
          "ConfigFirewallSubTypePaloalto" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9565,6 +9863,18 @@
                   "description" : "If you use an alternative port, please specify. This parameter is ignored when the Syslog transport is selected.",
                   "type" : "integer"
                },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
+               },
                "transport" : {
                   "description" : "Transport",
                   "type" : "string"
@@ -9598,6 +9908,10 @@
          },
          "ConfigFirewallSubTypeSmoothwall" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9633,6 +9947,18 @@
                "port" : {
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
+               },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
                },
                "type" : {
                   "default" : "SmoothWall",
@@ -9660,6 +9986,10 @@
          },
          "ConfigFirewallSubTypeWatchguard" : {
             "properties" : {
+               "act_on_accounting_stop" : {
+                  "description" : "Act on accounting stop",
+                  "type" : "string"
+               },
                "cache_timeout" : {
                   "description" : "Adjust the \"Cache timeout\" to half the expiration delay in your firewall.<br/>Your DHCP renewal interval should match this value.",
                   "type" : "integer"
@@ -9695,6 +10025,18 @@
                "port" : {
                   "description" : "If you use an alternative port, please specify",
                   "type" : "integer"
+               },
+               "sso_on_access_reevaluation" : {
+                  "description" : "Sso on access reevaluation",
+                  "type" : "string"
+               },
+               "sso_on_accounting" : {
+                  "description" : "Sso on accounting",
+                  "type" : "string"
+               },
+               "sso_on_dhcp" : {
+                  "description" : "Sso on dhcp",
+                  "type" : "string"
                },
                "type" : {
                   "default" : "WatchGuard",
@@ -10009,6 +10351,169 @@
             },
             "type" : "object"
          },
+         "ConfigKafka" : {
+            "properties" : {
+               "admin" : {
+                  "description" : "Admin",
+                  "properties" : {
+                     "pass" : {
+                        "description" : "Password",
+                        "type" : "string"
+                     },
+                     "user" : {
+                        "description" : "User",
+                        "type" : "string"
+                     }
+                  },
+                  "type" : "object"
+               },
+               "auths" : {
+                  "description" : "Auths",
+                  "items" : {
+                     "description" : "Auth",
+                     "properties" : {
+                        "pass" : {
+                           "description" : "Password",
+                           "type" : "string"
+                        },
+                        "user" : {
+                           "description" : "User",
+                           "type" : "string"
+                        }
+                     },
+                     "type" : "object"
+                  },
+                  "type" : "array"
+               },
+               "cluster" : {
+                  "description" : "Cluster",
+                  "items" : {
+                     "description" : "Cluster",
+                     "properties" : {
+                        "name" : {
+                           "description" : "Name",
+                           "type" : "string"
+                        },
+                        "value" : {
+                           "description" : "Value",
+                           "type" : "string"
+                        }
+                     },
+                     "type" : "object"
+                  },
+                  "type" : "array"
+               },
+               "host_configs" : {
+                  "description" : "Host configs",
+                  "items" : {
+                     "description" : "Host config",
+                     "properties" : {
+                        "config" : {
+                           "description" : "Config",
+                           "items" : {
+                              "description" : "Config",
+                              "properties" : {
+                                 "name" : {
+                                    "description" : "Name",
+                                    "type" : "string"
+                                 },
+                                 "value" : {
+                                    "description" : "Value",
+                                    "type" : "string"
+                                 }
+                              },
+                              "type" : "object"
+                           },
+                           "type" : "array"
+                        },
+                        "host" : {
+                           "description" : "Host",
+                           "type" : "string"
+                        }
+                     },
+                     "type" : "object"
+                  },
+                  "type" : "array"
+               },
+               "iptables" : {
+                  "description" : "Iptables",
+                  "properties" : {
+                     "clients" : {
+                        "description" : "Clients",
+                        "items" : {
+                           "description" : "Client",
+                           "type" : "string"
+                        },
+                        "type" : "array"
+                     },
+                     "cluster_ips" : {
+                        "description" : "Cluster ips",
+                        "items" : {
+                           "description" : "Cluster ip",
+                           "type" : "string"
+                        },
+                        "type" : "array"
+                     }
+                  },
+                  "type" : "object"
+               }
+            },
+            "type" : "object"
+         },
+         "ConfigKafkaList" : {
+            "allOf" : [
+               {
+                  "$ref" : "#/components/schemas/Iterable"
+               },
+               {
+                  "properties" : {
+                     "items" : {
+                        "items" : {
+                           "$ref" : "#/components/schemas/ConfigKafka"
+                        },
+                        "type" : "array"
+                     }
+                  },
+                  "type" : "object"
+               }
+            ]
+         },
+         "ConfigKafkaMeta" : {
+            "properties" : {
+               "meta" : {
+                  "properties" : {
+                     "admin" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "auths" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "cluster" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "host_configs" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "iptables" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     }
+                  },
+                  "type" : "object"
+               }
+            },
+            "type" : "object"
+         },
+         "ConfigKafkaWrapped" : {
+            "properties" : {
+               "item" : {
+                  "$ref" : "#/components/schemas/ConfigKafka"
+               },
+               "status" : {
+                  "type" : "integer"
+               }
+            },
+            "type" : "object"
+         },
          "ConfigL2Network" : {
             "properties" : {
                "algorithm" : {
@@ -10213,82 +10718,52 @@
             },
             "oneOf" : [
                {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeOption82Query"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePersonCleanup"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeIp6logCleanup"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeDnsAuditLogCleanup"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeSwitchCacheLldplocalportDescription"
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodesMaintenance"
                },
                {
                   "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeCleanupChiDatabaseCache"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAuthLogCleanup"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeProvisioningCompliancePoll"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeClusterCheck"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeSecurityEventMaintenance"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePkiCertificatesCheck"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAcctMaintenance"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeRadiusAuditLogCleanup"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePfflow"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFlushDnsAuditLog"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeBandwidthMaintenance"
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePasswordOfTheDay"
                },
                {
                   "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFingerbankDataUpdate"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePurgeBinaryLogs"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodesMaintenance"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeCertificatesCheck"
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeLocationlogCleanup"
                },
                {
                   "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAdminApiAuditLogCleanup"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodeCurrentSessionCleanup"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodeCleanup"
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeClusterCheck"
                },
                {
                   "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFlushRadiusAuditLog"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAcctCleanup"
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodeCleanup"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePasswordOfTheDay"
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeCertificatesCheck"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeIp6logCleanup"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePurgeBinaryLogs"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePersonCleanup"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeProvisioningCompliancePoll"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAuthLogCleanup"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeRadiusAuditLogCleanup"
                },
                {
                   "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeIp4logCleanup"
@@ -10297,7 +10772,37 @@
                   "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeUbiquitiApMacToIp"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeLocationlogCleanup"
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAcctMaintenance"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodeCurrentSessionCleanup"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeBandwidthMaintenance"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeOption82Query"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeSwitchCacheLldplocalportDescription"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeSecurityEventMaintenance"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFlushDnsAuditLog"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeDnsAuditLogCleanup"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePkiCertificatesCheck"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypePfflow"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAcctCleanup"
                }
             ]
          },
@@ -10929,13 +11434,25 @@
             "properties" : {
                "meta" : {
                   "properties" : {
+                     "filter_events" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
                      "group_id" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "heuristics" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "id" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "kafka_brokers" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "kakfa_pass" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "kakfa_user" : {
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "read_topic" : {
@@ -10954,6 +11471,9 @@
                         "$ref" : "#/components/schemas/Meta"
                      },
                      "type" : {
+                        "$ref" : "#/components/schemas/Meta"
+                     },
+                     "uuid" : {
                         "$ref" : "#/components/schemas/Meta"
                      }
                   },
@@ -12231,8 +12751,16 @@
          },
          "ConfigMaintenanceTaskSubTypePfflow" : {
             "properties" : {
+               "filter_events" : {
+                  "description" : "Filter incoming events",
+                  "type" : "string"
+               },
                "group_id" : {
                   "description" : "The Kafka Consumer Group ID ",
+                  "type" : "string"
+               },
+               "heuristics" : {
+                  "description" : "Heuristics",
                   "type" : "string"
                },
                "id" : {
@@ -12241,6 +12769,14 @@
                },
                "kafka_brokers" : {
                   "description" : "Kafka Brokers",
+                  "type" : "string"
+               },
+               "kakfa_pass" : {
+                  "description" : "Kafka Password",
+                  "type" : "string"
+               },
+               "kakfa_user" : {
+                  "description" : "Kafka Username",
                   "type" : "string"
                },
                "read_topic" : {
@@ -12266,6 +12802,10 @@
                "type" : {
                   "default" : "pfflow",
                   "description" : "Discriminator `pfflow`",
+                  "type" : "string"
+               },
+               "uuid" : {
+                  "description" : "UUID  ",
                   "type" : "string"
                }
             },
@@ -13493,97 +14033,97 @@
             },
             "oneOf" : [
                {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeProvisioning"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeSelectrole"
-               },
-               {
                   "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthFacebook"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeChained"
                },
                {
                   "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationNull"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeSslInspection"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthGithub"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeMessage"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeUrl"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthOpenid"
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationEmail"
                },
                {
                   "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationChoice"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthLinkedin"
-               },
-               {
                   "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeSurvey"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationPassword"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthGoogle"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeChoice"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeShowlocalaccount"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeFixedrole"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauth"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeRootsso"
                },
                {
                   "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSponsor"
                },
                {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSms"
+               },
+               {
                   "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeMfa"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeRootsso"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeShowlocalaccount"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthLinkedin"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeUrl"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthGithub"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeSelectrole"
                },
                {
                   "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSaml"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeRoot"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationEmail"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationLogin"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSms"
-               },
-               {
                   "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationBlackhole"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthentication"
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeRoot"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthWindowslive"
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeChoice"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationPassword"
                },
                {
                   "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationBilling"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeChained"
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthOpenid"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeMessage"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthGoogle"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauth"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeSslInspection"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeFixedrole"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationLogin"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthWindowslive"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeAuthentication"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigPortalModuleMetaSubTypeProvisioning"
                }
             ]
          },
@@ -16811,46 +17351,46 @@
             },
             "oneOf" : [
                {
-                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeAccept"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeMobileconfig"
-               },
-               {
                   "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeDeny"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeSentinelone"
                },
                {
                   "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeWindows"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeGoogleWorkspaceChromebook"
+                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeMobileconfig"
                },
                {
                   "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeAirwatch"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeKandji"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeAndroid"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeGoogleWorkspaceChromebook"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeJamfcloud"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeSentinelone"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeAccept"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeDpsk"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeMobileiron"
                },
                {
                   "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeJamf"
                },
                {
                   "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeIntune"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeMobileiron"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeAndroid"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeJamfcloud"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeKandji"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigProvisioningMetaSubTypeDpsk"
                }
             ]
          },
@@ -21567,67 +22107,19 @@
                   "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeOpenid"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeWindowslive"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeBlackhole"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeHtpasswd"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeHttp"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeEdir"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeEmail"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeNull"
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeStripe"
                },
                {
                   "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeAd"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeSaml"
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeBlackhole"
                },
                {
                   "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeAzuread"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeAdminproxy"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeAuthorization"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeRadius"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypePotd"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeFacebook"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeGoogle"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeLdap"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeGoogleworkspaceldap"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeSql"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeStripe"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypePaypal"
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeWindowslive"
                },
                {
                   "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeKickbox"
@@ -21636,28 +22128,76 @@
                   "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeSms"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeLinkedin"
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeSaml"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeTwilio"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeGithub"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeKerberos"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeEaptls"
-               },
-               {
-                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeClickatell"
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeHtpasswd"
                },
                {
                   "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeSponsoremail"
                },
                {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeSql"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeNull"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeHttp"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeAdminproxy"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeEmail"
+               },
+               {
                   "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeEduroam"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypePotd"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeRadius"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeGithub"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeGoogle"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypePaypal"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeKerberos"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeAuthorization"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeEdir"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeFacebook"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeLdap"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeTwilio"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeClickatell"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeEaptls"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeLinkedin"
+               },
+               {
+                  "$ref" : "#/components/schemas/ConfigSourceMetaSubTypeGoogleworkspaceldap"
                }
             ]
          },
@@ -31220,10 +31760,10 @@
             },
             "oneOf" : [
                {
-                  "$ref" : "#/components/schemas/ConfigSyslogForwarderMetaSubTypeServer"
+                  "$ref" : "#/components/schemas/ConfigSyslogForwarderMetaSubTypeFile"
                },
                {
-                  "$ref" : "#/components/schemas/ConfigSyslogForwarderMetaSubTypeFile"
+                  "$ref" : "#/components/schemas/ConfigSyslogForwarderMetaSubTypeServer"
                }
             ]
          },
@@ -51391,6 +51931,95 @@
             },
             "tags" : [
                "Config/Interfaces"
+            ]
+         }
+      },
+      "/api/v1/config/kafka" : {
+         "description" : "pf::UnifiedApi::Controller::Config::Kafka\n\n  field_meta\n    Get a field's meta data\n\n  field_type\n    Find the field type\n\n  field_is_required\n    Check if the field is required\n\n  field_placeholder\n    Get the placeholder for the field\n\n  field_resource_placeholder\n    The place holder for the field\n\n  field_meta_array_items\n    Get the meta for the items of the array\n\n  field_allowed\n    The allowed fields\n\n  field_default\n    Get the default value of a field\n\n  field_extra_meta\n    Get the extra meta data for a field\n\n  field_meta_object_properties\n    Get the properties of a field\n\n  field_text_meta\n    Update text field meta data\n\n  field_allowed_lookup\n    field_allowed_lookup\n\n  map_options\n    map_options\n\n  map_option\n    map_option\n\n  format_form_errors\n    format_form_errors",
+         "get" : {
+            "description" : "Get an item.",
+            "operationId" : "api.v1.Config.Kafka.get",
+            "parameters" : [],
+            "responses" : {
+               "200" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/ConfigKafkaWrapped"
+                        }
+                     }
+                  },
+                  "description" : "Request successful. Response contains a specific resource."
+               },
+               "401" : {
+                  "$ref" : "#/components/responses/Forbidden"
+               },
+               "404" : {
+                  "$ref" : "#/components/responses/NotFound"
+               }
+            },
+            "tags" : [
+               "Config/Kafka"
+            ]
+         },
+         "options" : {
+            "description" : "Get meta for a new item.",
+            "operationId" : "api.v1.Config.Kafka.options",
+            "parameters" : [],
+            "responses" : {
+               "200" : {
+                  "content" : {
+                     "application/json" : {
+                        "schema" : {
+                           "$ref" : "#/components/schemas/ConfigKafkaMeta"
+                        }
+                     }
+                  },
+                  "description" : "Request successful. Response contains meta for a resource."
+               },
+               "401" : {
+                  "$ref" : "#/components/responses/Forbidden"
+               },
+               "404" : {
+                  "$ref" : "#/components/responses/NotFound"
+               }
+            },
+            "tags" : [
+               "Config/Kafka"
+            ]
+         },
+         "patch" : {
+            "description" : "Update an item.",
+            "operationId" : "api.v1.Config.Kafka.update",
+            "parameters" : [],
+            "requestBody" : {
+               "content" : {
+                  "application/json" : {
+                     "schema" : {
+                        "$ref" : "#/components/schemas/ConfigKafka"
+                     }
+                  }
+               }
+            },
+            "responses" : {
+               "201" : {
+                  "$ref" : "#/components/responses/Updated"
+               },
+               "400" : {
+                  "$ref" : "#/components/responses/BadRequest"
+               },
+               "401" : {
+                  "$ref" : "#/components/responses/Forbidden"
+               },
+               "404" : {
+                  "$ref" : "#/components/responses/NotFound"
+               },
+               "422" : {
+                  "$ref" : "#/components/responses/UnprocessableEntity"
+               }
+            },
+            "tags" : [
+               "Config/Kafka"
             ]
          }
       },
