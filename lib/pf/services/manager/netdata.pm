@@ -214,7 +214,6 @@ EOT
     parse_template( \%tags, "$conf_dir/monitoring/go.d/haproxy.conf", "$generated_conf_dir/monitoring/go.d/haproxy.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/mysql.conf", "$generated_conf_dir/monitoring/go.d/mysql.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/ping.conf", "$generated_conf_dir/monitoring/go.d/ping.conf" );
-    parse_template( \%tags, "$conf_dir/monitoring/go.d/proxysql.conf", "$generated_conf_dir/monitoring/go.d/proxysql.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/redis.conf", "$generated_conf_dir/monitoring/go.d/redis.conf" );
     parse_template( \%tags, "$conf_dir/monitoring/go.d/web_log.conf", "$generated_conf_dir/monitoring/go.d/web_log.conf" );
     return 1;
