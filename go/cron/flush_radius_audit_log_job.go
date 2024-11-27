@@ -71,11 +71,11 @@ func (j *FlushRadiusAuditLogJob) Run() {
 					log.LogError(ctx, fmt.Sprintf("%s error running: %s", j.Name(), err.Error()))
 					continue
 				}
-
 				jsonStr = string(s)
 			}
-
+			jsonStr = strings.Replace(jsonStr, "\\", "", -1)
 			err := json.Unmarshal([]byte(jsonStr), &entry)
+
 			if err != nil {
 				log.LogError(ctx, fmt.Sprintf("%s error running: %s", j.Name(), err.Error()))
 				continue
@@ -406,7 +406,6 @@ func escapeRadiusRequest(s string) string {
 	if size == len(s) {
 		return s
 	}
-
 	out := make([]byte, size)
 	j := 0
 	for _, c := range []byte(s) {
