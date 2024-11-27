@@ -28,7 +28,7 @@
                 Netdata <icon name="external-link-alt" class="mx-1" />
               </template>
               <b-dropdown-item v-for="({ management_ip, host}) in cluster" :key="management_ip"
-                :href="`/netdata/${management_ip}`" target="_blank">{{ host }}</b-dropdown-item>
+                :href="`/netdata/${management_ip}/`" target="_blank">{{ host }}</b-dropdown-item>
             </b-dropdown>
           </b-button-group>
         </b-row>
@@ -58,7 +58,7 @@
                 Netdata <icon name="external-link-alt" class="mx-1" />
               </template>
               <b-dropdown-item v-for="({ management_ip, host: memberHost }) in cluster" :key="management_ip"
-                :href="`/netdata/${management_ip}`" target="_blank"
+                :href="`/netdata/${management_ip}/`" target="_blank"
                 :active="memberHost == host">{{ host }}</b-dropdown-item>
             </b-dropdown>
           </b-button-group>
