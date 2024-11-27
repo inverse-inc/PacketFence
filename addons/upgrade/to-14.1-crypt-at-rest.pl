@@ -30,9 +30,7 @@ for my $name (__PACKAGE__->_all_config) {
 
     my $c = $name->new();
     if ($name->isa( "pf::UnifiedApi::Controller::Config::Subtype")) {
-        while (my ($type, $formName) = each %{$name->type_lookup()}) {
-            update_config_controller($c, $name, $formName, { type => $type });
-        }
+        update_config_controller_with_subtype($c, $name);
     } else {
         my $formName = $c->form_class;
         update_config_controller($c, $name, $formName, {});
@@ -40,10 +38,9 @@ for my $name (__PACKAGE__->_all_config) {
 
 }
 
-sub update_config_controller{
+sub update_config_controller {
     my ($c, $name, $formName, $item) = @_;
     $c->stash({admin_roles => []});
-    print "$name $formName\n";
     my $form = $c->form($item);
     my %fields2Encrypt;
     for my $field ($form->fields) {
@@ -58,13 +55,46 @@ sub update_config_controller{
     my $ini = $cs->cachedConfig;
     my $changed = 0;
     for my $section ($ini->Sections()) {
-        print "$section\n";
         for my $param ($ini->Parameters($section)) {
             next if (!exists $fields2Encrypt{$param});
-            print "$section.$param\n";
+            print "Changing $section.$param\n";
             my $val = $ini->val($section, $param);
             $val = pf::config::crypt::pf_encrypt($val);
-            $ini->setval($section, $val);
+            $ini->setval($section, $param, $val);
+            $changed |= 1;
+        }
+    }
+    if ($changed) {
+        $ini->RewriteConfig();
+    }
+}
+
+sub update_config_controller_with_subtype {
+    my ($c, $name) = @_;
+    $c->stash({admin_roles => []});
+    my $typeLookup = $name->type_lookup();
+
+    my $cs = $c->config_store;
+    my $ini = $cs->cachedConfig;
+    my $changed = 0;
+    for my $section ($ini->Sections()) {
+        my $type = $ini->val($section, 'type');
+        next if !$type;
+        my $form = $c->form({type => $type});
+        my %fields2Encrypt;
+        for my $field ($form->fields) {
+            my $fieldName = $field->name;
+            my $type = $field->type;
+            if ($type eq 'ObfuscatedText') {
+                $fields2Encrypt{$fieldName} = undef;
+            }
+        }
+        for my $param ($ini->Parameters($section)) {
+            next if (!exists $fields2Encrypt{$param});
+            my $val = $ini->val($section, $param);
+            print "Changing $section.$param\n";
+            $val = pf::config::crypt::pf_encrypt($val);
+            $ini->setval($section, $param, $val);
             $changed |= 1;
         }
     }
