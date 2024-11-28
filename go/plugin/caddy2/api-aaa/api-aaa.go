@@ -177,7 +177,7 @@ func (h *ApiAAAHandler) buildApiAAAHandler(ctx context.Context) error {
 	h.authentication.AddAuthenticationBackend(h.webservicesBackend)
 
 	if webservices.User != "" {
-		h.webservicesBackend.SetUser(webservices.User, webservices.Pass)
+		h.webservicesBackend.SetUser(webservices.User, webservices.Pass.String())
 	}
 
 	// Backend for SSO
@@ -366,7 +366,7 @@ func (h *ApiAAAHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next c
 	webservices := pfconfigdriver.GetStruct(ctx, "PfConfWebservices").(*pfconfigdriver.PfConfWebservices)
 	// Reload the webservices user info
 	if webservices.User != "" {
-		h.webservicesBackend.SetUser(webservices.User, webservices.Pass)
+		h.webservicesBackend.SetUser(webservices.User, webservices.Pass.String())
 	}
 
 	defer panichandler.Http(ctx, w)

@@ -214,7 +214,7 @@ func main() {
 	router.HandleFunc("/api/v1/dhcp/options/network/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", api.handleRemoveNetworkOptions).Methods("DELETE")
 	router.HandleFunc("/api/v1/dhcp/options/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", api.handleOverrideOptions).Methods("POST")
 	router.HandleFunc("/api/v1/dhcp/options/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", api.handleRemoveOptions).Methods("DELETE")
-	http.Handle("/", httpauth.SimpleBasicAuth(webservices.User, webservices.Pass)(router))
+	http.Handle("/", httpauth.SimpleBasicAuth(webservices.User, webservices.Pass.String())(router))
 
 	srv := &http.Server{
 		Addr:        ":22222",
