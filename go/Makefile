@@ -29,6 +29,10 @@ copy:
 	cp -f $(PF_BINARIES) $(DESTDIR)$(SBINDIR)
 	cp -f $(PF_GO_CMDS) $(DESTDIR)$(BINDIR)
 
+.PHONY: copy-sbin
+copy-sbin:
+	cp -f $(PF_BINARIES) $(DESTDIR)$(SBINDIR)
+
 .PHONY: clean
 clean:
 	rm -f $(PF_BINARIES) $(PF_GO_CMDS)

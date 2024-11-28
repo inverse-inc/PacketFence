@@ -183,7 +183,7 @@ install: build
 	# Golang binary
 	install -d -m0744 $(CURDIR)/debian/packetfence-golang-daemon$(PREFIX)/$(NAME)/sbin
 	make -C go all
-	make -C go DESTDIR=$(CURDIR)/debian/packetfence-golang-daemon copy
+	make -C go DESTDIR=$(CURDIR)/debian/packetfence-golang-daemon copy-sbin
 
 
 # Build architecture-independent files here.
