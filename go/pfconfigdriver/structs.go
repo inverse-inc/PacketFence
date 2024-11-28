@@ -184,19 +184,19 @@ type PfConfServices struct {
 
 type PfConfWebservices struct {
 	StructConfig
-	PfconfigMethod string `val:"hash_element"`
-	PfconfigNS     string `val:"config::Pf"`
-	PfconfigHashNS string `val:"webservices"`
-	Pass           string `json:"pass"`
-	Proto          string `json:"proto"`
-	User           string `json:"user"`
-	Port           string `json:"port"`
-	AAAHost        string `json:"aaa_host"`
-	AAAPort        string `json:"aaa_port"`
-	AAAProto       string `json:"aaa_proto"`
-	UnifiedAPIHost string `json:"unifiedapi_host"`
-	UnifiedAPIPort string `json:"unifiedapi_port"`
-	Host           string `json:"host"`
+	PfconfigMethod string              `val:"hash_element"`
+	PfconfigNS     string              `val:"config::Pf"`
+	PfconfigHashNS string              `val:"webservices"`
+	Pass           pfcrypt.CryptString `json:"pass"`
+	Proto          string              `json:"proto"`
+	User           string              `json:"user"`
+	Port           string              `json:"port"`
+	AAAHost        string              `json:"aaa_host"`
+	AAAPort        string              `json:"aaa_port"`
+	AAAProto       string              `json:"aaa_proto"`
+	UnifiedAPIHost string              `json:"unifiedapi_host"`
+	UnifiedAPIPort string              `json:"unifiedapi_port"`
+	Host           string              `json:"host"`
 }
 
 type UnifiedApiSystemUser struct {
