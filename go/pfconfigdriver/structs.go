@@ -209,14 +209,14 @@ type UnifiedApiSystemUser struct {
 
 type PfConfDatabase struct {
 	StructConfig
-	PfconfigMethod string `val:"hash_element"`
-	PfconfigNS     string `val:"config::Pf"`
-	PfconfigHashNS string `val:"database"`
-	User           string `json:"user"`
-	Pass           string `json:"pass"`
-	Host           string `json:"host"`
-	Port           string `json:"port"`
-	Db             string `json:"db"`
+	PfconfigMethod string              `val:"hash_element"`
+	PfconfigNS     string              `val:"config::Pf"`
+	PfconfigHashNS string              `val:"database"`
+	User           string              `json:"user"`
+	Pass           pfcrypt.CryptString `json:"pass"`
+	Host           string              `json:"host"`
+	Port           string              `json:"port"`
+	Db             string              `json:"db"`
 }
 
 type ManagementNetwork struct {
@@ -631,28 +631,28 @@ type PfConfParking struct {
 
 type PfConfAlerting struct {
 	StructConfig
-	PfconfigMethod string `val:"hash_element"`
-	PfconfigNS     string `val:"config::Pf"`
-	PfconfigHashNS string `val:"alerting"`
-	EmailAddr      string `json:"emailaddr"`
-	FromAddr       string `json:"fromaddr"`
-	SMTPPassword   string `json:"smtp_password"`
-	SMTPEncryption string `json:"smtp_encryption"`
-	SubjectPrefic  string `json:"subjectprefix"`
-	SMTPUsername   string `json:"smtp_username"`
-	SMTPTimeout    string `json:"smtp_timeout"`
-	SMTPPort       int    `json:"smtp_port"`
-	SMTPVerifySSL  string `json:"smtp_verifyssl"`
-	SMTPServer     string `json:"smtpserver"`
+	PfconfigMethod string              `val:"hash_element"`
+	PfconfigNS     string              `val:"config::Pf"`
+	PfconfigHashNS string              `val:"alerting"`
+	EmailAddr      string              `json:"emailaddr"`
+	FromAddr       string              `json:"fromaddr"`
+	SMTPPassword   pfcrypt.CryptString `json:"smtp_password"`
+	SMTPEncryption string              `json:"smtp_encryption"`
+	SubjectPrefic  string              `json:"subjectprefix"`
+	SMTPUsername   string              `json:"smtp_username"`
+	SMTPTimeout    string              `json:"smtp_timeout"`
+	SMTPPort       int                 `json:"smtp_port"`
+	SMTPVerifySSL  string              `json:"smtp_verifyssl"`
+	SMTPServer     string              `json:"smtpserver"`
 }
 
 type PfConfActiveActive struct {
 	StructConfig
-	PfconfigMethod            string `val:"hash_element"`
-	PfconfigNS                string `val:"config::Pf"`
-	PfconfigHashNS            string `val:"active_active"`
-	GaleraReplicationUsername string `json:"galera_replication_username"`
-	GaleraReplicationPassword string `json:"galera_replication_password"`
+	PfconfigMethod            string              `val:"hash_element"`
+	PfconfigNS                string              `val:"config::Pf"`
+	PfconfigHashNS            string              `val:"active_active"`
+	GaleraReplicationUsername string              `json:"galera_replication_username"`
+	GaleraReplicationPassword pfcrypt.CryptString `json:"galera_replication_password"`
 }
 
 type AllClusterServers struct {

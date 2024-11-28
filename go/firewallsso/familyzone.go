@@ -9,14 +9,15 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/inverse-inc/go-utils/log"
+	"github.com/inverse-inc/packetfence/go/config/pfcrypt"
 )
 
 // FamilyZone struct
 type FamilyZone struct {
 	FirewallSSO
-	Username string `json:"username"`
-	Password string `json:"password"`
-	DeviceID string `json:"deviceid"`
+	Username string              `json:"username"`
+	Password pfcrypt.CryptString `json:"password"`
+	DeviceID string              `json:"deviceid"`
 }
 
 // Firewall specific init
@@ -38,7 +39,7 @@ func (fw *FamilyZone) startHttp(ctx context.Context, info map[string]string, tim
 		log.LoggerWContext(ctx).Error(err.Error())
 		return false, err
 	}
-	s := fw.Password + "__" + info["username"] + "_PacketFence_" + id.String()
+	s := fw.Password.String() + "__" + info["username"] + "_PacketFence_" + id.String()
 	h := sha1.New()
 	h.Write([]byte(s))
 	sha1Hash := hex.EncodeToString(h.Sum(nil))

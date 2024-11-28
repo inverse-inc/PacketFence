@@ -2095,7 +2095,7 @@ func email(ctx context.Context, email EmailType) (types.Info, error) {
 			return err
 		}))
 	}
-	d := gomail.NewDialer(alerting.SMTPServer, alerting.SMTPPort, alerting.SMTPUsername, alerting.SMTPPassword)
+	d := gomail.NewDialer(alerting.SMTPServer, alerting.SMTPPort, alerting.SMTPUsername, alerting.SMTPPassword.String())
 
 	if alerting.SMTPVerifySSL == "disabled" || alerting.SMTPEncryption == "none" {
 		d.TLSConfig = &tls.Config{InsecureSkipVerify: true}

@@ -9,12 +9,13 @@ import (
 	"github.com/inverse-inc/go-radius/rfc2865"
 	"github.com/inverse-inc/go-radius/rfc2866"
 	"github.com/inverse-inc/go-utils/log"
+	"github.com/inverse-inc/packetfence/go/config/pfcrypt"
 )
 
 type Checkpoint struct {
 	FirewallSSO
-	Password string `json:"password"`
-	Port     string `json:"port"`
+	Password pfcrypt.CryptString `json:"password"`
+	Port     string              `json:"port"`
 }
 
 // Send an SSO start to the Checkpoint firewall
@@ -37,7 +38,7 @@ func (fw *Checkpoint) Start(ctx context.Context, info map[string]string, timeout
 
 // Build the RADIUS packet for an SSO start
 func (fw *Checkpoint) startRadiusPacket(ctx context.Context, info map[string]string, timeout int) *radius.Packet {
-	r := radius.New(radius.CodeAccountingRequest, []byte(fw.Password))
+	r := radius.New(radius.CodeAccountingRequest, []byte(fw.Password.String()))
 	rfc2866.AcctStatusType_Add(r, rfc2866.AcctStatusType_Value_Start)
 	rfc2866.AcctSessionID_AddString(r, "acct_pf-"+info["mac"])
 	rfc2865.UserName_AddString(r, info["username"])

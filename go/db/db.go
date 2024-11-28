@@ -37,7 +37,7 @@ func ManualConnectDb(ctx context.Context, user, pass, host, port, dbName string)
 
 func DbLocalFromConfig(ctx context.Context) (*sql.DB, error) {
 	dbConfig := pfconfigdriver.GetType[pfconfigdriver.PfConfDatabase](ctx)
-	return ManualConnectDb(ctx, dbConfig.User, dbConfig.Pass, "localhost", dbConfig.Port, dbConfig.Db)
+	return ManualConnectDb(ctx, dbConfig.User, dbConfig.Pass.String(), "localhost", dbConfig.Port, dbConfig.Db)
 }
 
 func ConnectDb(ctx context.Context, dbName string) (*sql.DB, error) {
@@ -68,7 +68,7 @@ func ReturnURIFromConfig(ctx context.Context, dbName ...string) string {
 		DBName = dbConfig.Db
 	}
 
-	return ReturnURI(ctx, dbConfig.User, dbConfig.Pass, dbConfig.Host, dbConfig.Port, DBName)
+	return ReturnURI(ctx, dbConfig.User, dbConfig.Pass.String(), dbConfig.Host, dbConfig.Port, DBName)
 }
 
 func ReturnURI(ctx context.Context, user, pass, host, port, dbName string) string {
