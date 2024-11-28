@@ -3,7 +3,7 @@ GO ?= go
 build_cmd = $(GO) build $(ARGS)
 
 .PHONY: all
-all: $(PF_BINARIES)
+all: $(PF_BINARIES) $(PF_GO_CMDS)
 
 .PHONY: go-env
 go-env:
