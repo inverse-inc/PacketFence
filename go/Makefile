@@ -25,13 +25,15 @@ $(ALL_BINARIES_RACE):
 	$(build_cmd) -C cmd/$(@:-race=) -o ../../$@ -race
 
 .PHONY: copy
-copy:
-	cp -f $(PF_BINARIES) $(DESTDIR)$(SBINDIR)
-	cp -f $(PF_GO_CMDS) $(DESTDIR)$(BINDIR)
+copy: copy-sbin copy-bin
 
 .PHONY: copy-sbin
 copy-sbin:
 	cp -f $(PF_BINARIES) $(DESTDIR)$(SBINDIR)
+
+.PHONY: copy-bin
+copy-bin:
+	cp -f $(PF_GO_CMDS) $(DESTDIR)$(BINDIR)
 
 .PHONY: clean
 clean:
