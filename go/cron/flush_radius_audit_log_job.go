@@ -191,6 +191,7 @@ func (j *FlushRadiusAuditLogJob) argsFromEntry(entry []interface{}) []interface{
 	request = entry[1].(map[string]interface{})
 	reply = entry[2].(map[string]interface{})
 	control = entry[3].(map[string]interface{})
+	request = parseRequestArgs(request)
 	args[2] = formatRequestValue(request["PacketFence-Computer-Name"], "N/A")
 	args[0] = formatRequestValue(request["Calling-Station-Id"], "N/A")
 	args[1] = formatRequestValue(request["Framed-IP-Address"], "N/A")
@@ -339,4 +340,170 @@ func interfaceToStr(i interface{}, defaultStr string) string {
 	}
 
 	return defaultStr
+}
+
+func parseRequestArgs(request map[string]interface{}) map[string]interface{} {
+	if val, ok := request["WLAN-AKM-Suite"].(float64); ok {
+		request["WLAN-AKM-Suite"] = mapAKMSuite(int(val))
+	}
+	if val, ok := request["WLAN-Group-Cipher"].(float64); ok {
+		request["WLAN-Group-Cipher"] = mapCipherSuite(int(val))
+	}
+	if val, ok := request["WLAN-Pairwise-Cipher"].(float64); ok {
+		request["WLAN-Pairwise-Cipher"] = mapCipherSuite(int(val))
+	}
+	if val, ok := request["TLS-Cert-Expiration"].(string); ok {
+		request["TLS-Cert-Expiration"] = formatDate(val)
+	}
+	if val, ok := request["TLS-Cert-Valid-Since"].(string); ok {
+		request["TLS-Cert-Valid-Since"] = formatDate(val)
+	}
+	if val, ok := request["TLS-Client-Cert-Expiration"].(string); ok {
+		request["TLS-Client-Cert-Expiration"] = formatDate(val)
+	}
+	if val, ok := request["TLS-Client-Cert-Valid-Since"].(string); ok {
+		request["TLS-Client-Cert-Valid-Since"] = formatDate(val)
+	}
+	return request
+}
+
+type AKMSuite int
+
+const (
+	AKMReserved AKMSuite = iota // 0 - Reserved
+	IEEE8021X           // 1 - 802.1X
+	PSK                 // 2 - PSK
+	FT_8021X            // 3 - FT over 802.1X
+	FT_PSK              // 4 - FT over PSK
+	WPA_8021X           // 5 - WPA with 802.1X
+	WPA_PSK             // 6 - WPA with PSK
+	OWE                 // 7 - OWE
+	OWE_Transition      // 8 - OWE Transition Mode
+	SAE                 // 9 - Simultaneous Authentication of Equals
+	FT_SAE              // 10 - FT over SAE
+	FILS_SHA256         // 11 - FILS-SHA256
+	FILS_SHA384         // 12 - FILS-SHA384
+	FT_FILS_SHA256      // 13 - FT over FILS-SHA256
+	FT_FILS_SHA384      // 14 - FT over FILS-SHA384
+	OWE_transition_mode // 15 - OWE transition mode
+)
+
+type CipherSuite int
+
+const (
+	CipherReserved CipherSuite = iota // 0 - Reserved
+	WEP40            // 1 - WEP-40
+	TKIP             // 2 - TKIP
+	CipherReserved3  // 3 - Reserved
+	CCMP128          // 4 - CCMP-128
+	WEP104           // 5 - WEP-104
+	BIPCMAC128       // 6 - BIP-CMAC-128
+	GCMP128          // 7 - GCMP-128
+	GCMP256          // 8 - GCMP-256
+	CCMP256          // 9 - CCMP-256
+	BIPGMAC128       // 10 - BIP-GMAC-128
+	BIPGMAC256       // 11 - BIP-GMAC-256
+	SMS4             // 12 - SMS4
+	CKIP128          // 13 - CKIP-128
+	CKIP128_PMK      // 14 - CKIP-128 with PMK caching
+	CipherReserved15 // 15 - Reserved
+)
+
+func(c CipherSuite) String() string {
+	switch c {
+		case WEP40:
+			return "WEP-40"
+		case TKIP:
+			return "TKIP"
+		case CCMP128:
+			return "CCMP-128"
+		case WEP104:
+			return "WEP-104"
+		case GCMP128:
+			return "GCMP-128"
+		case GCMP256:
+			return "GCMP-256"
+		case CCMP256:
+			return "CCMP-256"
+		case BIPCMAC128:
+			return "BIP-CMAC-128"
+		case BIPGMAC128:
+			return "BIP-GMAC-128"
+		case BIPGMAC256:
+			return "BIP-GMAC-256"
+		case SMS4:
+			return "SMS4"
+		case CKIP128:
+			return "CKIP-128"
+		case CKIP128_PMK:
+			return "CKIP-128 with PMK caching"
+		case CipherReserved3, CipherReserved15:
+			return "Reserved"
+		default:
+			return fmt.Sprintf("Unknown cipher suite (Value: %d)", c)
+	}
+}
+
+func(a AKMSuite) String() string {
+	switch a {
+		case IEEE8021X:
+			return "802.1X"
+		case PSK:
+			return "PSK"
+		case FT_8021X:
+			return "FT over 802.1X"
+		case FT_PSK:
+			return "FT over PSK"
+		case WPA_8021X:
+			return "WPA with 802.1X"
+		case WPA_PSK:
+			return "WPA with PSK"
+		case OWE:
+			return "OWE"
+		case OWE_Transition:
+			return "OWE Transition Mode"
+		case SAE:
+			return "SAE"
+		case FT_SAE:
+			return "FT over SAE"
+		case FILS_SHA256:
+			return "FILS-SHA256"
+		case FILS_SHA384:
+			return "FILS-SHA384"
+		case FT_FILS_SHA256:
+			return "FT over FILS-SHA256"
+		case FT_FILS_SHA384:
+			return "FT over FILS-SHA384"
+		case OWE_transition_mode:
+			return "OWE transition mode"
+		default:
+			return fmt.Sprintf("Unknown or Reserved AKM suite (Value: %d)", a)
+	}
+}
+
+func mapAKMSuite(akmSuiteInt int) string {
+	akmSuiteSelector := akmSuiteInt & 0x0000000F
+	return AKMSuite(akmSuiteSelector).String()
+}
+
+func mapCipherSuite(cipherSuiteInt int) string {
+	cipherSuiteSelector := cipherSuiteInt & 0x0000000F
+	return CipherSuite(cipherSuiteSelector).String()
+}
+
+func formatDate(dateStr string) string {
+	const dateFormat2Digit = "060102150405Z"
+	const dateFormat4Digit = "20060102150405Z"
+
+	var t time.Time
+	var err error
+	t, err = time.Parse(dateFormat2Digit, dateStr)
+	if err != nil {
+		t, err = time.Parse(dateFormat4Digit, dateStr)
+		if err != nil {
+			return dateStr // Return the original string if parsing fails
+		}
+	}
+
+	return t.Format("2006-01-02 03:04:05 PM UTC")
 }
