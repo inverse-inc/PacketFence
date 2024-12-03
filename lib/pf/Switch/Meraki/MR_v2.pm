@@ -22,7 +22,7 @@ use pf::util;
 use pf::node;
 use pf::util::radius qw(perform_coa perform_disconnect);
 
-use base ('pf::Switch::Cisco::WLC');
+use base ('pf::Switch::Cisco::Cisco_WLC_AireOS');
 
 sub description { 'Meraki cloud controller V2' }
 
