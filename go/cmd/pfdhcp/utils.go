@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/binary"
 	"fmt"
 	"math/rand"
@@ -32,14 +33,14 @@ type NodeInfo struct {
 }
 
 // connectDB connect to the database
-func connectDB(configDatabase *pfconfigdriver.PfConfDatabase) {
+func connectDB(configDatabase *pfconfigdriver.PfConfDatabase) *sql.DB {
 	db, err := db.DbFromConfig(ctx)
 	sharedutils.CheckError(err)
-	MySQLdatabase = db
+	return db
 }
 
 // initiaLease fetch the database to remove already assigned ip addresses
-func initiaLease(dhcpHandler *DHCPHandler, ConfNet pfconfigdriver.RessourseNetworkConf) {
+func initiaLease(dhcpHandler *DHCPHandler, ConfNet pfconfigdriver.RessourseNetworkConf, db *sql.DB) {
 	// Need to calculate the end ip because of the ip per role feature
 	now := time.Now()
 	endip := binary.BigEndian.Uint32(dhcpHandler.start.To4()) + uint32(dhcpHandler.leaseRange) - uint32(1)
@@ -47,7 +48,7 @@ func initiaLease(dhcpHandler *DHCPHandler, ConfNet pfconfigdriver.RessourseNetwo
 	binary.BigEndian.PutUint32(a, endip)
 	ipend := net.IPv4(a[0], a[1], a[2], a[3])
 
-	rows, err := MySQLdatabase.Query("select ip,mac,end_time,start_time from ip4log i where inet_aton(ip) between inet_aton(?) and inet_aton(?) and (end_time = '"+ZeroDate+"' OR  end_time > NOW()) and end_time in (select MAX(end_time) from ip4log where mac = i.mac)  ORDER BY mac,end_time desc", dhcpHandler.start.String(), ipend.String())
+	rows, err := db.Query("select ip,mac,end_time,start_time from ip4log i where inet_aton(ip) between inet_aton(?) and inet_aton(?) and (end_time = '"+ZeroDate+"' OR  end_time > NOW()) and end_time in (select MAX(end_time) from ip4log where mac = i.mac)  ORDER BY mac,end_time desc", dhcpHandler.start.String(), ipend.String())
 	if err != nil {
 		log.LoggerWContext(ctx).Error(err.Error())
 		return
@@ -121,7 +122,7 @@ func InterfaceScopeFromMac(MAC string) string {
 }
 
 // Detect the vip on each interfaces
-func (d *Interfaces) detectVIP(interfaces []string) {
+func (d *Interfaces) detectVIP(interfaces []string, db *sql.DB) {
 
 	var keyConfCluster pfconfigdriver.NetInterface
 	keyConfCluster.PfconfigNS = "config::Pf(CLUSTER," + pfconfigdriver.FindClusterName(ctx) + ")"
@@ -151,7 +152,7 @@ func (d *Interfaces) detectVIP(interfaces []string) {
 				if VIP[v] == false {
 					log.LoggerWContext(ctx).Info(v + " got the VIP")
 					if h, ok := intNametoInterface[v]; ok {
-						go h.handleAPIReq(APIReq{Req: "initialease", NetInterface: v, NetWork: ""})
+						go h.handleAPIReq(APIReq{Req: "initialease", NetInterface: v, NetWork: ""}, db)
 					}
 					VIP[v] = true
 				}
@@ -164,9 +165,9 @@ func (d *Interfaces) detectVIP(interfaces []string) {
 }
 
 // NodeInformation return the node information
-func NodeInformation(ctx context.Context, target net.HardwareAddr) (r NodeInfo) {
+func NodeInformation(ctx context.Context, target net.HardwareAddr, db *sql.DB) (r NodeInfo) {
 
-	rows, err := MySQLdatabase.Query("SELECT mac, status, IF(ISNULL(nc.name), '', nc.name) as category FROM node LEFT JOIN node_category as nc on node.category_id = nc.category_id WHERE mac = ?", target.String())
+	rows, err := db.Query("SELECT mac, status, IF(ISNULL(nc.name), '', nc.name) as category FROM node LEFT JOIN node_category as nc on node.category_id = nc.category_id WHERE mac = ?", target.String())
 	defer rows.Close()
 
 	if err != nil {
@@ -361,8 +362,8 @@ func AssignIP(dhcpHandler *DHCPHandler, ipRange string) (map[string]uint32, []ne
 }
 
 // AddDevicesOptions function add options on the fly
-func AddDevicesOptions(object string, leaseDuration *time.Duration, GlobalOptions map[dhcp.OptionCode][]byte) {
-	x, err := decodeOptions(object)
+func AddDevicesOptions(object string, leaseDuration *time.Duration, GlobalOptions map[dhcp.OptionCode][]byte, db *sql.DB) {
+	x, err := decodeOptions(object, db)
 	if err == nil {
 		for key, value := range x {
 			if key == dhcp.OptionIPAddressLeaseTime {
@@ -433,30 +434,30 @@ func IsIPv6(address net.IP) bool {
 }
 
 // MysqlUpdateIP4Log update the ip4log table
-func MysqlUpdateIP4Log(mac string, ip string, duration time.Duration) error {
-	if err := MySQLdatabase.PingContext(ctx); err != nil {
+func MysqlUpdateIP4Log(mac string, ip string, duration time.Duration, db *sql.DB) error {
+	if err := db.PingContext(ctx); err != nil {
 		log.LoggerWContext(ctx).Error("Unable to ping database, reconnect: " + err.Error())
 	}
 
-	MAC2IP, err := MySQLdatabase.Prepare("SELECT ip FROM ip4log WHERE mac = ? AND (end_time = \"" + ZeroDate + "\" OR ( end_time + INTERVAL 30 SECOND ) > NOW()) ORDER BY start_time DESC LIMIT 1")
+	MAC2IP, err := db.Prepare("SELECT ip FROM ip4log WHERE mac = ? AND (end_time = \"" + ZeroDate + "\" OR ( end_time + INTERVAL 30 SECOND ) > NOW()) ORDER BY start_time DESC LIMIT 1")
 	if err != nil {
 		return err
 	}
 	defer MAC2IP.Close()
 
-	IP2MAC, err := MySQLdatabase.Prepare("SELECT mac FROM ip4log WHERE ip = ? AND (end_time = \"" + ZeroDate + "\" OR end_time > NOW()) ORDER BY start_time DESC")
+	IP2MAC, err := db.Prepare("SELECT mac FROM ip4log WHERE ip = ? AND (end_time = \"" + ZeroDate + "\" OR end_time > NOW()) ORDER BY start_time DESC")
 	if err != nil {
 		return err
 	}
 	defer IP2MAC.Close()
 
-	IPClose, err := MySQLdatabase.Prepare(" UPDATE ip4log SET end_time = NOW() WHERE ip = ?")
+	IPClose, err := db.Prepare(" UPDATE ip4log SET end_time = NOW() WHERE ip = ?")
 	if err != nil {
 		return err
 	}
-	defer IP2MAC.Close()
+	defer IPClose.Close()
 
-	IPInsert, err := MySQLdatabase.Prepare("INSERT INTO ip4log (mac, ip, start_time, end_time) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? SECOND)) ON DUPLICATE KEY UPDATE mac=VALUES(mac), start_time=NOW(), end_time=VALUES(end_time)")
+	IPInsert, err := db.Prepare("INSERT INTO ip4log (mac, ip, start_time, end_time) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? SECOND)) ON DUPLICATE KEY UPDATE mac=VALUES(mac), start_time=NOW(), end_time=VALUES(end_time)")
 	if err != nil {
 		return err
 	}

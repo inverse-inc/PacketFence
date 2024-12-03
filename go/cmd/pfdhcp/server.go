@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"net"
 
 	dhcp "github.com/inverse-inc/dhcp4"
@@ -19,7 +20,7 @@ type Answer struct {
 
 // Handler interface
 type Handler interface {
-	ServeDHCP(ctx context.Context, req dhcp.Packet, msgType dhcp.MessageType, srcIP net.Addr, srvIP net.IP) Answer
+	ServeDHCP(ctx context.Context, req dhcp.Packet, msgType dhcp.MessageType, srcIP net.Addr, srvIP net.IP, db *sql.DB) Answer
 }
 
 // ServeConn is the bare minimum connection functions required by Serve()
