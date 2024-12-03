@@ -570,6 +570,7 @@ sub returnCliAuthorize {
         %radius_reply = @$attrs;
     } else {
         $radius_reply{'Reply-Message'} = "Switch $accessType access granted by PacketFence";
+        $radius_reply{'Reply-Message'} = $args->{'message'}." . ".$radius_reply{'Reply-Message'} if exists $args->{'message'};
     }
 
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with $accessType access");

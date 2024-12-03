@@ -652,6 +652,7 @@ sub returnAuthorizeRead {
     my $status;
     $radius_reply_ref->{'Service-Type'} = '7';
     $radius_reply_ref->{'Reply-Message'} = "Switch read access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = $args->{'message'}." . ".$radius_reply_ref->{'Reply-Message'} if exists $args->{'message'};
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with read access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeRead', $args);
@@ -672,6 +673,7 @@ sub returnAuthorizeWrite {
     my $status;
     $radius_reply_ref->{'Service-Type'} = '6';
     $radius_reply_ref->{'Reply-Message'} = "Switch enable access granted by PacketFence";
+    $radius_reply_ref->{'Reply-Message'} = $args->{'message'}." . ".$radius_reply_ref->{'Reply-Message'} if exists $args->{'message'};
     $logger->info("User $args->{'user_name'} logged in $args->{'switch'}{'_id'} with write access");
     my $filter = pf::access_filter::radius->new;
     my $rule = $filter->test('returnAuthorizeWrite', $args);

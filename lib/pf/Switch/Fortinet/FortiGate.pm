@@ -271,6 +271,7 @@ sub returnAuthorizeVPN {
 
 
     my $radius_reply_ref = {};
+    $radius_reply_ref->{'Reply-Message'} = $args->{'message'} if exists $args->{'message'};
     my $status;
     # should this node be kicked out?
     my $kick = $self->handleRadiusDeny($args);
