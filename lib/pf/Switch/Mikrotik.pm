@@ -37,6 +37,7 @@ sub description { 'Mikrotik' }
 use pf::Switch::constants;
 use pf::util;
 use pf::util::radius qw(perform_disconnect);
+use pf::accounting qw(node_accounting_dynauth_attr);
 
 =head1 SUBROUTINES
 
@@ -245,12 +246,15 @@ sub radiusDisconnect {
     try {
         my $connection_info = $self->radius_deauth_connection_info($send_disconnect_to);
 
-        # transforming MAC to the expected format 00:11:22:33:CA:FE
-        $mac = uc($mac);
+        #Fetching the acct-session-id
+        my $dynauth = node_accounting_dynauth_attr($mac);
+
+        $logger->debug("deauthenticate $mac using RADIUS Disconnect-Request deauth method");
 
         # Standard Attributes
         my $attributes_ref = {
-            'User-Name' => "$mac",
+            'User-Name' => $dynauth->{'username'},
+            'Acct-Session-Id' => $dynauth->{'acctsessionid'},
         };
 
         # merging additional attributes provided by caller to the standard attributes
@@ -440,6 +444,36 @@ sub deauthenticateMacSSHDHCP {
     $ssh->disconnect();
 
     return 1;
+}
+
+=item parseRequest
+
+Takes FreeRADIUS' RAD_REQUEST hash and process it to return
+NAS Port type (Ethernet, Wireless, etc.)
+Network Device IP
+EAP
+MAC
+NAS-Port (port)
+User-Name
+
+=cut
+
+sub parseRequest {
+    my ( $self, $radius_request ) = @_;
+
+    my $client_mac      = ref($radius_request->{'Calling-Station-Id'}) eq 'ARRAY'
+                           ? clean_mac($radius_request->{'Calling-Station-Id'}[0])
+                           : clean_mac($radius_request->{'Calling-Station-Id'});
+    my $user_name       = $self->parseRequestUsername($radius_request);
+    my $nas_port_type   = ( defined($radius_request->{'NAS-Port-Type'}) ? $radius_request->{'NAS-Port-Type'} : ( defined($radius_request->{'Called-Station-SSID'}) ? "Wireless-802.11" : undef ) );
+    my $port            = $radius_request->{'NAS-Port'};
+    my $eap_type        = ( exists($radius_request->{'EAP-Type'}) ? $radius_request->{'EAP-Type'} : 0 );
+    my $nas_port_id     = ( defined($radius_request->{'NAS-Port-Id'}) ? $radius_request->{'NAS-Port-Id'} : undef );
+    # Store the radius request if it contains accounting attribute
+    if (exists($radius_request->{'Acct-Session-Id'})) {
+        pf::accounting->cache->set($client_mac, $radius_request);
+    }
+    return ($nas_port_type, $eap_type, $client_mac, $port, $user_name, $nas_port_id, undef, $nas_port_id);
 }
 
 =back
