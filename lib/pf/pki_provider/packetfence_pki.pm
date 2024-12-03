@@ -20,6 +20,9 @@ use URI::Escape::XS qw(uri_escape uri_unescape);
 use pf::api::unifiedapiclient;
 use pf::dal::key_value_storage;
 use pf::error qw(is_success is_error);
+use DateTime::TimeZone;
+use DateTime::Format::Strptime;
+use pf::util qw(isenabled);
 
 extends 'pf::pki_provider';
 
@@ -55,11 +58,8 @@ sub get_bundle {
     my $street = $self->streetaddress;
     my $postalcode = $self->postalcode;
     my $streetaddress = $self->streetaddress;
-
-    my $certpwd = $args->{'certificate_pwd'};
-
-    my $value = eval {
-        my $return = pf::api::unifiedapiclient->default_client->call("POST", "/api/v1/pki/certs", {
+    my $expiration = $args->{'unregdate'};
+    my $payload = {
             "cn"             => $cn,
             "mail"           => $email,
             "organisation"   => $organisation,
@@ -69,7 +69,22 @@ sub get_bundle {
             "postal_code"    => $postalcode,
             "street_address" => $streetaddress,
             "profile_id"     => $profile,
-        });
+    };
+
+    if (defined($expiration) && $expiration ne "" && isenabled($pki_provider->certificate_validity_time_from_unreg_date) ) {
+        my $tz = $ENV{TZ} || DateTime::TimeZone->new( name => 'local' )->name();
+        my $formatter = DateTime::Format::Strptime->new(pattern => "%F %T",time_zone=>$tz);
+        my $dt_obj    = $formatter->parse_datetime($expiration);
+        # to convert to a different zone:
+        $dt_obj->set_time_zone('UTC');
+        my $dt = $dt_obj->strftime("%Y-%m-%dT%T%z");
+        $dt =~ s/(.*)\+(\d{2})(\d{2})/$1Z/g;
+        $payload->{"valid_until"} = "$dt";
+    }
+    my $certpwd = $args->{'certificate_pwd'};
+
+    my $value = eval {
+        my $return = pf::api::unifiedapiclient->default_client->call("POST", "/api/v1/pki/certs", $payload);
     };
     if ($@) {
         $logger->warn("Certificate creation failed");
