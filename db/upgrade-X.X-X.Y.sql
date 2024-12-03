@@ -72,7 +72,7 @@ ALTER TABLE person ADD CONSTRAINT UNIQUE person_psk (`psk`);
 
 \! echo "Create table node_tls"
 
-CREATE TABLE node_tls (
+CREATE TABLE IF NOT EXISTS node_tls (
   `mac` varchar(17) NOT NULL PRIMARY KEY,
   `TLSCertSerial` varchar(255) default NULL,
   `TLSCertExpiration` varchar(255) default NULL,
