@@ -278,19 +278,19 @@ const setup = (props, context) => {
 
   const showAfter = ref(60 * 60)
   const periods = [
-    { title: i18n.t('5 minutes'), text: '5m', value: 60 * 5 },
+    { title: i18n.t('5 minutes'),  text: '5m', value: 60 * 5 },
     { title: i18n.t('15 minutes'), text: '15m', value: 60 * 15 },
     { title: i18n.t('30 minutes'), text: '30m', value: 60 * 30 },
     { title: i18n.t('1 hour'),     text: '1h',  value: 60 * 60 },
+    { title: i18n.t('2 hours'),    text: '2h',  value: 60 * 60 * 2 },
     { title: i18n.t('6 hours'),    text: '6h',  value: 60 * 60 * 6 },
     { title: i18n.t('12 hours'),   text: '12h', value: 60 * 60 * 12 },
-    { title: i18n.t('1 day'),      text: '1D',  value: 60 * 60 * 24 },
-    { title: i18n.t('1 week'),     text: '1W',  value: 60 * 60 * 24 * 7},
+    { title: i18n.t('24 hours'),   text: '24h',  value: 60 * 60 * 24 },
+    { title: i18n.t('2 days'),     text: '2D',  value: 60 * 60 * 24 * 2 },
+    { title: i18n.t('4 days'),     text: '4D',  value: 60 * 60 * 24 * 2 },
+    { title: i18n.t('1 week'),     text: '1W',  value: 60 * 60 * 24 * 7 },
     { title: i18n.t('2 weeks'),    text: '2W',  value: 60 * 60 * 24 * 14 },
-    { title: i18n.t('1 month'),    text: '1M',  value: 60 * 60 * 24 * 31 },
-    { title: i18n.t('2 months'),   text: '2M',  value: 60 * 60 * 24 * 31 * 2 },
-    { title: i18n.t('6 months'),   text: '6M',  value: 60 * 60 * 24 * 31 * 6 } ,
-    { title: i18n.t('1 year'),     text: '1Y',  value: 60 * 60 * 24 * 365 }
+    { title: i18n.t('28 days'),    text: '28D',  value: 60 * 60 * 24 * 28 }
   ]
 
   watch([tabIndex, () => i18n.locale, showAfter], () => {

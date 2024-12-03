@@ -8,7 +8,7 @@
 [global]
 	# run as user = netdata
 	# web files owner = root
-	# web files group = netdata
+	# web files group = root
 	# config directory = /usr/local/pf/var/conf/monitoring
 	# Netdata is not designed to be exposed to potentially hostile networks
 	# See https://github.com/firehol/netdata/issues/164
@@ -38,6 +38,14 @@
 	# listen backlog = 4096
 	default port = 8125
 	bind to = udp:[::1] udp:127.0.0.1 udp:containers-gateway.internal tcp:[::1] tcp:127.0.0.1 tcp:containers-gateway.internal
+
+[db]
+  #  storage tiers = 1
+  #  mode = alloc
+   retention = 2419200 # 28 days (seconds)
+
+[ml]
+   enabled = no
 
 [plugin:cgroups]
 	use unified cgroups = yes
