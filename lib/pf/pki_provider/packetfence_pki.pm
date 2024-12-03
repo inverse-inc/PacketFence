@@ -71,7 +71,7 @@ sub get_bundle {
             "profile_id"     => $profile,
     };
 
-    if (defined($expiration) && $expiration ne "" && isenabled($pki_provider->certificate_validity_time_from_unreg_date) ) {
+    if (defined($expiration) && $expiration ne "" && isenabled($self->certificate_validity_time_from_unreg_date) ) {
         my $tz = $ENV{TZ} || DateTime::TimeZone->new( name => 'local' )->name();
         my $formatter = DateTime::Format::Strptime->new(pattern => "%F %T",time_zone=>$tz);
         my $dt_obj    = $formatter->parse_datetime($expiration);
