@@ -71,11 +71,11 @@ func (j *FlushRadiusAuditLogJob) Run() {
 					log.LogError(ctx, fmt.Sprintf("%s error running: %s", j.Name(), err.Error()))
 					continue
 				}
-
 				jsonStr = string(s)
 			}
-
+			jsonStr = strings.Replace(jsonStr, "\\", "", -1)
 			err := json.Unmarshal([]byte(jsonStr), &entry)
+
 			if err != nil {
 				log.LogError(ctx, fmt.Sprintf("%s error running: %s", j.Name(), err.Error()))
 				continue
@@ -121,11 +121,33 @@ func (j *FlushRadiusAuditLogJob) flushLogs(entries [][]interface{}) error {
 		return err
 	}
 
+	// REPLACE in node_tls
+	sqlTLS, argsTLS, err := j.buildQueryTLS(entries)
+	if err != nil {
+		return err
+	}
+
+	res, err = db.ExecContext(
+		ctx,
+		sqlTLS,
+		argsTLS...,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
 	log.LogInfo(ctx, fmt.Sprintf("Flushed %d radius_audit_log", rows))
 	return nil
 }
 
 const RADIUS_AUDIT_LOG_COLUMN_COUNT = 37
+const NODE_TLS_COLUMN_COUNT = 19
 
 /*
    query = "INSERT INTO radius_audit_log \
@@ -232,6 +254,79 @@ func (j *FlushRadiusAuditLogJob) argsFromEntry(entry []interface{}) []interface{
 	return args
 }
 
+func (j *FlushRadiusAuditLogJob) buildQueryTLS(entries [][]interface{}) (string, []interface{}, error) {
+	sql := `
+INSERT INTO node_tls
+	(
+		mac, TLSCertSerial, TLSCertExpiration, TLSCertValidSince,
+		TLSCertSubject, TLSCertIssuer, TLSCertCommonName,
+		TLSCertSubjectAltNameEmail, TLSClientCertSerial,
+		TLSClientCertExpiration, TLSClientCertValidSince,
+		TLSClientCertSubject, TLSClientCertIssuer,
+		TLSClientCertCommonName, TLSClientCertSubjectAltNameEmail,
+		TLSClientCertX509v3ExtendedKeyUsage,
+		TLSClientCertX509v3SubjectKeyIdentifier,
+		TLSClientCertX509v3AuthorityKeyIdentifier,
+		TLSClientCertX509v3ExtendedKeyUsageOID
+	)
+VALUES `
+	bind := "( ?" + strings.Repeat(",?", NODE_TLS_COLUMN_COUNT-1) + ")"
+	sql += bind + strings.Repeat(","+bind, len(entries)-1)
+	sql += `
+	 ON DUPLICATE KEY UPDATE TLSCertSerial = VALUES(TLSCertSerial),
+	        TLSCertExpiration = VALUES(TLSCertExpiration), TLSCertValidSince = VALUES(TLSCertValidSince),
+			TLSCertSubject = VALUES(TLSCertSubject), TLSCertIssuer = VALUES(TLSCertIssuer), TLSCertCommonName = VALUES( TLSCertCommonName),
+			TLSCertSubjectAltNameEmail = VALUES(TLSCertSubjectAltNameEmail), TLSClientCertSerial = VALUES(TLSClientCertSerial),
+			TLSClientCertExpiration = VALUES(TLSClientCertExpiration), TLSClientCertValidSince = VALUES(TLSClientCertValidSince),
+			TLSClientCertSubject = VALUES(TLSClientCertSubject), TLSClientCertIssuer = VALUES(TLSClientCertIssuer),
+			TLSClientCertCommonName = VALUES(TLSClientCertCommonName), TLSClientCertSubjectAltNameEmail = VALUES(TLSClientCertSubjectAltNameEmail),
+			TLSClientCertX509v3ExtendedKeyUsage = VALUES(TLSClientCertX509v3ExtendedKeyUsage),
+			TLSClientCertX509v3SubjectKeyIdentifier = VALUES(TLSClientCertX509v3SubjectKeyIdentifier),
+			TLSClientCertX509v3AuthorityKeyIdentifier = VALUES(TLSClientCertX509v3AuthorityKeyIdentifier),
+			TLSClientCertX509v3ExtendedKeyUsageOID = VALUES(TLSClientCertX509v3ExtendedKeyUsageOID)
+
+		`
+	args := make([]interface{}, 0, NODE_TLS_COLUMN_COUNT)
+	for _, e := range entries {
+		if keyExists(e[1].(map[string]interface{}), "Calling-Station-Id") && keyExists(e[1].(map[string]interface{}), "TLS-Client-Cert-Common-Name") {
+			args = append(args, j.argsFromEntryForTLS(e)...)
+		}
+	}
+	return sql, args, nil
+}
+
+func keyExists(myMap map[string]interface{}, key string) bool {
+	_, exists := myMap[key]
+	return exists
+}
+
+func (j *FlushRadiusAuditLogJob) argsFromEntryForTLS(entry []interface{}) []interface{} {
+	args := make([]interface{}, NODE_TLS_COLUMN_COUNT)
+	var request map[string]interface{}
+	request = entry[1].(map[string]interface{})
+	request = parseRequestArgs(request)
+	args[0] = formatRequestValue(request["Calling-Station-Id"], "")
+	args[1] = formatRequestValue(request["TLS-Cert-Serial"], "N/A")
+	args[2] = formatRequestValue(request["TLS-Cert-Expiration"], "N/A")
+	args[3] = formatRequestValue(request["TLS-Cert-Valid-Since"], "N/A")
+	args[4] = formatRequestValue(request["TLS-Cert-Subject"], "N/A")
+	args[5] = formatRequestValue(request["TLS-Cert-Issuer"], "N/A")
+	args[6] = formatRequestValue(request["TLS-Cert-Common-Name"], "N/A")
+	args[7] = formatRequestValue(request["TLS-Cert-Subject-Alt-Name-Email"], "N/A")
+	args[8] = formatRequestValue(request["TLS-Client-Cert-Serial"], "N/A")
+	args[9] = formatRequestValue(request["TLS-Client-Cert-Expiration"], "N/A")
+	args[10] = formatRequestValue(request["TLS-Client-Cert-Valid-Since"], "N/A")
+	args[11] = formatRequestValue(request["TLS-Client-Cert-Subject"], "N/A")
+	args[12] = formatRequestValue(request["TLS-Client-Cert-Issuer"], "N/A")
+	args[13] = formatRequestValue(request["TLS-Client-Cert-Common-Name"], "N/A")
+	args[14] = formatRequestValue(request["TLS-Client-Cert-Subject-Alt-Name-Email"], "N/A")
+	args[15] = formatRequestValue(request["TLS-Client-Cert-X509v3-Extended-Key-Usage"], "N/A")
+	args[16] = formatRequestValue(request["TLS-Client-Cert-X509v3-Subject-Key-Identifier"], "N/A")
+	args[17] = formatRequestValue(request["TLS-Client-Cert-X509v3-Authority-Key-Identifier"], "N/A")
+	args[18] = formatRequestValue(request["TLS-Client-Cert-X509v3-Extended-Key-Usage-OID"], "N/A")
+	return args
+}
+
 func formatRequest(request map[string]interface{}) string {
 	parts := []string{}
 	keys := util.MapKeys(request)
@@ -312,7 +407,6 @@ func escapeRadiusRequest(s string) string {
 	if size == len(s) {
 		return s
 	}
-
 	out := make([]byte, size)
 	j := 0
 	for _, c := range []byte(s) {
@@ -370,114 +464,114 @@ func parseRequestArgs(request map[string]interface{}) map[string]interface{} {
 type AKMSuite int
 
 const (
-	AKMReserved AKMSuite = iota // 0 - Reserved
-	IEEE8021X           // 1 - 802.1X
-	PSK                 // 2 - PSK
-	FT_8021X            // 3 - FT over 802.1X
-	FT_PSK              // 4 - FT over PSK
-	WPA_8021X           // 5 - WPA with 802.1X
-	WPA_PSK             // 6 - WPA with PSK
-	OWE                 // 7 - OWE
-	OWE_Transition      // 8 - OWE Transition Mode
-	SAE                 // 9 - Simultaneous Authentication of Equals
-	FT_SAE              // 10 - FT over SAE
-	FILS_SHA256         // 11 - FILS-SHA256
-	FILS_SHA384         // 12 - FILS-SHA384
-	FT_FILS_SHA256      // 13 - FT over FILS-SHA256
-	FT_FILS_SHA384      // 14 - FT over FILS-SHA384
-	OWE_transition_mode // 15 - OWE transition mode
+	AKMReserved         AKMSuite = iota // 0 - Reserved
+	IEEE8021X                           // 1 - 802.1X
+	PSK                                 // 2 - PSK
+	FT_8021X                            // 3 - FT over 802.1X
+	FT_PSK                              // 4 - FT over PSK
+	WPA_8021X                           // 5 - WPA with 802.1X
+	WPA_PSK                             // 6 - WPA with PSK
+	OWE                                 // 7 - OWE
+	OWE_Transition                      // 8 - OWE Transition Mode
+	SAE                                 // 9 - Simultaneous Authentication of Equals
+	FT_SAE                              // 10 - FT over SAE
+	FILS_SHA256                         // 11 - FILS-SHA256
+	FILS_SHA384                         // 12 - FILS-SHA384
+	FT_FILS_SHA256                      // 13 - FT over FILS-SHA256
+	FT_FILS_SHA384                      // 14 - FT over FILS-SHA384
+	OWE_transition_mode                 // 15 - OWE transition mode
 )
 
 type CipherSuite int
 
 const (
-	CipherReserved CipherSuite = iota // 0 - Reserved
-	WEP40            // 1 - WEP-40
-	TKIP             // 2 - TKIP
-	CipherReserved3  // 3 - Reserved
-	CCMP128          // 4 - CCMP-128
-	WEP104           // 5 - WEP-104
-	BIPCMAC128       // 6 - BIP-CMAC-128
-	GCMP128          // 7 - GCMP-128
-	GCMP256          // 8 - GCMP-256
-	CCMP256          // 9 - CCMP-256
-	BIPGMAC128       // 10 - BIP-GMAC-128
-	BIPGMAC256       // 11 - BIP-GMAC-256
-	SMS4             // 12 - SMS4
-	CKIP128          // 13 - CKIP-128
-	CKIP128_PMK      // 14 - CKIP-128 with PMK caching
-	CipherReserved15 // 15 - Reserved
+	CipherReserved   CipherSuite = iota // 0 - Reserved
+	WEP40                               // 1 - WEP-40
+	TKIP                                // 2 - TKIP
+	CipherReserved3                     // 3 - Reserved
+	CCMP128                             // 4 - CCMP-128
+	WEP104                              // 5 - WEP-104
+	BIPCMAC128                          // 6 - BIP-CMAC-128
+	GCMP128                             // 7 - GCMP-128
+	GCMP256                             // 8 - GCMP-256
+	CCMP256                             // 9 - CCMP-256
+	BIPGMAC128                          // 10 - BIP-GMAC-128
+	BIPGMAC256                          // 11 - BIP-GMAC-256
+	SMS4                                // 12 - SMS4
+	CKIP128                             // 13 - CKIP-128
+	CKIP128_PMK                         // 14 - CKIP-128 with PMK caching
+	CipherReserved15                    // 15 - Reserved
 )
 
-func(c CipherSuite) String() string {
+func (c CipherSuite) String() string {
 	switch c {
-		case WEP40:
-			return "WEP-40"
-		case TKIP:
-			return "TKIP"
-		case CCMP128:
-			return "CCMP-128"
-		case WEP104:
-			return "WEP-104"
-		case GCMP128:
-			return "GCMP-128"
-		case GCMP256:
-			return "GCMP-256"
-		case CCMP256:
-			return "CCMP-256"
-		case BIPCMAC128:
-			return "BIP-CMAC-128"
-		case BIPGMAC128:
-			return "BIP-GMAC-128"
-		case BIPGMAC256:
-			return "BIP-GMAC-256"
-		case SMS4:
-			return "SMS4"
-		case CKIP128:
-			return "CKIP-128"
-		case CKIP128_PMK:
-			return "CKIP-128 with PMK caching"
-		case CipherReserved3, CipherReserved15:
-			return "Reserved"
-		default:
-			return fmt.Sprintf("Unknown cipher suite (Value: %d)", c)
+	case WEP40:
+		return "WEP-40"
+	case TKIP:
+		return "TKIP"
+	case CCMP128:
+		return "CCMP-128"
+	case WEP104:
+		return "WEP-104"
+	case GCMP128:
+		return "GCMP-128"
+	case GCMP256:
+		return "GCMP-256"
+	case CCMP256:
+		return "CCMP-256"
+	case BIPCMAC128:
+		return "BIP-CMAC-128"
+	case BIPGMAC128:
+		return "BIP-GMAC-128"
+	case BIPGMAC256:
+		return "BIP-GMAC-256"
+	case SMS4:
+		return "SMS4"
+	case CKIP128:
+		return "CKIP-128"
+	case CKIP128_PMK:
+		return "CKIP-128 with PMK caching"
+	case CipherReserved3, CipherReserved15:
+		return "Reserved"
+	default:
+		return fmt.Sprintf("Unknown cipher suite (Value: %d)", c)
 	}
 }
 
-func(a AKMSuite) String() string {
+func (a AKMSuite) String() string {
 	switch a {
-		case IEEE8021X:
-			return "802.1X"
-		case PSK:
-			return "PSK"
-		case FT_8021X:
-			return "FT over 802.1X"
-		case FT_PSK:
-			return "FT over PSK"
-		case WPA_8021X:
-			return "WPA with 802.1X"
-		case WPA_PSK:
-			return "WPA with PSK"
-		case OWE:
-			return "OWE"
-		case OWE_Transition:
-			return "OWE Transition Mode"
-		case SAE:
-			return "SAE"
-		case FT_SAE:
-			return "FT over SAE"
-		case FILS_SHA256:
-			return "FILS-SHA256"
-		case FILS_SHA384:
-			return "FILS-SHA384"
-		case FT_FILS_SHA256:
-			return "FT over FILS-SHA256"
-		case FT_FILS_SHA384:
-			return "FT over FILS-SHA384"
-		case OWE_transition_mode:
-			return "OWE transition mode"
-		default:
-			return fmt.Sprintf("Unknown or Reserved AKM suite (Value: %d)", a)
+	case IEEE8021X:
+		return "802.1X"
+	case PSK:
+		return "PSK"
+	case FT_8021X:
+		return "FT over 802.1X"
+	case FT_PSK:
+		return "FT over PSK"
+	case WPA_8021X:
+		return "WPA with 802.1X"
+	case WPA_PSK:
+		return "WPA with PSK"
+	case OWE:
+		return "OWE"
+	case OWE_Transition:
+		return "OWE Transition Mode"
+	case SAE:
+		return "SAE"
+	case FT_SAE:
+		return "FT over SAE"
+	case FILS_SHA256:
+		return "FILS-SHA256"
+	case FILS_SHA384:
+		return "FILS-SHA384"
+	case FT_FILS_SHA256:
+		return "FT over FILS-SHA256"
+	case FT_FILS_SHA384:
+		return "FT over FILS-SHA384"
+	case OWE_transition_mode:
+		return "OWE transition mode"
+	default:
+		return fmt.Sprintf("Unknown or Reserved AKM suite (Value: %d)", a)
 	}
 }
 

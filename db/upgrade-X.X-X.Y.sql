@@ -70,6 +70,30 @@ ALTER TABLE radius_audit_log MODIFY created_at TIMESTAMP NOT NULL DEFAULT CURREN
 \! echo "Make psk unique";
 ALTER TABLE person ADD CONSTRAINT UNIQUE person_psk (`psk`);
 
+\! echo "Create table node_tls"
+
+CREATE TABLE IF NOT EXISTS node_tls (
+  `mac` varchar(17) NOT NULL PRIMARY KEY,
+  `TLSCertSerial` varchar(255) default NULL,
+  `TLSCertExpiration` varchar(255) default NULL,
+  `TLSCertValidSince` varchar(255) default NULL,
+  `TLSCertSubject` varchar(255) default NULL,
+  `TLSCertIssuer` varchar(255) default NULL,
+  `TLSCertCommonName` varchar(255) default NULL,
+  `TLSCertSubjectAltNameEmail` varchar(255) default NULL,
+  `TLSClientCertSerial` varchar(255) default NULL,
+  `TLSClientCertExpiration` varchar(255) default NULL,
+  `TLSClientCertValidSince` varchar(255) default NULL,
+  `TLSClientCertSubject` varchar(255) default NULL,
+  `TLSClientCertIssuer` varchar(255) default NULL,
+  `TLSClientCertCommonName` varchar(255) default NULL,
+  `TLSClientCertSubjectAltNameEmail` varchar(255) default NULL,
+  `TLSClientCertX509v3ExtendedKeyUsage` varchar(255) default NULL,
+  `TLSClientCertX509v3SubjectKeyIdentifier` varchar(255) default NULL,
+  `TLSClientCertX509v3AuthorityKeyIdentifier` varchar(255) default NULL,
+  `TLSClientCertX509v3ExtendedKeyUsageOID` varchar(255) default NULL
+) ENGINE=InnoDB DEFAULT CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_general_ci';
+
 \! echo "Incrementing PacketFence schema version...";
 INSERT IGNORE INTO pf_version (id, version, created_at) VALUES (@VERSION_INT, CONCAT_WS('.', @MAJOR_VERSION, @MINOR_VERSION), NOW());
 

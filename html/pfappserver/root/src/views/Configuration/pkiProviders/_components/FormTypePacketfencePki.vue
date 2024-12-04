@@ -62,6 +62,13 @@
                                        disabled-value="N"
     />
 
+    <form-group-certificate-validity-time-from-unreg-date namespace="certificate_validity_time_from_unreg_date"
+                                       :column-label="$i18n.t('Set the certificate validity date to the unreg date value')"
+                                       :text="$i18n.t('Enable to apply the same expiration date of the certificate as the unregistration date of the node.')"
+                                       enabled-value="Y"
+                                       disabled-value="N"
+    />
+
     <form-group-ca-cert-path namespace="ca_cert_path"
                              :column-label="$i18n.t('CA certificate file')"
                              :title="$i18n.t('Upload CA certificate file')"
@@ -88,6 +95,7 @@ import {
   FormGroupPostalCode,
   FormGroupProfile,
   FormGroupRevokeOnRegistration,
+  FormGroupCertificateValidityTimeFromUnregDate,
   FormGroupServerCertPath,
   FormGroupState,
   FormGroupStreetAddress
@@ -107,6 +115,7 @@ const components = {
   FormGroupPostalCode,
   FormGroupProfile,
   FormGroupRevokeOnRegistration,
+  FormGroupCertificateValidityTimeFromUnregDate,
   FormGroupServerCertPath,
   FormGroupState,
   FormGroupStreetAddress

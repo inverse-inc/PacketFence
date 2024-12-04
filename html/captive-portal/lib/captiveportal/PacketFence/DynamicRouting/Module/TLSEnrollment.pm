@@ -195,7 +195,7 @@ sub get_bundle {
     my $mac           = $self->current_mac;
     my $user_cache = $self->app->user_cache;
     my $pki_session = $user_cache->compute("pki_session", sub {});
-    my $cert_content = $pki_provider->get_bundle({ certificate_email => $pki_session->{certificate_email}, certificate_cn => $pki_session->{certificate_cn}, certificate_pwd => $pki_session->{certificate_pwd} });
+    my $cert_content = $pki_provider->get_bundle({ certificate_email => $pki_session->{certificate_email}, certificate_cn => $pki_session->{certificate_cn}, certificate_pwd => $pki_session->{certificate_pwd}, unregdate => $self->new_node_info->{'unregdate'}});
     get_logger->debug(sub { "cert_content from pki service $cert_content" });
 
     unless(defined($cert_content)){
