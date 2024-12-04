@@ -157,6 +157,7 @@ sub returnAuthorizeVPN {
     my $status = shift @super_reply;
     my %radius_reply = @super_reply;
     my $radius_reply_ref = \%radius_reply;
+    $radius_reply_ref->{'Reply-Message'} = $args->{'message'} if exists $args->{'message'};
     return [$status, %$radius_reply_ref] if($status == $RADIUS::RLM_MODULE_USERLOCK);
     my $role;
 

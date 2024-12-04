@@ -327,55 +327,65 @@ sub generate_dpsk_attribute_value {
 
 
 sub find_user_by_psk {
-    my ($self, $radius_request) = @_;
+    my ($self, $radius_request, $args) = @_;
+    my $pid;
+    if($radius_request->{"Ruckus-DPSK-Cipher"} != 4) {
+        get_logger->error("Ruckus-DPSK-Cipher isn't for WPA2 that uses AES and HMAC-SHA1. This isn't supported by this module.");
+        return $pid;
+    }
+
+    my $ssid = $radius_request->{'Ruckus-Wlan-Name'};
+    my $bssid = pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-BSSID"}));
+    my $username = pack("H*", $radius_request->{'User-Name'});
+    my $anonce = pack('H*', pf::util::wpa::strip_hex_prefix($radius_request->{'Ruckus-DPSK-Anonce'}));
+    my $snonce = pf::util::wpa::snonce_from_eapol_key_frame(pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-DPSK-EAPOL-Key-Frame"})));
+    my $eapol_key_frame = pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-DPSK-EAPOL-Key-Frame"}));
+    my $cache = $self->cache;
+    # Try first the pid of the mac address
+    if (exists $args->{'owner'} && $args->{'owner'}->{'pid'} ne "" && exists $args->{'owner'}->{'psk'} && defined $args->{'owner'}->{'psk'} && $args->{'owner'}->{'psk'} ne "") {
+        if (check_if_radius_request_psk_matches($cache, $radius_request, $args->{'owner'}->{'psk'}, $ssid, $bssid, $username, $anonce, $snonce, $eapol_key_frame)) {
+            get_logger->info("PSK matches the pid associated with the mac ".$args->{'owner'}->{'pid'});
+            return $args->{'owner'}->{'pid'};
+        }
+    }
+
     my ($status, $iter) = pf::dal::person->search(
         -where => {
             psk => {'!=' => [-and => '', undef]},
         },
+        -columns => [qw(pid psk)],
+        -no_default_join => 1,
     );
 
-    my $matched = 0;
-    my $pid;
-    while(my $person = $iter->next) {
+    while (my $person = $iter->next) {
         get_logger->debug("User ".$person->{pid}." has a PSK. Checking if it matches the one in the packet");
-        if($self->check_if_radius_request_psk_matches($radius_request, $person->{psk})) {
+        if (check_if_radius_request_psk_matches($cache, $radius_request, $person->{psk}, $ssid, $bssid, $username, $anonce, $snonce, $eapol_key_frame)) {
             get_logger->info("PSK matches the one of ".$person->{pid});
-            $matched ++;
             $pid = $person->{pid};
+            last;
         }
     }
-
-    if($matched > 1) {
-        get_logger->error("Multiple users use the same PSK. This cannot work with unbound DPSK. Ignoring it.");
-        return undef;
-    }
-    else {
-        return $pid;
-    }
+    return $pid;
 }
 
 sub check_if_radius_request_psk_matches {
-    my ($self, $radius_request, $psk) = @_;
-    if($radius_request->{"Ruckus-DPSK-Cipher"} != 4) {
-        get_logger->error("Ruckus-DPSK-Cipher isn't for WPA2 that uses AES and HMAC-SHA1. This isn't supported by this module.");
-        return $FALSE;
-    }
+    my ($cache, $radius_request, $psk, $ssid, $bssid, $username, $anonce, $snonce, $eapol_key_frame) = @_;
 
-    my $pmk = $self->cache->compute(
-        "Ruckus::SmartZone::check_if_radius_request_psk_matches::PMK::$radius_request->{'Ruckus-Wlan-Name'}+$psk", 
+    my $pmk = $cache->compute(
+        "Ruckus::SmartZone::check_if_radius_request_psk_matches::PMK::$ssid+$psk", 
         {expires_in => '1 month', expires_variance => '.20'},
-        sub { pf::util::wpa::calculate_pmk($radius_request->{"Ruckus-Wlan-Name"}, $psk) },
+        sub { pf::util::wpa::calculate_pmk($ssid, $psk) },
     );
 
     return pf::util::wpa::match_mic(
       pf::util::wpa::calculate_ptk(
         $pmk,
-        pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-BSSID"})),
-        pack("H*", $radius_request->{"User-Name"}),
-        pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-DPSK-Anonce"})),
-        pf::util::wpa::snonce_from_eapol_key_frame(pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-DPSK-EAPOL-Key-Frame"}))),
+        $bssid,
+        $username,
+        $anonce,
+        $snonce,
       ),      
-      pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-DPSK-EAPOL-Key-Frame"})),
+      $eapol_key_frame,
     );
 }
 

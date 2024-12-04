@@ -1,12 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"strconv"
@@ -20,6 +20,10 @@ import (
 	"github.com/inverse-inc/packetfence/go/api-frontend/unifiedapierrors"
 	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
 )
+
+type API struct {
+	DB *sql.DB
+}
 
 // Node struct
 type Node struct {
@@ -82,7 +86,7 @@ type OptionsFromFilter struct {
 	Type   string          `json:"type"`
 }
 
-func handleIP2Mac(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleIP2Mac(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
 	if index, expiresAt, found := GlobalIPCache.GetWithExpiration(vars["ip"]); found {
@@ -102,7 +106,7 @@ func handleIP2Mac(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func handleMac2Ip(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleMac2Ip(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
 	if index, expiresAt, found := GlobalMacCache.GetWithExpiration(vars["mac"]); found {
@@ -122,7 +126,7 @@ func handleMac2Ip(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func handleAllStats(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleAllStats(res http.ResponseWriter, req *http.Request) {
 	var result Items
 	var interfaces pfconfigdriver.ListenInts
 	pfconfigdriver.FetchDecodeSocket(ctx, &interfaces)
@@ -132,7 +136,7 @@ func handleAllStats(res http.ResponseWriter, req *http.Request) {
 	}
 	for _, i := range interfaces.Element {
 		if h, ok := intNametoInterface[i]; ok {
-			stat := h.handleAPIReq(APIReq{Req: "stats", NetInterface: i, NetWork: ""})
+			stat := h.handleAPIReq(APIReq{Req: "stats", NetInterface: i, NetWork: ""}, a.DB)
 			for _, s := range stat.([]Stats) {
 				result.Items = append(result.Items, s)
 			}
@@ -151,11 +155,11 @@ func handleAllStats(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func handleStats(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleStats(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
 	if h, ok := intNametoInterface[vars["int"]]; ok {
-		stat := h.handleAPIReq(APIReq{Req: "stats", NetInterface: vars["int"], NetWork: vars["network"]})
+		stat := h.handleAPIReq(APIReq{Req: "stats", NetInterface: vars["int"], NetWork: vars["network"]}, a.DB)
 
 		outgoingJSON, err := json.Marshal(stat)
 
@@ -172,11 +176,11 @@ func handleStats(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func handleDuplicates(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleDuplicates(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
 	if h, ok := intNametoInterface[vars["int"]]; ok {
-		stat := h.handleAPIReq(APIReq{Req: "duplicates", NetInterface: vars["int"], NetWork: vars["network"]})
+		stat := h.handleAPIReq(APIReq{Req: "duplicates", NetInterface: vars["int"], NetWork: vars["network"]}, a.DB)
 
 		outgoingJSON, err := json.Marshal(stat)
 
@@ -193,11 +197,11 @@ func handleDuplicates(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func handleDebug(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleDebug(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
 	if h, ok := intNametoInterface[vars["int"]]; ok {
-		stat := h.handleAPIReq(APIReq{Req: "debug", NetInterface: vars["int"], Role: vars["role"]})
+		stat := h.handleAPIReq(APIReq{Req: "debug", NetInterface: vars["int"], Role: vars["role"]}, a.DB)
 
 		outgoingJSON, err := json.Marshal(stat)
 
@@ -213,7 +217,7 @@ func handleDebug(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func handleReleaseIP(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleReleaseIP(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	_ = InterfaceScopeFromMac(vars["mac"])
 
@@ -226,11 +230,11 @@ func handleReleaseIP(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func handleOverrideOptions(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleOverrideOptions(res http.ResponseWriter, req *http.Request) {
 
 	vars := mux.Vars(req)
 
-	body, err := ioutil.ReadAll(io.LimitReader(req.Body, 1048576))
+	body, err := io.ReadAll(io.LimitReader(req.Body, 1048576))
 	if err != nil {
 		panic(err)
 	}
@@ -239,7 +243,7 @@ func handleOverrideOptions(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// Insert information in MySQL
-	_ = MysqlInsert(vars["mac"], sharedutils.ConvertToString(body))
+	_ = MysqlInsert(vars["mac"], sharedutils.ConvertToString(body), a.DB)
 
 	var result = &Info{Mac: vars["mac"], Status: "ACK"}
 
@@ -250,11 +254,11 @@ func handleOverrideOptions(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func handleOverrideNetworkOptions(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleOverrideNetworkOptions(res http.ResponseWriter, req *http.Request) {
 
 	vars := mux.Vars(req)
 
-	body, err := ioutil.ReadAll(io.LimitReader(req.Body, 1048576))
+	body, err := io.ReadAll(io.LimitReader(req.Body, 1048576))
 	if err != nil {
 		panic(err)
 	}
@@ -263,7 +267,7 @@ func handleOverrideNetworkOptions(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// Insert information in MySQL
-	_ = MysqlInsert(vars["network"], sharedutils.ConvertToString(body))
+	_ = MysqlInsert(vars["network"], sharedutils.ConvertToString(body), a.DB)
 
 	var result = &Info{Network: vars["network"], Status: "ACK"}
 
@@ -274,13 +278,13 @@ func handleOverrideNetworkOptions(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func handleRemoveOptions(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleRemoveOptions(res http.ResponseWriter, req *http.Request) {
 
 	vars := mux.Vars(req)
 
 	var result = &Info{Mac: vars["mac"], Status: "ACK"}
 
-	err := MysqlDel(vars["mac"])
+	err := MysqlDel(vars["mac"], a.DB)
 	if !err {
 		result = &Info{Mac: vars["mac"], Status: "NAK"}
 	}
@@ -291,13 +295,13 @@ func handleRemoveOptions(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func handleRemoveNetworkOptions(res http.ResponseWriter, req *http.Request) {
+func (a *API) handleRemoveNetworkOptions(res http.ResponseWriter, req *http.Request) {
 
 	vars := mux.Vars(req)
 
 	var result = &Info{Network: vars["network"], Status: "ACK"}
 
-	err := MysqlDel(vars["network"])
+	err := MysqlDel(vars["network"], a.DB)
 	if !err {
 		result = &Info{Network: vars["network"], Status: "NAK"}
 	}
@@ -308,9 +312,9 @@ func handleRemoveNetworkOptions(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func decodeOptions(b string) (map[dhcp.OptionCode][]byte, error) {
+func decodeOptions(b string, db *sql.DB) (map[dhcp.OptionCode][]byte, error) {
 	var options []Options
-	_, value := MysqlGet(b)
+	_, value := MysqlGet(b, db)
 	decodedValue := sharedutils.ConvertToByte(value)
 	var dhcpOptions = make(map[dhcp.OptionCode][]byte)
 	if err := json.Unmarshal(decodedValue, &options); err != nil {
@@ -360,7 +364,7 @@ func extractMembers(v Network) ([]Node, []string, int) {
 	return Members, Macs, Count
 }
 
-func (h *Interface) handleAPIReq(Request APIReq) interface{} {
+func (h *Interface) handleAPIReq(Request APIReq, db *sql.DB) interface{} {
 	var stats []Stats
 
 	if Request.Req == "duplicates" {
@@ -399,7 +403,7 @@ func (h *Interface) handleAPIReq(Request APIReq) interface{} {
 			}
 
 			// Add network options on the fly
-			x, err := decodeOptions(v.network.IP.String())
+			x, err := decodeOptions(v.network.IP.String(), db)
 			if err == nil {
 				for key, value := range x {
 					Options[key.String()] = Tlv.Tlvlist[int(key)].Transform.String(value)

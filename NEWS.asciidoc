@@ -43,6 +43,11 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
  * Performance improvements on pfacct (#8369)
  * Added Aruba-MPSK-password attribute (#6957)
  * Reduce time to flush the RADIUS log (#8397)
+ * Improve DPSK (#8356)
+ * Improve Mikrotik Disconnect (#8418)
+ * Select the first device that matches MFA (#8400)
+ * Improve pfdhcp DB connection (#8419)
+ * Track TLS certificate attributes per node (#8416)
 
 === Bug Fixes
 

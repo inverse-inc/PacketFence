@@ -1243,7 +1243,10 @@ func (c Cert) New() (types.Info, error) {
 
 	Subject := c.MakeSubject()
 
-	NotAfter := time.Now().AddDate(0, 0, prof.Validity)
+	NotAfter := c.ValidUntil
+	if c.ValidUntil.IsZero() {
+		NotAfter = time.Now().AddDate(0, 0, prof.Validity)
+	}
 
 	// Prepare certificate
 	cert := &x509.Certificate{
@@ -1268,6 +1271,7 @@ func (c Cert) New() (types.Info, error) {
 	if len(c.Mail) > 0 {
 		Email = c.Mail
 	}
+
 	if len(Email) > 0 {
 		for _, mail := range strings.Split(Email, ",") {
 			cert.EmailAddresses = append(cert.EmailAddresses, mail)

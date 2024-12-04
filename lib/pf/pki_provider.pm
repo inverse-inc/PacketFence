@@ -33,6 +33,8 @@ has cn_format => (is => 'rw', default => '%s');
 
 has revoke_on_unregistration => (is => 'rw', default => 'N');
 
+has certificate_validity_time_from_unreg_date => (is => 'rw', default => 'N');
+
 =head2 country
 
 What country to use for the certificate
