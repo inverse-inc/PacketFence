@@ -13,7 +13,7 @@
       hide-footer
     >
       <template v-slot:modal-title>
-        {{ showChartTitle }}
+        {{ showChartTitle }} <b-badge class="ml-1" variant="light">{{ showChart.metric }}</b-badge>
       </template>
       <template v-slot:default>
         <b-row class="align-items-center mt-3 mx-3" align-h="end">
@@ -46,7 +46,23 @@
       </template>
     </b-modal>
 
-        <b-row class="align-items-center mb-3 mx-3" align-h="end">
+      <b-row class="align-items-center mb-3">
+        <b-col cols="4" align-h="start">
+          <b-input-group class="flex-grow-1">
+            <base-input v-model="filter"
+              :placeholder="$i18n.t('Filter')" />
+            <template v-slot:append>
+              <b-button
+                :disabled="filter==''"
+                tabIndex="-1"
+                @click="filter = ''"
+              >
+                <icon name="times"/>
+              </b-button>
+            </template>
+          </b-input-group>
+        </b-col>
+        <b-col cols="8" align="end">
           <small class="mx-3">{{ $t('Show Last') }}</small>
           <b-button-group size="sm" class="mr-3">
             <b-button v-for="period in periods" :key="period.text"
@@ -62,7 +78,8 @@
                 :active="memberHost == host">{{ host }}</b-dropdown-item>
             </b-dropdown>
           </b-button-group>
-        </b-row>
+        </b-col>
+      </b-row>
 
     <b-tabs nav-class="nav-fill" v-model="tabIndex" lazy :key="$i18n.locale">
       <b-tab v-for="(section, sectionIndex) in filteredSections" :title="$i18n.t(section.name)" :key="`${section.name}-${sectionIndex}-${showAfter}`">
@@ -71,9 +88,9 @@
           <component :is="group.name ? 'b-card' : 'div'" class="mt-3" :key="`${group.name}-${groupIndex}`" :title="$i18n.t(group.name)">
             <b-row align-h="center">
               <b-col class="mt-3 chart" v-for="(chart, chartIndex) in group.items" :key="`${chart.metric}-${chartIndex}`" :md="cols(chart.cols, group.items.length)">
-                <small class="text-muted cursor-pointer pb-3" @click="chartZoom(section, group, chart)">
+                <small class="text-muted cursor-pointer pb-3" @click="chartZoom(section, group, chart)" v-b-tooltip.hover.bottom.d300 :title="chart.metric">
                   <icon name="expand" class="text-primary mr-1" @click="chartZoom(section, group, chart)" />
-                  {{ chart.title }}
+                  {{ chart.title }} <b-badge class="float-right ml-1" variant="light">{{ chart.metric }}</b-badge>
                 </small>
                 <div class="mt-2">
                   <chart :definition="chart" :host="`/netdata/${ip}`" :data-colors="palette(0)"
@@ -92,13 +109,15 @@
 import Badge from './Badge'
 import Chart, { palettes } from './Chart'
 import {
-  BaseButtonService
+  BaseButtonService,
+  BaseInput
 } from '@/components/new/'
 
 const components = {
   Badge,
   Chart,
-  BaseButtonService
+  BaseButtonService,
+  BaseInput
 }
 
 const props = {
@@ -136,8 +155,17 @@ const setup = (props, context) => {
 
   const chartsError = computed(() => !$store.state.session.charts)
   const cluster = computed(() => $store.state.cluster.servers)
+
+  const filter = ref('')
   const filteredSections = computed(() => { // filter out empty sections
     const isValid = chart => {
+      if (filter.value) {
+        const { metric, title } = chart
+        let re = new RegExp(filter.value, 'g')
+        if ( ! (re.test(metric) || re.test(title))) {
+          return false
+        }
+      }
       const uniqueCharts = $store.getters[`$_status/uniqueCharts`]
       return uniqueCharts && !!uniqueCharts.find(c => c.id === chart.metric)
     }
@@ -293,13 +321,14 @@ const setup = (props, context) => {
     { title: i18n.t('28 days'),    text: '28D',  value: 60 * 60 * 24 * 28 }
   ]
 
-  watch([tabIndex, () => i18n.locale, showAfter], () => {
+  watch([tabIndex, () => i18n.locale, showAfter, filter], () => {
     nextTick(() => {
       window.NETDATA.updatedDom()
     })
   })
 
   return {
+    filter,
     filteredSections,
     tabIndex,
     chartsError,
