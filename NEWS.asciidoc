@@ -62,7 +62,7 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
 
 === Security Fixes
 
- * Library updates (#8307, #8328, #8329, #8336, #8341, #8353, #8371, #8404, #8405)
+ * Library updates (#8307, #8328, #8329, #8336, #8341, #8353, #8371, #8404, #8405, #8407, #8408, #8409, #8410, #8412)
 
 == Version 14.0.0 released on 2024-09-06
 
