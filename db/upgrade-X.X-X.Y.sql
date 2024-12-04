@@ -56,7 +56,8 @@ ALTER TABLE `pki_profiles`
     ADD IF NOT EXISTS `allow_duplicated_cn` bigint(20) UNSIGNED DEFAULT 0,
     ADD IF NOT EXISTS `maximum_duplicated_cn` bigint(20) DEFAULT 0,
     MODIFY `scep_server_enabled` bigint(20) DEFAULT 0,
-    RENAME INDEX scep_server__id TO scep_server_id;
+    DROP INDEX IF EXISTS `scep_server__id`,
+    ADD INDEX IF NOT EXISTS `scep_server_id` (`scep_server_id`);
 
 \! echo "altering pki_certs"
 ALTER TABLE `pki_certs`
