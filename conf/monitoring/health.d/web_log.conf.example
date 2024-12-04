@@ -19,20 +19,20 @@ component: Web log
     every: 10s
      info: number of HTTP requests in the last minute
 
- template: web_log_1m_unmatched
-       on: web_log.excluded_requests
-    class: Errors
-     type: Web Server
-component: Web log
-   lookup: sum -1m unaligned of unmatched
-     calc: $this * 100 / $web_log_1m_total_requests
-    units: %
-    every: 10s
-     warn: ($web_log_1m_total_requests > 120) ? ($this > 1) : ( 0 )
-    delay: up 1m down 5m multiplier 1.5 max 1h
-  summary: Web log unparsed
-     info: Percentage of unparsed log lines over the last minute
-       to: webmaster
+# template: web_log_1m_unmatched
+#       on: web_log.excluded_requests
+#    class: Errors
+#     type: Web Server
+#component: Web log
+#   lookup: sum -1m unaligned of unmatched
+#     calc: $this * 100 / $web_log_1m_total_requests
+#    units: %
+#    every: 10s
+#     warn: ($web_log_1m_total_requests > 120) ? ($this > 1) : ( 0 )
+#    delay: up 1m down 5m multiplier 1.5 max 1h
+#  summary: Web log unparsed
+#     info: Percentage of unparsed log lines over the last minute
+#       to: webmaster
 
 # -----------------------------------------------------------------------------
 # high level response code alarms
