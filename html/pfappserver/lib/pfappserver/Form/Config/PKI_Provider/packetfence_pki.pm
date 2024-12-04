@@ -193,8 +193,17 @@ has_field 'revoke_on_unregistration' => (
     },
 );
 
+has_field 'certificate_validity_time_from_unreg_date' => (
+    type             => 'Checkbox',
+    checkbox_value   => 'Y',
+    tags             => {
+        after_element   => \&help,
+        help            => 'Enable to apply the same expiration date of the certificate as the unregistration date of the node.',
+    },
+);
+
 has_block 'definition' => (
-    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path server_cert_path) ],
+    render_list => [ qw(type proto host port username password profile country state organization cn_attribute cn_format revoke_on_unregistration ca_cert_path server_cert_pathi certificate_validity_time_from_unreg_date) ],
 );
 
 =head1 AUTHOR
