@@ -8,6 +8,7 @@ chown -R 1000:1000 /usr/local/pf/var/conf/monitoring
 chown -R 1000:1000 /usr/local/pf/conf/monitoring
 
 args=`base_args $name`
+args+=" -m 500m --oom-kill-disable"
 args+=" --pid=host"
 args+=" --network=host"
 args+=" --privileged"
