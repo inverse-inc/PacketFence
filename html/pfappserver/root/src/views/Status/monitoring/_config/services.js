@@ -14,7 +14,7 @@ const chartFactory = (match, factory) => {
 
 export default [
   {
-    name: 'Virtualization', // i18n defer
+    name: 'Services', // i18n defer
     groups: chartFactory(
       ({ id }) => id.match(/^cgroup_([a-z0-9-]{3,}).mem$/),
       //eslint-disable-next-line

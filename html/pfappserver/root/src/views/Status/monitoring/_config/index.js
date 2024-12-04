@@ -5,19 +5,17 @@ import haproxy from './haproxy'
 import logs from './logs'
 import queue from './queue'
 import radius from './radius'
+import services from './services'
 import system from './system'
-import virtualization from './virtualization'
 
 export default [
   ...system,
+  ...services,
   ...radius,
-  ...apache, // multi
+  ...apache,
   ...authentication,
   ...dhcp,
-  ...haproxy, // vip/multi
-  ...queue,  // multi
-  ...logs,  // multi
-  ...virtualization, // multi
-
-  // NTLM AUTH // multi
+  ...haproxy,
+  ...queue,
+  ...logs,
 ]
