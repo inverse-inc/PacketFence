@@ -287,7 +287,7 @@ const setup = (props, context) => {
     { title: i18n.t('12 hours'),   text: '12h', value: 60 * 60 * 12 },
     { title: i18n.t('24 hours'),   text: '24h',  value: 60 * 60 * 24 },
     { title: i18n.t('2 days'),     text: '2D',  value: 60 * 60 * 24 * 2 },
-    { title: i18n.t('4 days'),     text: '4D',  value: 60 * 60 * 24 * 2 },
+    { title: i18n.t('4 days'),     text: '4D',  value: 60 * 60 * 24 * 4 },
     { title: i18n.t('1 week'),     text: '1W',  value: 60 * 60 * 24 * 7 },
     { title: i18n.t('2 weeks'),    text: '2W',  value: 60 * 60 * 24 * 14 },
     { title: i18n.t('28 days'),    text: '28D',  value: 60 * 60 * 24 * 28 }
