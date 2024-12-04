@@ -215,7 +215,7 @@ sub fetch_all_intermediates {
     }
 
     my $ca_info = $ca_info_ext->to_string;
-    if($ca_info =~ /CA Issuers\s*-\s*URI:(.*)\n/) {
+    if($ca_info =~ /CA Issuers\s*-\s*URI:(.*)/ms) {
         my $url = $1;
         
         get_logger->info("Downloading certificate at $url");
