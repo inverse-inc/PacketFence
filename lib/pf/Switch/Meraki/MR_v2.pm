@@ -38,7 +38,7 @@ sub returnRoleAttribute {
 
 =item deauthenticateMacDefault
 
-Some of the attributes from Cisco::WLC aren't necessary
+Some of the attributes from Cisco::Cisco_WLC_AireOS aren't necessary
 
 =cut
 
