@@ -344,7 +344,7 @@ sub check_auth {
         my $post_fields = encode_json({tx => $infos->{'tx'}, user_input => $otp});
         my ($return, $error) = $self->_get_curl("/api/v1/verify/check_auth?tx=".$infos->{'tx'}."&user_input=".$otp);
         if ($error) {
-            $message = "Error trying to verify the OTP code for user $username"
+            $message = "Error trying to verify the OTP code for user $username";
             $logger->error($message);
             return $FALSE, $message;
         }
