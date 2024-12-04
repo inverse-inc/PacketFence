@@ -65,11 +65,11 @@ def init_secure_connection():
     lp.set('server string', server_string)
     lp.set('workgroup', workgroup)
 
-    error_code, error_message, pdc_dns_name = find_dc(lp)
-    if error_code != 0:
-        return global_vars.s_secure_channel_connection, global_vars.s_machine_cred, error_code, error_message
-    else:
-        global_vars.c_server_name = pdc_dns_name
+    # error_code, error_message, pdc_dns_name = find_dc(lp)
+    # if error_code != 0:
+    #     return global_vars.s_secure_channel_connection, global_vars.s_machine_cred, error_code, error_message
+    # else:
+    #     global_vars.c_server_name = pdc_dns_name
 
     server_name = global_vars.c_server_name  # FQDN of Domain Controller
 
