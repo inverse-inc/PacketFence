@@ -1,39 +1,31 @@
-package pf::Sereal;
+package pf::config::crypt::string;
 
 =head1 NAME
 
-pf::Sereal - Global package for Sereal Encoder/Decoder
-
-=cut
+pf::config::crypt::string -
 
 =head1 DESCRIPTION
 
-pf::Sereal
+pf::config::crypt::string
 
 =cut
 
 use strict;
 use warnings;
-use Sereal::Encoder;
-use Sereal::Decoder;
-use base qw(Exporter);
 
-our @EXPORT_OK = qw($ENCODER $DECODER $ENCODER_FREEZER);
+sub new {
+    my ($proto, $data) = @_;
+    my $class = ref($proto) || $proto;
+    return bless(\$data, $class)
+}
 
-our $ENCODER = Sereal::Encoder->new();
-our $ENCODER_FREEZER = Sereal::Encoder->new({ freeze_callbacks => 1});
-our $DECODER = Sereal::Decoder->new;
+use overload
+    '""' => \&stringify,
+    fallback => 1;
 
-=head2 CLONE
 
-Reinitialize ENCODER/DECODER when a new thread is created
-
-=cut
-
-sub CLONE {
-    $ENCODER = Sereal::Encoder->new;
-    $DECODER = Sereal::Decoder->new;
-    $ENCODER_FREEZER = Sereal::Encoder->new({ freeze_callbacks => 1});
+sub stringify {
+    ${$_[0]}
 }
 
 =head1 AUTHOR
@@ -64,3 +56,4 @@ USA.
 =cut
 
 1;
+

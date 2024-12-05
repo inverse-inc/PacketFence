@@ -57,6 +57,7 @@ Requires: freeradius >= 3.2.6, freeradius-mysql >= 3.2.6, freeradius-perl >= 3.2
 Requires: make
 Requires: net-tools
 Requires: sscep
+Requires: util-linux
 Requires: net-snmp >= 5.3.2.2
 Requires: net-snmp-perl
 Requires: perl >= %{perl_version}
@@ -695,6 +696,11 @@ if [ ! -f /usr/local/pf/conf/unified_api_system_pass ]; then
     date +%s | sha256sum | base64 | head -c 32 > /usr/local/pf/conf/unified_api_system_pass
 fi
 
+# Create server API system user password
+if [ ! -f /usr/local/pf/conf/system_init_key ]; then
+	hexdump -e '/1 "%x"' < /dev/urandom | head -c 32 > /usr/local/pf/conf/system_init_key
+fi
+
 for service in httpd snmptrapd portreserve redis netdata
 do
   if /bin/systemctl -a | grep $service > /dev/null 2>&1; then
@@ -920,6 +926,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/addons/watchdog/*.sh
 %dir                    /usr/local/pf/bin
 %attr(6755, root, root) /usr/local/pf/bin/pfcmd
+%attr(6755, root, root) /usr/local/pf/bin/pfcrypt
 %attr(0755, root, root) /usr/local/pf/bin/ntlm_auth_wrapper
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd.pl
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd_vlan

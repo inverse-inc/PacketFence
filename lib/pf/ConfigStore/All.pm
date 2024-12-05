@@ -1,39 +1,35 @@
-package pf::Sereal;
+package pf::ConfigStore::All;
 
 =head1 NAME
 
-pf::Sereal - Global package for Sereal Encoder/Decoder
-
-=cut
+pf::ConfigStore::All -
 
 =head1 DESCRIPTION
 
-pf::Sereal
+pf::ConfigStore::All
 
 =cut
 
 use strict;
 use warnings;
-use Sereal::Encoder;
-use Sereal::Decoder;
-use base qw(Exporter);
+use Role::Tiny qw();
 
-our @EXPORT_OK = qw($ENCODER $DECODER $ENCODER_FREEZER);
+use Module::Pluggable
+  'search_path' => [qw(pf::ConfigStore)],
+  'sub_name'    => '_all_stores',
+  'require'     => 1,
+  'inner'       => 0,
+  ;
 
-our $ENCODER = Sereal::Encoder->new();
-our $ENCODER_FREEZER = Sereal::Encoder->new({ freeze_callbacks => 1});
-our $DECODER = Sereal::Decoder->new;
+our @STORES;
 
-=head2 CLONE
+sub all_stores {
+    if (!@STORES) {
+        my @tmp_stores = __PACKAGE__->_all_stores();
+        @STORES = grep { $_ ne __PACKAGE__ && !Role::Tiny->is_role($_) && !$_->does('pf::ConfigStore::Group') && !$_->does('pf::ConfigStore::Filtered') } @tmp_stores;
+    }
 
-Reinitialize ENCODER/DECODER when a new thread is created
-
-=cut
-
-sub CLONE {
-    $ENCODER = Sereal::Encoder->new;
-    $DECODER = Sereal::Decoder->new;
-    $ENCODER_FREEZER = Sereal::Encoder->new({ freeze_callbacks => 1});
+    return [@STORES];
 }
 
 =head1 AUTHOR

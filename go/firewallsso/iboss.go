@@ -7,13 +7,14 @@ import (
 	"net/http"
 
 	"github.com/inverse-inc/go-utils/log"
+	"github.com/inverse-inc/packetfence/go/config/pfcrypt"
 )
 
 type Iboss struct {
 	FirewallSSO
-	NacName  string `json:"nac_name"`
-	Password string `json:"password"`
-	Port     string `json:"port"`
+	NacName  string              `json:"nac_name"`
+	Password pfcrypt.CryptString `json:"password"`
+	Port     string              `json:"port"`
 }
 
 // Send an SSO start to the Iboss firewall

@@ -1,39 +1,27 @@
-package pf::Sereal;
+package pf::config::crypt::object::freeze;
 
 =head1 NAME
 
-pf::Sereal - Global package for Sereal Encoder/Decoder
-
-=cut
+pf::config::crypt::object::freeze -
 
 =head1 DESCRIPTION
 
-pf::Sereal
+pf::config::crypt::object::freeze
 
 =cut
 
 use strict;
 use warnings;
-use Sereal::Encoder;
-use Sereal::Decoder;
-use base qw(Exporter);
+use pf::config::crypt;
 
-our @EXPORT_OK = qw($ENCODER $DECODER $ENCODER_FREEZER);
+sub pf::config::crypt::object::FREEZE {
+    my ($self, $serializer) = @_;
+    my $data = $$self;
+    if (rindex($data, $pf::config::crypt::PREFIX, 0) == 0) {
+        return $data;
+    }
 
-our $ENCODER = Sereal::Encoder->new();
-our $ENCODER_FREEZER = Sereal::Encoder->new({ freeze_callbacks => 1});
-our $DECODER = Sereal::Decoder->new;
-
-=head2 CLONE
-
-Reinitialize ENCODER/DECODER when a new thread is created
-
-=cut
-
-sub CLONE {
-    $ENCODER = Sereal::Encoder->new;
-    $DECODER = Sereal::Decoder->new;
-    $ENCODER_FREEZER = Sereal::Encoder->new({ freeze_callbacks => 1});
+    return pf::config::crypt::pf_encrypt($data)
 }
 
 =head1 AUTHOR
@@ -64,3 +52,4 @@ USA.
 =cut
 
 1;
+

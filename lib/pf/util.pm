@@ -124,6 +124,7 @@ BEGIN {
         chown_pf
         norm_net_mask
         safe_pf_run
+        starts_with
     );
 }
 
@@ -1886,10 +1887,6 @@ sub extract {
     return $default;
 }
 
-sub ends_with {
-    return $_[1] eq substr($_[0], -length($_[1]));
-}
-
 sub split_pem {
     my ($s) = @_;
     my @parts;
@@ -1974,6 +1971,14 @@ sub norm_net_mask {
     my $mask_norm_packed = ~$mask_wild_packed;
     my $mask_norm_dotted = join '.', unpack 'C4', $mask_norm_packed;
     return $mask_norm_dotted;
+}
+
+sub starts_with {
+    return rindex($_[0], $_[1], 0) == 0;
+}
+
+sub ends_with {
+    return index($_[0], $_[1], -length($_[1])) != -1;
 }
 
 =back

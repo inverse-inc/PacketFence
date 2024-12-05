@@ -9,12 +9,13 @@ import (
 	"github.com/inverse-inc/go-radius/rfc2865"
 	"github.com/inverse-inc/go-radius/rfc2866"
 	"github.com/inverse-inc/go-utils/log"
+	"github.com/inverse-inc/packetfence/go/config/pfcrypt"
 )
 
 type FortiGate struct {
 	FirewallSSO
-	Password string `json:"password"`
-	Port     string `json:"port"`
+	Password pfcrypt.CryptString `json:"password"`
+	Port     string              `json:"port"`
 }
 
 // Send an SSO start to the Fortigate firewall

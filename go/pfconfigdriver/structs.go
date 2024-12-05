@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/inverse-inc/go-utils/sharedutils"
+	"github.com/inverse-inc/packetfence/go/config/pfcrypt"
 )
 
 // Interface for a pfconfig object. Not doing much now but it is there for future-proofing
@@ -183,19 +184,19 @@ type PfConfServices struct {
 
 type PfConfWebservices struct {
 	StructConfig
-	PfconfigMethod string `val:"hash_element"`
-	PfconfigNS     string `val:"config::Pf"`
-	PfconfigHashNS string `val:"webservices"`
-	Pass           string `json:"pass"`
-	Proto          string `json:"proto"`
-	User           string `json:"user"`
-	Port           string `json:"port"`
-	AAAHost        string `json:"aaa_host"`
-	AAAPort        string `json:"aaa_port"`
-	AAAProto       string `json:"aaa_proto"`
-	UnifiedAPIHost string `json:"unifiedapi_host"`
-	UnifiedAPIPort string `json:"unifiedapi_port"`
-	Host           string `json:"host"`
+	PfconfigMethod string              `val:"hash_element"`
+	PfconfigNS     string              `val:"config::Pf"`
+	PfconfigHashNS string              `val:"webservices"`
+	Pass           pfcrypt.CryptString `json:"pass"`
+	Proto          string              `json:"proto"`
+	User           string              `json:"user"`
+	Port           string              `json:"port"`
+	AAAHost        string              `json:"aaa_host"`
+	AAAPort        string              `json:"aaa_port"`
+	AAAProto       string              `json:"aaa_proto"`
+	UnifiedAPIHost string              `json:"unifiedapi_host"`
+	UnifiedAPIPort string              `json:"unifiedapi_port"`
+	Host           string              `json:"host"`
 }
 
 type UnifiedApiSystemUser struct {
@@ -208,14 +209,14 @@ type UnifiedApiSystemUser struct {
 
 type PfConfDatabase struct {
 	StructConfig
-	PfconfigMethod string `val:"hash_element"`
-	PfconfigNS     string `val:"config::Pf"`
-	PfconfigHashNS string `val:"database"`
-	User           string `json:"user"`
-	Pass           string `json:"pass"`
-	Host           string `json:"host"`
-	Port           string `json:"port"`
-	Db             string `json:"db"`
+	PfconfigMethod string              `val:"hash_element"`
+	PfconfigNS     string              `val:"config::Pf"`
+	PfconfigHashNS string              `val:"database"`
+	User           string              `json:"user"`
+	Pass           pfcrypt.CryptString `json:"pass"`
+	Host           string              `json:"host"`
+	Port           string              `json:"port"`
+	Db             string              `json:"db"`
 }
 
 type ManagementNetwork struct {
@@ -500,24 +501,24 @@ type AuthenticationSourceRadius struct {
 
 type AuthenticationSourceLdap struct {
 	StructConfig
-	PfconfigMethod    string   `val:"hash_element"`
-	PfconfigNS        string   `val:"resource::authentication_sources_ldap"`
-	PfconfigHashNS    string   `val:"-"`
-	Description       string   `json:"description"`
-	Password          string   `json:"password"`
-	Port              string   `json:"port"`
-	Host              []string `json:"host"`
-	ReadTimeout       string   `json:"read_timeout"`
-	WriteTimeout      string   `json:"write_timeout"`
-	BaseDN            string   `json:"basedn"`
-	Scope             string   `json:"scope"`
-	EmailAttribute    string   `json:"email_attribute"`
-	UserNameAttribute string   `json:"usernameattribute"`
-	UseConnector      bool     `json:"use_connector"`
-	BindDN            string   `json:"binddn"`
-	Encryption        string   `json:"encryption"`
-	Monitor           string   `json:"monitor"`
-	Type              string   `json:"type"`
+	PfconfigMethod    string              `val:"hash_element"`
+	PfconfigNS        string              `val:"resource::authentication_sources_ldap"`
+	PfconfigHashNS    string              `val:"-"`
+	Description       string              `json:"description"`
+	Password          pfcrypt.CryptString `json:"password"`
+	Port              string              `json:"port"`
+	Host              []string            `json:"host"`
+	ReadTimeout       string              `json:"read_timeout"`
+	WriteTimeout      string              `json:"write_timeout"`
+	BaseDN            string              `json:"basedn"`
+	Scope             string              `json:"scope"`
+	EmailAttribute    string              `json:"email_attribute"`
+	UserNameAttribute string              `json:"usernameattribute"`
+	UseConnector      bool                `json:"use_connector"`
+	BindDN            string              `json:"binddn"`
+	Encryption        string              `json:"encryption"`
+	Monitor           string              `json:"monitor"`
+	Type              string              `json:"type"`
 }
 
 func (t *AuthenticationSourceLdap) UnmarshalJSON(data []byte) error {
@@ -630,28 +631,28 @@ type PfConfParking struct {
 
 type PfConfAlerting struct {
 	StructConfig
-	PfconfigMethod string `val:"hash_element"`
-	PfconfigNS     string `val:"config::Pf"`
-	PfconfigHashNS string `val:"alerting"`
-	EmailAddr      string `json:"emailaddr"`
-	FromAddr       string `json:"fromaddr"`
-	SMTPPassword   string `json:"smtp_password"`
-	SMTPEncryption string `json:"smtp_encryption"`
-	SubjectPrefic  string `json:"subjectprefix"`
-	SMTPUsername   string `json:"smtp_username"`
-	SMTPTimeout    string `json:"smtp_timeout"`
-	SMTPPort       int    `json:"smtp_port"`
-	SMTPVerifySSL  string `json:"smtp_verifyssl"`
-	SMTPServer     string `json:"smtpserver"`
+	PfconfigMethod string              `val:"hash_element"`
+	PfconfigNS     string              `val:"config::Pf"`
+	PfconfigHashNS string              `val:"alerting"`
+	EmailAddr      string              `json:"emailaddr"`
+	FromAddr       string              `json:"fromaddr"`
+	SMTPPassword   pfcrypt.CryptString `json:"smtp_password"`
+	SMTPEncryption string              `json:"smtp_encryption"`
+	SubjectPrefic  string              `json:"subjectprefix"`
+	SMTPUsername   string              `json:"smtp_username"`
+	SMTPTimeout    string              `json:"smtp_timeout"`
+	SMTPPort       int                 `json:"smtp_port"`
+	SMTPVerifySSL  string              `json:"smtp_verifyssl"`
+	SMTPServer     string              `json:"smtpserver"`
 }
 
 type PfConfActiveActive struct {
 	StructConfig
-	PfconfigMethod            string `val:"hash_element"`
-	PfconfigNS                string `val:"config::Pf"`
-	PfconfigHashNS            string `val:"active_active"`
-	GaleraReplicationUsername string `json:"galera_replication_username"`
-	GaleraReplicationPassword string `json:"galera_replication_password"`
+	PfconfigMethod            string              `val:"hash_element"`
+	PfconfigNS                string              `val:"config::Pf"`
+	PfconfigHashNS            string              `val:"active_active"`
+	GaleraReplicationUsername string              `json:"galera_replication_username"`
+	GaleraReplicationPassword pfcrypt.CryptString `json:"galera_replication_password"`
 }
 
 type AllClusterServers struct {
