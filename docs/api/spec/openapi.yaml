@@ -2306,27 +2306,7 @@ components:
       properties:
         meta:
           properties:
-            emailaddr:
-              $ref: '#/components/schemas/Meta'
-            fromaddr:
-              $ref: '#/components/schemas/Meta'
             id:
-              $ref: '#/components/schemas/Meta'
-            smtp_encryption:
-              $ref: '#/components/schemas/Meta'
-            smtp_password:
-              $ref: '#/components/schemas/Meta'
-            smtp_port:
-              $ref: '#/components/schemas/Meta'
-            smtp_timeout:
-              $ref: '#/components/schemas/Meta'
-            smtp_username:
-              $ref: '#/components/schemas/Meta'
-            smtp_verifyssl:
-              $ref: '#/components/schemas/Meta'
-            smtpserver:
-              $ref: '#/components/schemas/Meta'
-            subjectprefix:
               $ref: '#/components/schemas/Meta'
           type: object
       type: object
@@ -3049,6 +3029,10 @@ components:
         ad_server:
           description: The IPv4 of the Active Directory server
           type: string
+        additional_machine_accounts:
+          description: How many additional machine accounts should be created and
+            used to parallel NTLM authentication
+          type: integer
         bind_dn:
           description: The username of a Domain Admin to use to join the server to
             the domain
@@ -3165,6 +3149,8 @@ components:
               $ref: '#/components/schemas/Meta'
             ad_server:
               $ref: '#/components/schemas/Meta'
+            additional_machine_accounts:
+              $ref: '#/components/schemas/Meta'
             bind_dn:
               $ref: '#/components/schemas/Meta'
             bind_pass:
@@ -3240,12 +3226,12 @@ components:
       oneOf:
       - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeSuricata'
       - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeSecurityOnion'
-      - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeSnort'
-      - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeSuricataMd5'
-      - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeRegex'
       - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeNexpose'
       - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeDhcp'
+      - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeSuricataMd5'
+      - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeSnort'
       - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeFortianalyser'
+      - $ref: '#/components/schemas/ConfigEventHandlerMetaSubTypeRegex'
     ConfigEventHandlerMetaSubTypeDhcp:
       properties:
         meta:
@@ -3301,6 +3287,8 @@ components:
             id:
               $ref: '#/components/schemas/Meta'
             path:
+              $ref: '#/components/schemas/Meta'
+            rate_limit:
               $ref: '#/components/schemas/Meta'
             rules:
               $ref: '#/components/schemas/Meta'
@@ -3472,6 +3460,16 @@ components:
         path:
           description: Alert pipe
           type: string
+        rate_limit:
+          description: Rate limit requests.
+          properties:
+            interval:
+              description: Interval
+              type: integer
+            unit:
+              description: Unit
+              type: string
+          type: object
         rules:
           description: Rules
           items:
@@ -3947,19 +3945,19 @@ components:
         propertyName: type
       oneOf:
       - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeDeny'
-      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeMobileconfig'
-      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAccept'
-      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeIntune'
-      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeJamf'
-      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAirwatch'
       - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeWindows'
       - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeLookup'
+      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAccept'
+      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeDpsk'
+      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeMobileiron'
+      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeIntune'
+      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeJamf'
+      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeKandji'
+      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAndroid'
+      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAirwatch'
+      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeMobileconfig'
       - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeGoogleWorkspaceChromebook'
       - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeSentinelone'
-      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeAndroid'
-      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeMobileiron'
-      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeDpsk'
-      - $ref: '#/components/schemas/ConfigFilterEnginesProvisioningFilterMetaSubTypeKandji'
     ConfigFilterEnginesProvisioningFilterMetaSubTypeAccept:
       properties:
         meta:
@@ -5654,21 +5652,23 @@ components:
         propertyName: type
       oneOf:
       - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeJunipersrx'
-      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeContentkeeper'
-      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeFortigate'
-      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeBarracudang'
-      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeSmoothwall'
-      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypePaloalto'
       - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeJsonrpc'
-      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeCheckpoint'
-      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeFamilyzone'
-      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeLightspeedrocket'
+      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypePaloalto'
+      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeContentkeeper'
+      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeSmoothwall'
       - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeWatchguard'
+      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeLightspeedrocket'
+      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeFamilyzone'
+      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeBarracudang'
+      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeCheckpoint'
       - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeIboss'
+      - $ref: '#/components/schemas/ConfigFirewallMetaSubTypeFortigate'
     ConfigFirewallMeta:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5684,6 +5684,12 @@ components:
             password:
               $ref: '#/components/schemas/Meta'
             port:
+              $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
               $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
@@ -5699,6 +5705,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5714,6 +5722,12 @@ components:
             password:
               $ref: '#/components/schemas/Meta'
             port:
+              $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
               $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
@@ -5731,6 +5745,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5746,6 +5762,12 @@ components:
             password:
               $ref: '#/components/schemas/Meta'
             port:
+              $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
               $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
@@ -5761,6 +5783,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5777,6 +5801,12 @@ components:
               $ref: '#/components/schemas/Meta'
             port:
               $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
+              $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
             uid:
@@ -5791,6 +5821,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5809,6 +5841,12 @@ components:
               $ref: '#/components/schemas/Meta'
             port:
               $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
+              $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
             uid:
@@ -5823,6 +5861,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5839,6 +5879,12 @@ components:
               $ref: '#/components/schemas/Meta'
             port:
               $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
+              $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
             uid:
@@ -5853,6 +5899,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5871,6 +5919,12 @@ components:
               $ref: '#/components/schemas/Meta'
             port:
               $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
+              $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
             uid:
@@ -5885,6 +5939,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5900,6 +5956,12 @@ components:
             password:
               $ref: '#/components/schemas/Meta'
             port:
+              $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
               $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
@@ -5917,6 +5979,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5932,6 +5996,12 @@ components:
             password:
               $ref: '#/components/schemas/Meta'
             port:
+              $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
               $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
@@ -5949,6 +6019,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5964,6 +6036,12 @@ components:
             password:
               $ref: '#/components/schemas/Meta'
             port:
+              $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
               $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
@@ -5979,6 +6057,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -5994,6 +6074,12 @@ components:
             password:
               $ref: '#/components/schemas/Meta'
             port:
+              $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
               $ref: '#/components/schemas/Meta'
             transport:
               $ref: '#/components/schemas/Meta'
@@ -6013,6 +6099,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -6028,6 +6116,12 @@ components:
             password:
               $ref: '#/components/schemas/Meta'
             port:
+              $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
               $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
@@ -6043,6 +6137,8 @@ components:
       properties:
         meta:
           properties:
+            act_on_accounting_stop:
+              $ref: '#/components/schemas/Meta'
             cache_timeout:
               $ref: '#/components/schemas/Meta'
             cache_updates:
@@ -6059,6 +6155,12 @@ components:
               $ref: '#/components/schemas/Meta'
             port:
               $ref: '#/components/schemas/Meta'
+            sso_on_access_reevaluation:
+              $ref: '#/components/schemas/Meta'
+            sso_on_accounting:
+              $ref: '#/components/schemas/Meta'
+            sso_on_dhcp:
+              $ref: '#/components/schemas/Meta'
             type:
               $ref: '#/components/schemas/Meta'
             uid:
@@ -6071,6 +6173,9 @@ components:
       type: object
     ConfigFirewallSubTypeBarracudang:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6104,6 +6209,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: BarracudaNG
           description: Discriminator `BarracudaNG`
@@ -6131,6 +6245,9 @@ components:
       type: object
     ConfigFirewallSubTypeCheckpoint:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6164,6 +6281,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: Checkpoint
           description: Discriminator `Checkpoint`
@@ -6187,6 +6313,9 @@ components:
       type: object
     ConfigFirewallSubTypeContentkeeper:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6220,6 +6349,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: ContentKeeper
           description: Discriminator `ContentKeeper`
@@ -6243,6 +6381,9 @@ components:
       type: object
     ConfigFirewallSubTypeFamilyzone:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6279,6 +6420,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: FamilyZone
           description: Discriminator `FamilyZone`
@@ -6301,6 +6451,9 @@ components:
       type: object
     ConfigFirewallSubTypeFortigate:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6334,6 +6487,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: FortiGate
           description: Discriminator `FortiGate`
@@ -6357,6 +6519,9 @@ components:
       type: object
     ConfigFirewallSubTypeIboss:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6393,6 +6558,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: Iboss
           description: Discriminator `Iboss`
@@ -6416,6 +6590,9 @@ components:
       type: object
     ConfigFirewallSubTypeJsonrpc:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6449,6 +6626,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: JSONRPC
           description: Discriminator `JSONRPC`
@@ -6476,6 +6662,9 @@ components:
       type: object
     ConfigFirewallSubTypeJunipersrx:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6509,6 +6698,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: JuniperSRX
           description: Discriminator `JuniperSRX`
@@ -6536,6 +6734,9 @@ components:
       type: object
     ConfigFirewallSubTypeLightspeedrocket:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6569,6 +6770,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: LightSpeedRocket
           description: Discriminator `LightSpeedRocket`
@@ -6592,6 +6802,9 @@ components:
       type: object
     ConfigFirewallSubTypePaloalto:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6627,6 +6840,15 @@ components:
           description: If you use an alternative port, please specify. This parameter
             is ignored when the Syslog transport is selected.
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         transport:
           description: Transport
           type: string
@@ -6656,6 +6878,9 @@ components:
       type: object
     ConfigFirewallSubTypeSmoothwall:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6689,6 +6914,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: SmoothWall
           description: Discriminator `SmoothWall`
@@ -6712,6 +6946,9 @@ components:
       type: object
     ConfigFirewallSubTypeWatchguard:
       properties:
+        act_on_accounting_stop:
+          description: Act on accounting stop
+          type: string
         cache_timeout:
           description: Adjust the "Cache timeout" to half the expiration delay in
             your firewall.<br/>Your DHCP renewal interval should match this value.
@@ -6745,6 +6982,15 @@ components:
         port:
           description: If you use an alternative port, please specify
           type: integer
+        sso_on_access_reevaluation:
+          description: Sso on access reevaluation
+          type: string
+        sso_on_accounting:
+          description: Sso on accounting
+          type: string
+        sso_on_dhcp:
+          description: Sso on dhcp
+          type: string
         type:
           default: WatchGuard
           description: Discriminator `WatchGuard`
@@ -6959,6 +7205,116 @@ components:
             $ref: '#/components/schemas/ConfigInterfaceGet'
           type: array
       type: object
+    ConfigKafka:
+      properties:
+        admin:
+          description: Admin
+          properties:
+            pass:
+              description: Password
+              type: string
+            user:
+              description: User
+              type: string
+          type: object
+        auths:
+          description: Auths
+          items:
+            description: Auth
+            properties:
+              pass:
+                description: Password
+                type: string
+              user:
+                description: User
+                type: string
+            type: object
+          type: array
+        cluster:
+          description: Cluster
+          items:
+            description: Cluster
+            properties:
+              name:
+                description: Name
+                type: string
+              value:
+                description: Value
+                type: string
+            type: object
+          type: array
+        host_configs:
+          description: Host configs
+          items:
+            description: Host config
+            properties:
+              config:
+                description: Config
+                items:
+                  description: Config
+                  properties:
+                    name:
+                      description: Name
+                      type: string
+                    value:
+                      description: Value
+                      type: string
+                  type: object
+                type: array
+              host:
+                description: Host
+                type: string
+            type: object
+          type: array
+        iptables:
+          description: Iptables
+          properties:
+            clients:
+              description: Clients
+              items:
+                description: Client
+                type: string
+              type: array
+            cluster_ips:
+              description: Cluster ips
+              items:
+                description: Cluster ip
+                type: string
+              type: array
+          type: object
+      type: object
+    ConfigKafkaList:
+      allOf:
+      - $ref: '#/components/schemas/Iterable'
+      - properties:
+          items:
+            items:
+              $ref: '#/components/schemas/ConfigKafka'
+            type: array
+        type: object
+    ConfigKafkaMeta:
+      properties:
+        meta:
+          properties:
+            admin:
+              $ref: '#/components/schemas/Meta'
+            auths:
+              $ref: '#/components/schemas/Meta'
+            cluster:
+              $ref: '#/components/schemas/Meta'
+            host_configs:
+              $ref: '#/components/schemas/Meta'
+            iptables:
+              $ref: '#/components/schemas/Meta'
+          type: object
+      type: object
+    ConfigKafkaWrapped:
+      properties:
+        item:
+          $ref: '#/components/schemas/ConfigKafka'
+        status:
+          type: integer
+      type: object
     ConfigL2Network:
       properties:
         algorithm:
@@ -7106,35 +7462,35 @@ components:
           ubiquiti_ap_mac_to_ip: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeUbiquitiApMacToIp'
         propertyName: type
       oneOf:
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeOption82Query'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypePersonCleanup'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeIp6logCleanup'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeDnsAuditLogCleanup'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeSwitchCacheLldplocalportDescription'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeCleanupChiDatabaseCache'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAuthLogCleanup'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeProvisioningCompliancePoll'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeClusterCheck'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeSecurityEventMaintenance'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypePkiCertificatesCheck'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAcctMaintenance'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeRadiusAuditLogCleanup'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypePfflow'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFlushDnsAuditLog'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeBandwidthMaintenance'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFingerbankDataUpdate'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypePurgeBinaryLogs'
       - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodesMaintenance'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeCertificatesCheck'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAdminApiAuditLogCleanup'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodeCurrentSessionCleanup'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodeCleanup'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFlushRadiusAuditLog'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAcctCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeCleanupChiDatabaseCache'
       - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypePasswordOfTheDay'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFingerbankDataUpdate'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeLocationlogCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAdminApiAuditLogCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeClusterCheck'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFlushRadiusAuditLog'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodeCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeCertificatesCheck'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeIp6logCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypePurgeBinaryLogs'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypePersonCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeProvisioningCompliancePoll'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAuthLogCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeRadiusAuditLogCleanup'
       - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeIp4logCleanup'
       - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeUbiquitiApMacToIp'
-      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeLocationlogCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAcctMaintenance'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeNodeCurrentSessionCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeBandwidthMaintenance'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeOption82Query'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeSwitchCacheLldplocalportDescription'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeSecurityEventMaintenance'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeFlushDnsAuditLog'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeDnsAuditLogCleanup'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypePkiCertificatesCheck'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypePfflow'
+      - $ref: '#/components/schemas/ConfigMaintenanceTaskMetaSubTypeAcctCleanup'
     ConfigMaintenanceTaskMetaSubTypeAcctCleanup:
       properties:
         meta:
@@ -7541,11 +7897,19 @@ components:
       properties:
         meta:
           properties:
+            filter_events:
+              $ref: '#/components/schemas/Meta'
             group_id:
+              $ref: '#/components/schemas/Meta'
+            heuristics:
               $ref: '#/components/schemas/Meta'
             id:
               $ref: '#/components/schemas/Meta'
             kafka_brokers:
+              $ref: '#/components/schemas/Meta'
+            kakfa_pass:
+              $ref: '#/components/schemas/Meta'
+            kakfa_user:
               $ref: '#/components/schemas/Meta'
             read_topic:
               $ref: '#/components/schemas/Meta'
@@ -7558,6 +7922,8 @@ components:
             submit_batch:
               $ref: '#/components/schemas/Meta'
             type:
+              $ref: '#/components/schemas/Meta'
+            uuid:
               $ref: '#/components/schemas/Meta'
           type: object
       type: object
@@ -8536,14 +8902,26 @@ components:
       type: object
     ConfigMaintenanceTaskSubTypePfflow:
       properties:
+        filter_events:
+          description: Filter incoming events
+          type: string
         group_id:
           description: 'The Kafka Consumer Group ID '
+          type: string
+        heuristics:
+          description: Heuristics
           type: string
         id:
           description: Pfcron Name
           type: string
         kafka_brokers:
           description: Kafka Brokers
+          type: string
+        kakfa_pass:
+          description: Kafka Password
+          type: string
+        kakfa_user:
+          description: Kafka Username
           type: string
         read_topic:
           description: The Kafka topic to read pfflows from
@@ -8566,6 +8944,9 @@ components:
         type:
           default: pfflow
           description: Discriminator `pfflow`
+          type: string
+        uuid:
+          description: 'UUID  '
           type: string
       required:
       - id
@@ -9441,37 +9822,37 @@ components:
           URL: '#/components/schemas/ConfigPortalModuleMetaSubTypeUrl'
         propertyName: type
       oneOf:
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeProvisioning'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeSelectrole'
       - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthFacebook'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationNull'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeSslInspection'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthGithub'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeMessage'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeUrl'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthOpenid'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationChoice'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthLinkedin'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeSurvey'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationPassword'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthGoogle'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeChoice'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeShowlocalaccount'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeFixedrole'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauth'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeRootsso'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSponsor'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeMfa'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSaml'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeRoot'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationEmail'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationLogin'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSms'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationBlackhole'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthentication'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthWindowslive'
-      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationBilling'
       - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeChained'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationNull'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationEmail'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationChoice'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeSurvey'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSponsor'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSms'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeMfa'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeRootsso'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeShowlocalaccount'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthLinkedin'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeUrl'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthGithub'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeSelectrole'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationSaml'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationBlackhole'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeRoot'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeChoice'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationPassword'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationBilling'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthOpenid'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeMessage'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthGoogle'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauth'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeSslInspection'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeFixedrole'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationLogin'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthenticationOauthWindowslive'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeAuthentication'
+      - $ref: '#/components/schemas/ConfigPortalModuleMetaSubTypeProvisioning'
     ConfigPortalModuleMetaSubTypeAuthentication:
       properties:
         meta:
@@ -11773,20 +12154,20 @@ components:
           windows: '#/components/schemas/ConfigProvisioningMetaSubTypeWindows'
         propertyName: type
       oneOf:
-      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeAccept'
-      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeMobileconfig'
       - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeDeny'
-      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeSentinelone'
       - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeWindows'
-      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeGoogleWorkspaceChromebook'
+      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeMobileconfig'
       - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeAirwatch'
+      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeKandji'
+      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeAndroid'
+      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeGoogleWorkspaceChromebook'
+      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeJamfcloud'
+      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeSentinelone'
+      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeAccept'
+      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeDpsk'
+      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeMobileiron'
       - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeJamf'
       - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeIntune'
-      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeMobileiron'
-      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeAndroid'
-      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeJamfcloud'
-      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeKandji'
-      - $ref: '#/components/schemas/ConfigProvisioningMetaSubTypeDpsk'
     ConfigProvisioningMetaSubTypeAccept:
       properties:
         meta:
@@ -15265,37 +15646,37 @@ components:
         propertyName: type
       oneOf:
       - $ref: '#/components/schemas/ConfigSourceMetaSubTypeOpenid'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeWindowslive'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeBlackhole'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeHtpasswd'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeHttp'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeEdir'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeEmail'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeNull'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeAd'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeSaml'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeAzuread'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeAdminproxy'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeAuthorization'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeRadius'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypePotd'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeFacebook'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeGoogle'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeLdap'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeGoogleworkspaceldap'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeSql'
       - $ref: '#/components/schemas/ConfigSourceMetaSubTypeStripe'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypePaypal'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeAd'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeBlackhole'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeAzuread'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeWindowslive'
       - $ref: '#/components/schemas/ConfigSourceMetaSubTypeKickbox'
       - $ref: '#/components/schemas/ConfigSourceMetaSubTypeSms'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeLinkedin'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeTwilio'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeGithub'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeKerberos'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeEaptls'
-      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeClickatell'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeSaml'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeHtpasswd'
       - $ref: '#/components/schemas/ConfigSourceMetaSubTypeSponsoremail'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeSql'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeNull'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeHttp'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeAdminproxy'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeEmail'
       - $ref: '#/components/schemas/ConfigSourceMetaSubTypeEduroam'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypePotd'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeRadius'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeGithub'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeGoogle'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypePaypal'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeKerberos'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeAuthorization'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeEdir'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeFacebook'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeLdap'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeTwilio'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeClickatell'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeEaptls'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeLinkedin'
+      - $ref: '#/components/schemas/ConfigSourceMetaSubTypeGoogleworkspaceldap'
     ConfigSourceMetaSubTypeAd:
       properties:
         meta:
@@ -22274,8 +22655,8 @@ components:
           server: '#/components/schemas/ConfigSyslogForwarderMetaSubTypeServer'
         propertyName: type
       oneOf:
-      - $ref: '#/components/schemas/ConfigSyslogForwarderMetaSubTypeServer'
       - $ref: '#/components/schemas/ConfigSyslogForwarderMetaSubTypeFile'
+      - $ref: '#/components/schemas/ConfigSyslogForwarderMetaSubTypeServer'
     ConfigSyslogForwarderMetaSubTypeFile:
       properties:
         meta:
@@ -36522,6 +36903,110 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
       tags:
       - Config/Interfaces
+  /api/v1/config/kafka:
+    description: |-
+      pf::UnifiedApi::Controller::Config::Kafka
+
+        field_meta
+          Get a field's meta data
+
+        field_type
+          Find the field type
+
+        field_is_required
+          Check if the field is required
+
+        field_placeholder
+          Get the placeholder for the field
+
+        field_resource_placeholder
+          The place holder for the field
+
+        field_meta_array_items
+          Get the meta for the items of the array
+
+        field_allowed
+          The allowed fields
+
+        field_default
+          Get the default value of a field
+
+        field_extra_meta
+          Get the extra meta data for a field
+
+        field_meta_object_properties
+          Get the properties of a field
+
+        field_text_meta
+          Update text field meta data
+
+        field_allowed_lookup
+          field_allowed_lookup
+
+        map_options
+          map_options
+
+        map_option
+          map_option
+
+        format_form_errors
+          format_form_errors
+    get:
+      description: Get an item.
+      operationId: api.v1.Config.Kafka.get
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigKafkaWrapped'
+          description: Request successful. Response contains a specific resource.
+        '401':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+      - Config/Kafka
+    options:
+      description: Get meta for a new item.
+      operationId: api.v1.Config.Kafka.options
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigKafkaMeta'
+          description: Request successful. Response contains meta for a resource.
+        '401':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+      - Config/Kafka
+    patch:
+      description: Update an item.
+      operationId: api.v1.Config.Kafka.update
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigKafka'
+      responses:
+        '201':
+          $ref: '#/components/responses/Updated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      tags:
+      - Config/Kafka
   /api/v1/config/l2_network/{network_id}:
     description: pf::UnifiedApi::Controller::Config::L2Networks
     get:

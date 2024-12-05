@@ -146,6 +146,65 @@
                      enabled-value="enabled"
                      disabled-value="disabled"
     />
+
+    <form-group-kafka-brokers v-show="wants('kafka_brokers')"
+                     namespace="kafka_brokers"
+                     :column-label="$i18n.t('Kafka Brokers')"
+                     :text="$i18n.t('Kafka Brokers.')"
+    />
+
+    <form-group-kafka-pass v-show="wants('kafka_pass')"
+                     namespace="kafka_pass"
+                     :column-label="$i18n.t('Kafka Password')"
+                     :text="$i18n.t('Kafka Password.')"
+    />
+
+    <form-group-kafka-user v-show="wants('kafka_user')"
+                     namespace="kafka_user"
+                     :column-label="$i18n.t('Kafka User')"
+                     :text="$i18n.t('Kafka User.')"
+    />
+
+    <form-group-read-topic v-show="wants('read_topic')"
+                     namespace="read_topic"
+                     :column-label="$i18n.t('Read Topic')"
+                     :text="$i18n.t('Read Topic.')"
+    />
+
+    <form-group-send-topic v-show="wants('send_topic')"
+                     namespace="send_topic"
+                     :column-label="$i18n.t('Send Topic')"
+                     :text="$i18n.t('Send Topic.')"
+    />
+
+    <form-group-uuid v-show="wants('uuid')"
+                     namespace="uuid"
+                     :column-label="$i18n.t('UUID')"
+                     :text="$i18n.t('UUID.')"
+    />
+
+    <form-group-group-id v-show="wants('group_id')"
+                     namespace="group_id"
+                     :column-label="$i18n.t('Kafka Group ID')"
+                     :text="$i18n.t('Kafka Group ID.')"
+    />
+
+    <form-group-filter-events v-show="wants('filter_events')"
+                     namespace="filter_events"
+                     :column-label="$i18n.t('Filter Events')"
+                     :text="$i18n.t('Filter Events.')"
+                     enabled-value="1"
+                     disabled-value="0"
+    />
+
+    <form-group-heuristics v-show="wants('heuristics')"
+                     namespace="heuristics"
+                     :column-label="$i18n.t('Heuristics')"
+                     :text="$i18n.t('Heuristics.')"
+                     enabled-value="1"
+                     disabled-value="0"
+    />
+
   </base-form>
 </template>
 <script>

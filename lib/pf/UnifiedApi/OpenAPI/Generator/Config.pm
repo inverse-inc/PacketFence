@@ -94,9 +94,12 @@ sub operation_generators {
 sub resourceParameters {
     my ( $self, $scope, $c, $m, $a ) = @_;
     my $parameters = $self->operationParameters( $scope, $c, $m, $a );
-    my $parameter = $self->path_parameter($c->primary_key);
-    $parameter->{required} = JSON::MaybeXS::true;
-    $parameter->{description} = '`PRIMARY KEY`';
+    my $parameter = undef;
+    if ($c->can("primary_key")) {
+        $parameter = $self->path_parameter($c->primary_key);
+        $parameter->{required} = JSON::MaybeXS::true;
+        $parameter->{description} = '`PRIMARY KEY`';
+    }
     if (ref($c) =~ /Config::.*(?<!Subtype)$/ && $c->config_store->importConfigFile) {
         my $ini = Config::IniFiles->new(
             -file => $c->config_store->importConfigFile,
@@ -110,7 +113,8 @@ sub resourceParameters {
             $parameter->{schema}->{enum} = [sort @$enum];
         }
     }
-    push @$parameters, $parameter;
+
+    push @$parameters, $parameter if defined $parameter;
     return $parameters;
 }
 
