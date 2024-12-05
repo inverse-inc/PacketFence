@@ -51,6 +51,46 @@ has_field 'submit_batch' => (
              help => \&batch_help_text },
 );
 
+has_field 'uuid' => (
+    type => 'Text',
+    default_method => \&default_field_method,
+    tags => { help => 'UUID  ' },
+);
+
+has_field 'kakfa_user' => (
+    type => 'Text',
+    default_method => \&default_field_method,
+    tags => { help => 'Kafka Username' },
+);
+
+has_field 'kakfa_pass' => (
+    type => 'Text',
+    default_method => \&default_field_method,
+    tags => { help => 'Kafka Password' },
+);
+
+has_field 'filter_events' => (
+    type            => 'Toggle',
+    checked_value   => '1',
+    unchecked_value => '0',
+    default_method  => \&default_field_method,
+    tags => {
+        after_element   => \&help,
+        help            => "Filter incoming events",
+    },
+);
+
+has_field 'heuristics' => (
+    type            => 'Toggle',
+    checked_value   => '1',
+    unchecked_value => '0',
+    default_method  => \&default_field_method,
+    tags => {
+        after_element   => \&help,
+        help            => "Heuristics",
+    },
+);
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>

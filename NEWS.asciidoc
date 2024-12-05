@@ -48,6 +48,7 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
  * Select the first device that matches MFA (#8400)
  * Improve pfdhcp DB connection (#8419)
  * Track TLS certificate attributes per node (#8416)
+ * Kafka UI Config (#8421)
 
 === Bug Fixes
 
