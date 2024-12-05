@@ -22,7 +22,6 @@ use pf::UnifiedApi::OpenAPI::Generator::Config;
 use pf::UnifiedApi::GenerateSpec;
 use Mojo::JSON qw(encode_json);
 use pf::util qw(expand_csv isenabled);
-use pf::error qw(is_error);
 use pf::error qw(is_error is_success);
 use Data::UUID;
 use pf::pfqueue::status_updater::redis;

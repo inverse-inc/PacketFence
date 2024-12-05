@@ -29,6 +29,7 @@ import SyslogForwardersRoutes from '../syslogForwarders/_router'
 import WrixRoutes from '../wrix/_router'
 import PkiRoutes from '../pki/_router'
 import MfasRoutes from '../mfas/_router'
+import FleetDMRoutes from '../fleetDM/_router'
 
 /* Advanced Access Configuration */
 const AdvancedAccessConfigurationSection = () => import(/* webpackChunkName: "Configuration" */ '../_components/TheSectionAdvancedAccessConfiguration')
@@ -59,12 +60,12 @@ import MonitRoutes from '../monit/_router'
 import ServicesRoutes from '../services/_router'
 import DatabaseRoutes from '../database/_router'
 import ActiveActiveRoutes from '../activeActive/_router'
-import FleetDMRoutes from '../fleetDM/_router'
 import RadiusRoutes from '../radius/_router'
 import DnsRoutes from '../dns/_router'
 import AdminLoginRoutes from '../adminLogin/_router'
 import AdminRolesRoutes from '../adminRoles/_router'
 import ConnectorsRoutes from '../connectors/_router'
+import KafkaRoutes from '../kafka/_router'
 
 import store from '@/store'
 import BasesStoreModule from '../bases/_store'
@@ -131,6 +132,7 @@ const route = {
     ...WrixRoutes,
     ...PkiRoutes,
     ...MfasRoutes,
+    ...FleetDMRoutes,
 
     /**
      *  Advanced Access Configuration
@@ -178,13 +180,13 @@ const route = {
     ...ServicesRoutes,
     ...DatabaseRoutes,
     ...ActiveActiveRoutes,
-    ...FleetDMRoutes,
     ...RadiusRoutes,
     ...DnsRoutes,
     ...AdminLoginRoutes,
     ...AdminRolesRoutes,
     ...SslCertificatesRoutes,
-    ...ConnectorsRoutes
+    ...ConnectorsRoutes,
+    ...KafkaRoutes,
   ]
 }
 

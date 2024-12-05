@@ -109,7 +109,10 @@ export const useInputValidator = (props, value, recursive = false) => {
           // yup throws an exception when a path is not defined in the schema
           //  https://github.com/jquense/yup/issues/599
           try {
-            validationPromise = schema.validateAt(path.value, form.value, { recursive, abortEarly: !recursive })
+            //validationPromise = schema.validateAt(path.value, form.value, { recursive, abortEarly: !recursive })
+            const schemaAt = yup.reach(schema, path.value)
+            const formAt = (function(p) { return p.split('.').reduce((a, v) => a[v], form.value) })(namespace.value)
+            validationPromise = schemaAt.validate(formAt, { recursive, abortEarly: !recursive })
           } catch (e) { // path not defined in schema
             validationPromise = true
           }
