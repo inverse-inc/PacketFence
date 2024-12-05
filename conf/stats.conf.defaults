@@ -112,6 +112,39 @@ mysql_query=select connection_type, count(distinct mac) from locationlog where e
 interval=720s
 management=true
 
+[metric 'total number of connected devices per device class']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_device_class
+mysql_query=select ifnull(device_class, 'unknown') , count(distinct node.mac) from locationlog right join node on node.mac=locationlog.mac where end_time is null group by device_class
+interval=720s
+management=true
+
+[metric 'total number of connected devices per device manufacturer']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_device_manufacturer
+mysql_query=select ifnull(device_manufacturer, 'unknown') , count(distinct node.mac) from locationlog right join node on node.mac=locationlog.mac where end_time is null group by device_manufacturer
+interval=720s
+management=true
+
+[metric 'total number of connected devices per device type']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_device_type
+mysql_query=select ifnull(device_type, 'unknown') , count(distinct node.mac) from locationlog right join node on node.mac=locationlog.mac where end_time is null group by device_type
+interval=720s
+management=true
+
+[metric 'total number of connected devices per role']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_role
+mysql_query=select ifnull(name, 'none'), count(distinct node.mac) from locationlog right join node on node.mac=locationlog.mac left join node_category on node.category_id=node_category.category_id group by name
+interval=60s
+randomize=true
+management=true
+
 [metric 'total number of connected devices per ssid']
 type=mysql_query
 statsd_type=gauge
@@ -120,11 +153,36 @@ mysql_query=select ssid, count(distinct mac) from locationlog where ssid != '' a
 interval=720s
 management=true
 
+[metric 'total number of connected devices per switch']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_switch
+mysql_query=select switch, count(distinct mac) from locationlog where switch != '' and end_time is null group by switch
+interval=720s
+management=true
+
+[metric 'total number of connected devices per vlan']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_vlan
+mysql_query=select vlan, count(distinct mac) from locationlog where vlan != '' and end_time is null group by vlan
+interval=720s
+management=true
+
 [metric 'total number of unregistered devices']
 type=mysql_query
 statsd_type=gauge
 statsd_ns=source.packetfence.devices.unregistered
 mysql_query=select count(distinct mac) from node where status='unreg'
+interval=60s
+randomize=true
+management=true
+
+[metric 'number of devices currently connected']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected
+mysql_query=select count(distinct mac) from locationlog where vlan != '' and end_time is null
 interval=60s
 randomize=true
 management=true
@@ -201,6 +259,15 @@ type=mysql_query
 statsd_type=gauge
 statsd_ns=source.packetfence.security_events
 mysql_query=select count(distinct mac) from security_event where status='open'
+interval=60s
+randomize=true
+management=true
+
+[metric 'number of pending security events']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.security_events_pending
+mysql_query=select count(distinct mac) from security_event where status='pending'
 interval=60s
 randomize=true
 management=true

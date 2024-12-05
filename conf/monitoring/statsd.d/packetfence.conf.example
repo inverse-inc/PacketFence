@@ -17,7 +17,7 @@
     title = registered/unregistered online devices
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = source.packetfence.devices.online_registered 'registered' last 1 1
@@ -28,7 +28,7 @@
     title = devices roles
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.registered_per_role.*' '' last 1 1
@@ -38,7 +38,7 @@
     title = device types
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.registered_per_device_type.*' '' last 1 1
@@ -48,7 +48,7 @@
     title = device classes
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.registered_per_device_class.*' '' last 1 1
@@ -58,7 +58,7 @@
     title = device manufacturers
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.registered_per_device_manufacturer.*' '' last 1 1
@@ -68,7 +68,7 @@
     title = device vlans
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.registered_per_vlan.*' '' last 1 1
@@ -78,7 +78,7 @@
     title = device connection types
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.registered_per_connection_type.*' '' last 1 1
@@ -88,7 +88,7 @@
     title = device ssids
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.registered_per_ssid.*' '' last 1 1
@@ -98,30 +98,90 @@
     title = device switches
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.registered_per_switch.*' '' last 1 1
+
+[devices.connected_per_device_class]
+    name = devices.connected_per_device_class
+    title = device classes
+    family = packetfence
+    context = chart.context
+    units = # of devices
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.devices.connected_per_device_class.*' '' last 1 1
 
 [devices.connected_per_connection_type]
     name = devices.connected_per_connection_type
     title = connection types
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.connected_per_connection_type.*' '' last 1 1
 
-[devices.connected_per_ssid]
-    name = devices.connected_per_ssid
-    title = ssid
+[devices.connected_per_device_manufacturer]
+    name = devices.connected_per_device_manufacturer
+    title = device manufacturers
     family = packetfence
     context = chart.context
-    units = devices
+    units = # of devices
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.devices.connected_per_device_manufacturer.*' '' last 1 1
+
+[devices.connected_per_device_type]
+    name = devices.connected_per_device_type
+    title = device types
+    family = packetfence
+    context = chart.context
+    units = # of devices
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.devices.connected_per_device_type.*' '' last 1 1
+
+[devices.connected_per_role]
+    name = devices.connected_per_role
+    title = roles
+    family = packetfence
+    context = chart.context
+    units = # of devices
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.devices.connected_per_role.*' '' last 1 1
+
+[devices.connected_per_ssid]
+    name = devices.connected_per_ssid
+    title = ssids
+    family = packetfence
+    context = chart.context
+    units = # of devices
     priority = 91000
     type = line
     dimension = pattern 'source.packetfence.devices.connected_per_ssid.*' '' last 1 1
+
+[devices.connected_per_switch]
+    name = devices.connected_per_switch
+    title = switches
+    family = packetfence
+    context = chart.context
+    units = # of devices
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.devices.connected_per_switch.*' '' last 1 1
+
+[devices.connected_per_vlan]
+    name = devices.connected_per_vlan
+    title = vlans
+    family = packetfence
+    context = chart.context
+    units = # of devices
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.devices.connected_per_vlan.*' '' last 1 1
 
 [redis.queue_stats_count]
     name = redis.queue_stats_count
