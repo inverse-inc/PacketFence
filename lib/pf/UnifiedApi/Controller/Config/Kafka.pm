@@ -78,7 +78,7 @@ Get a field's meta data
 sub field_meta {
     my ($self, $field, $parent_meta, $no_array) = @_;
     my $type = $self->field_type($field, $no_array);
-   my $meta = {
+    my $meta = {
         type        => $type,
         required    => $self->field_is_required($field),
         placeholder => $self->field_placeholder($field, $parent_meta->{placeholder}),
