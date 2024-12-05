@@ -53,14 +53,47 @@ DROP PROCEDURE IF EXISTS ValidateVersion;
 
 \! echo "altering pki_profiles"
 ALTER TABLE `pki_profiles`
-    ADD IF NOT EXISTS `allow_duplicated_cn` bigint(20) unsigned DEFAULT 0  AFTER `scep_server_id`,
-    ADD IF NOT EXISTS `maximum_duplicated_cn` bigint(20) DEFAULT 0;
+    ADD IF NOT EXISTS `allow_duplicated_cn` bigint(20) UNSIGNED DEFAULT 0,
+    ADD IF NOT EXISTS `maximum_duplicated_cn` bigint(20) DEFAULT 0,
+    MODIFY `scep_server_enabled` bigint(20) DEFAULT 0,
+    DROP INDEX IF EXISTS `scep_server__id`,
+    ADD INDEX IF NOT EXISTS `scep_server_id` (`scep_server_id`);
 
 \! echo "altering pki_certs"
 ALTER TABLE `pki_certs`
     MODIFY `subject` longtext DEFAULT NULL,
     DROP INDEX IF EXISTS `subject`,
     ADD UNIQUE KEY IF NOT EXISTS `cn_serial` (`cn`,`serial_number`) USING HASH;
+
+\! echo "Adding default timestamp to RADIUS audit logs";
+ALTER TABLE radius_audit_log MODIFY created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+\! echo "Make psk unique";
+ALTER TABLE person ADD CONSTRAINT UNIQUE person_psk (`psk`);
+
+\! echo "Create table node_tls"
+
+CREATE TABLE IF NOT EXISTS node_tls (
+  `mac` varchar(17) NOT NULL PRIMARY KEY,
+  `TLSCertSerial` varchar(255) default NULL,
+  `TLSCertExpiration` varchar(255) default NULL,
+  `TLSCertValidSince` varchar(255) default NULL,
+  `TLSCertSubject` varchar(255) default NULL,
+  `TLSCertIssuer` varchar(255) default NULL,
+  `TLSCertCommonName` varchar(255) default NULL,
+  `TLSCertSubjectAltNameEmail` varchar(255) default NULL,
+  `TLSClientCertSerial` varchar(255) default NULL,
+  `TLSClientCertExpiration` varchar(255) default NULL,
+  `TLSClientCertValidSince` varchar(255) default NULL,
+  `TLSClientCertSubject` varchar(255) default NULL,
+  `TLSClientCertIssuer` varchar(255) default NULL,
+  `TLSClientCertCommonName` varchar(255) default NULL,
+  `TLSClientCertSubjectAltNameEmail` varchar(255) default NULL,
+  `TLSClientCertX509v3ExtendedKeyUsage` varchar(255) default NULL,
+  `TLSClientCertX509v3SubjectKeyIdentifier` varchar(255) default NULL,
+  `TLSClientCertX509v3AuthorityKeyIdentifier` varchar(255) default NULL,
+  `TLSClientCertX509v3ExtendedKeyUsageOID` varchar(255) default NULL
+) ENGINE=InnoDB DEFAULT CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_general_ci';
 
 \! echo "Incrementing PacketFence schema version...";
 INSERT IGNORE INTO pf_version (id, version, created_at) VALUES (@VERSION_INT, CONCAT_WS('.', @MAJOR_VERSION, @MINOR_VERSION), NOW());

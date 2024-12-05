@@ -25,10 +25,12 @@
                  :selected-label="selectedLabel"
                  :show-labels="showLabels"
                  :show-pointer="showPointer"
+                 :taggable="taggable"
                  :track-by="trackBy"
                  :value="value"
                  @search-change="onSearch"
                  @select="onSelect"
+                 @tag="onTag"
                  @open="onOpen"
                  @remove="onRemove"
                  @close="onClose"
@@ -105,13 +107,17 @@ export const props = {
     validator: value => ['sm', 'md', 'lg'].includes(value)
   },
 
-
   onSearch: {
     type: Function,
     default: () => {}
   },
 
   onSelect: {
+    type: Function,
+    default: () => {}
+  },
+
+  onTag: {
     type: Function,
     default: () => {}
   },

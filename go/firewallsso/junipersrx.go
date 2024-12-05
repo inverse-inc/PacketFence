@@ -9,13 +9,14 @@ import (
 	"time"
 
 	"github.com/inverse-inc/go-utils/log"
+	"github.com/inverse-inc/packetfence/go/config/pfcrypt"
 )
 
 type JuniperSRX struct {
 	FirewallSSO
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Port     string `json:"port"`
+	Username string              `json:"username"`
+	Password pfcrypt.CryptString `json:"password"`
+	Port     string              `json:"port"`
 }
 
 // Send an SSO start to the JuniperSRX using HTTP
@@ -32,7 +33,7 @@ func (fw *JuniperSRX) startHttp(ctx context.Context, info map[string]string, tim
 
 	dst := fw.getDst(ctx, "tcp", fw.PfconfigHashNS, fw.Port)
 	req, err := http.NewRequest("POST", "https://"+dst+"/api/userfw/v1/post-entry", bytes.NewBuffer([]byte(fw.startHttpPayload(ctx, info))))
-	req.SetBasicAuth(fw.Username, fw.Password)
+	req.SetBasicAuth(fw.Username, fw.Password.String())
 	client := fw.getHttpClient(ctx)
 	resp, err := client.Do(req)
 
@@ -112,7 +113,7 @@ func (fw *JuniperSRX) Stop(ctx context.Context, info map[string]string) (bool, e
 func (fw *JuniperSRX) stopHttp(ctx context.Context, info map[string]string) (bool, error) {
 	dst := fw.getDst(ctx, "tcp", fw.PfconfigHashNS, fw.Port)
 	req, err := http.NewRequest("POST", "https://"+dst+"/api/userfw/v1/post-entry", bytes.NewBuffer([]byte(fw.stopHttpPayload(ctx, info))))
-	req.SetBasicAuth(fw.Username, fw.Password)
+	req.SetBasicAuth(fw.Username, fw.Password.String())
 	client := fw.getHttpClient(ctx)
 	resp, err := client.Do(req)
 

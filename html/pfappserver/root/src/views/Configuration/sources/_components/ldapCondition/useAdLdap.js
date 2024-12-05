@@ -36,23 +36,34 @@ function useAdLdap(form) {
   }
 
   const getSubSchemaDN = () => {
-    return sendLdapSearchRequest({...form.value}, null, 'base', ['subschemaSubentry'], '')
-      .then((result) => {
-        let firstAttribute = result[Object.keys(result)[0]]
-        return firstAttribute['subSchemaSubEntry']
+    return sendLdapSearchRequest({...form.value}, null, 'base', ['subschemaSubentry'], '', 1)
+      .then((response) => {
+        const keys = Object.keys(response)
+        if (keys.length) {
+          const firstAttribute = response[keys[0]]
+          const lowerCaseKeys = Object.keys(firstAttribute).map(key => key.toLowerCase())
+          const subSchemaSubEntryIndex = lowerCaseKeys.indexOf('subschemasubentry')
+          if (subSchemaSubEntryIndex !== -1) {
+            const subSchemaSubEntryKey = Object.keys(firstAttribute)[subSchemaSubEntryIndex]
+            return firstAttribute[subSchemaSubEntryKey]
+          }
+        }
+        return []
       })
   }
 
   const fetchAttributeTypes = (subSchemaDN) => {
-    return sendLdapSearchRequest({...form.value}, '(objectclass=subschema)',
-      'base',
-      ['attributetypes'],
-      subSchemaDN)
+    return sendLdapSearchRequest({...form.value}, '(objectClass=subSchema)', 'base', ['attributeTypes'], subSchemaDN, 1000)
       .then((response) => {
         const keys = Object.keys(response)
         if (keys.length) {
-          const { attributeTypes } =  response[keys[0]]
-          return attributeTypes
+          const firstAttribute = response[keys[0]]
+          const lowerCaseKeys = Object.keys(firstAttribute).map(key => key.toLowerCase())
+          const attributeTypesIndex = lowerCaseKeys.indexOf('attributetypes')
+          if (attributeTypesIndex !== -1) {
+            const attributeTypesKey = Object.keys(firstAttribute)[attributeTypesIndex]
+            return firstAttribute[attributeTypesKey]
+          }
         }
         return []
       })

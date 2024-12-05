@@ -478,7 +478,7 @@ func (s *Server) handleRemoteFingerbankCollectorEnv(w http.ResponseWriter, req *
 
 	if sharedutils.IsEnabled(fingerbankSettings.Collector.NetworkBehaviorAnalysis) {
 		env["COLLECTOR_ENDPOINT_ANALYSIS_WEBHOOK"] = "https://localhost:9090/fingerbank/nba/webhook"
-		env["COLLECTOR_ENDPOINT_ANALYSIS_WEBHOOK_PASSWORD"] = webservices.Pass
+		env["COLLECTOR_ENDPOINT_ANALYSIS_WEBHOOK_PASSWORD"] = webservices.Pass.String()
 		env["COLLECTOR_ENDPOINT_ANALYSIS_WEBHOOK_USERNAME"] = webservices.User
 		env["COLLECTOR_NETWORK_BEHAVIOR_ANALYSIS"] = "true"
 		env["COLLECTOR_NETWORK_BEHAVIOR_POLICIES"] = "/usr/local/collector-remote/conf/network_behavior_policies.conf"

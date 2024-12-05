@@ -22,7 +22,7 @@ use pf::util;
 use pf::node;
 use pf::util::radius qw(perform_coa perform_disconnect);
 
-use base ('pf::Switch::Cisco::WLC');
+use base ('pf::Switch::Cisco::Cisco_WLC_AireOS');
 
 sub description { 'Meraki cloud controller V2' }
 
@@ -38,7 +38,7 @@ sub returnRoleAttribute {
 
 =item deauthenticateMacDefault
 
-Some of the attributes from Cisco::WLC aren't necessary
+Some of the attributes from Cisco::Cisco_WLC_AireOS aren't necessary
 
 =cut
 

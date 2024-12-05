@@ -76,6 +76,7 @@ const setup = () => {
         { name: i18n.t('Cloud Services'), path: '/configuration/clouds' },
         { name: i18n.t('Event Loggers'), path: '/configuration/event_loggers' },
         { name: i18n.t('Firewall SSO'), path: '/configuration/firewalls' },
+        { name: i18n.t('FleetDM'), path: '/configuration/fleetdm', class: 'no-saas'},
         { name: i18n.t('Web Services'), path: '/configuration/webservices' },
         { name: i18n.t('Switch Templates'), path: '/configuration/switch_templates' },
         { name: i18n.t('Event Handlers'), path: '/configuration/pfdetect' },
@@ -153,7 +154,6 @@ const setup = () => {
           ]
         },
         { name: i18n.t('Cluster'), path: '/configuration/active_active', class: 'no-saas' },
-        { name: i18n.t('FleetDM'), path: '/configuration/fleetdm', class: 'no-saas'},
         { name: i18n.t('RADIUS'),
           items: [
             { name: i18n.t('General'), path: '/configuration/radius/general' },
@@ -164,11 +164,13 @@ const setup = () => {
             { name: i18n.t('OCSP Profiles'), path: '/configuration/radius/ocsp' }
           ]
         },
-        { name: i18n.t('DNS Configuration'), path: '/configuration/dns' },
         { name: i18n.t('Admin Access'), path: '/configuration/admin_roles' },
         { name: i18n.t('Admin Login'), path: '/configuration/admin_login' },
+        { name: i18n.t('Connectors'), path: '/configuration/connectors' },
+        { name: i18n.t('DNS Configuration'), path: '/configuration/dns' },
+        { name: i18n.t('FleetDM'), path: '/configuration/fleetdm', class: 'no-saas'},
+        { name: i18n.t('Kafka'), path: '/configuration/kafka' },
         { name: i18n.t('SSL Certificates'), path: '/configuration/certificates' },
-        { name: i18n.t('Connectors'), path: '/configuration/connectors' }
       ]
     }
   ]))

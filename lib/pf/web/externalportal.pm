@@ -45,6 +45,7 @@ Readonly our $SWITCH_REWRITE_MAP => {
     'guest' => 'Ubiquiti::Unifi',
     'AeroHIVE' => 'AeroHIVE::AP',
     'Cisco::Catalyst_2960' => 'Cisco::Cisco_IOS_15_0',
+    'Cisco::WLC' => 'Cisco::Cisco_WLC_AireOS',
     'Aruba::CX' => 'Aruba::ArubaOS_CX_10.x',
     'Aruba::2930M' => 'Aruba::ArubaOS_Switch_16.x',
     'Meraki::MS220_8' => 'Meraki::MS_v15',

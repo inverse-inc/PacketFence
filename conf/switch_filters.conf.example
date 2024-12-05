@@ -248,7 +248,7 @@
 #scope = external_portal
 #switch = Fortinet::FortiGate
 #
-# - If the device is authenticating on a wireless connection, then use the Cisco::WLC_5500 module
+# - If the device is authenticating on a wireless connection, then use the Cisco::Cisco_WLC_AireOS module
 #
 #[wireless_radius]
 #filter = radius_request.NAS-Port-Type
@@ -262,4 +262,4 @@
 #
 #[msmodule4wired:wireless_locationlog|wireless_radius]
 #scope=instantiate_module
-#switch = Cisco::WLC_5500
+#switch = Cisco::Cisco_WLC_AireOS

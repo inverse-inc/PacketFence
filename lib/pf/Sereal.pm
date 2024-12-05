@@ -18,9 +18,10 @@ use Sereal::Encoder;
 use Sereal::Decoder;
 use base qw(Exporter);
 
-our @EXPORT_OK = qw($ENCODER $DECODER);
+our @EXPORT_OK = qw($ENCODER $DECODER $ENCODER_FREEZER);
 
-our $ENCODER = Sereal::Encoder->new;
+our $ENCODER = Sereal::Encoder->new();
+our $ENCODER_FREEZER = Sereal::Encoder->new({ freeze_callbacks => 1});
 our $DECODER = Sereal::Decoder->new;
 
 =head2 CLONE
@@ -32,6 +33,7 @@ Reinitialize ENCODER/DECODER when a new thread is created
 sub CLONE {
     $ENCODER = Sereal::Encoder->new;
     $DECODER = Sereal::Decoder->new;
+    $ENCODER_FREEZER = Sereal::Encoder->new({ freeze_callbacks => 1});
 }
 
 =head1 AUTHOR

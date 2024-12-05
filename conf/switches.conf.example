@@ -32,7 +32,7 @@ VoIPLLDPDetect=N
 
 [192.168.1.0/24]
 description=Test Range WLC
-type = Cisco::WLC
+type = Cisco::Cisco_WLC_AireOS
 mode = production
 uplink_dynamic=0
 VoIPLLDPDetect=N

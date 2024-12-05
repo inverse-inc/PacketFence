@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/binary"
 	"math"
 	"net"
@@ -68,7 +69,7 @@ func newDHCPConfig() *Interfaces {
 	return &p
 }
 
-func (d *Interfaces) readConfig() {
+func (d *Interfaces) readConfig(MyDB *sql.DB) {
 	interfaces := pfconfigdriver.GetType[pfconfigdriver.ListenInts](ctx)
 	DHCPinterfaces := pfconfigdriver.GetType[pfconfigdriver.DHCPInts](ctx)
 	portal := pfconfigdriver.GetType[pfconfigdriver.PfConfCaptivePortal](ctx)
@@ -246,7 +247,7 @@ func (d *Interfaces) readConfig() {
 							}
 							DHCPScope.dstIp = dstReplyIp
 							// Initialize dhcp pool
-							available, _ := pool.Create(ctx, backend, uint64(dhcp.IPRange(ip, ips)), DHCPNet.network.IP.String()+Role, algorithm, StatsdClient, MySQLdatabase)
+							available, _ := pool.Create(ctx, backend, uint64(dhcp.IPRange(ip, ips)), DHCPNet.network.IP.String()+Role, algorithm, StatsdClient, MyDB)
 
 							DHCPScope.available = available
 
@@ -267,7 +268,7 @@ func (d *Interfaces) readConfig() {
 							DHCPScope.xid = xid
 							wg.Add(1)
 							go func() {
-								initiaLease(DHCPScope, ConfNet)
+								initiaLease(DHCPScope, ConfNet, MyDB)
 								wg.Done()
 							}()
 							var options = make(map[dhcp.OptionCode][]byte)
@@ -326,7 +327,7 @@ func (d *Interfaces) readConfig() {
 						}
 						DHCPScope.dstIp = dstReplyIp
 						// Initialize dhcp pool
-						available, _ := pool.Create(ctx, backend, uint64(dhcp.IPRange(net.ParseIP(ConfNet.DhcpStart), net.ParseIP(ConfNet.DhcpEnd))), DHCPNet.network.IP.String(), algorithm, StatsdClient, MySQLdatabase)
+						available, _ := pool.Create(ctx, backend, uint64(dhcp.IPRange(net.ParseIP(ConfNet.DhcpStart), net.ParseIP(ConfNet.DhcpEnd))), DHCPNet.network.IP.String(), algorithm, StatsdClient, MyDB)
 
 						DHCPScope.available = available
 
@@ -347,7 +348,7 @@ func (d *Interfaces) readConfig() {
 						DHCPScope.xid = xid
 						wg.Add(1)
 						go func() {
-							initiaLease(DHCPScope, ConfNet)
+							initiaLease(DHCPScope, ConfNet, MyDB)
 							wg.Done()
 						}()
 

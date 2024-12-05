@@ -216,7 +216,7 @@ home_server pf.remote {
         ipaddr = $radius_remote
         src_ipaddr = $tags{'management_ip'}
         port = 1812
-        secret = $local_secret
+        secret = '$local_secret'
         response_window = 6
         status_check = status-server
         revive_interval = 120
@@ -626,7 +626,7 @@ EOT
             $tags{'config'} .= <<"EOT";
 client eduroam_tlrs_server_$i {
         ipaddr = $radius_ip
-        secret = $radius_secret
+        secret = '$radius_secret'
         shortname = eduroam_tlrs$i
         virtual_server = $virtual_server
 }
@@ -898,7 +898,7 @@ EOT
 oauth2 {
     discovery = "https://login.microsoftonline.com/%{Realm}/v2.0"
     client_id = "$client_id"
-    client_secret = "$client_secret"
+    client_secret = '$client_secret'
     cache_password = yes
 }
 EOT
@@ -1043,7 +1043,7 @@ EOT
 home_server $radius {
 ipaddr = $source->{'host'}
 port = $source->{'port'}
-secret = $source->{'secret'}
+secret = '$source->{'secret'}'
 $source->{'options'}
 }
 
@@ -1166,7 +1166,7 @@ home_server pf$i.cluster {
         ipaddr = $radius_back
         src_ipaddr = $cluster_ip
         port = $self->{auth_port}
-        secret = $local_secret
+        secret = '$local_secret'
         response_window = 6
         status_check = status-server
         check_interval = 20
@@ -1179,7 +1179,7 @@ home_server pf$i.cli.cluster {
         ipaddr = $radius_back
         src_ipaddr = $cluster_ip
         port = $self->{cli_port}
-        secret = $local_secret
+        secret = '$local_secret'
         response_window = 60
         status_check = status-server
         check_interval = 20
@@ -1216,7 +1216,7 @@ home_server eduroam$i.cluster {
         ipaddr = $radius_back
         src_ipaddr = $cluster_ip
         port = $self->{eduroam_port}
-        secret = $local_secret
+        secret = '$local_secret'
         response_window = 6
         status_check = status-server
         revive_interval = 120
@@ -1364,7 +1364,7 @@ EOT
         $tags{'config'} .= <<"EOT";
 client $radius_back {
         ipaddr = $radius_back
-        secret = $local_secret
+        secret = '$local_secret'
         port = $self->{eduroam_port}
         shortname = pf
 }
@@ -1381,7 +1381,7 @@ EOT
         $tags{'config'} .= <<"EOT";
 client $management_ip {
         ipaddr = $management_ip
-        secret = $local_secret
+        secret = '$local_secret'
         shortname = pf
 }
 EOT

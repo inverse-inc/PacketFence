@@ -79,7 +79,8 @@ CREATE TABLE person (
   `potd` enum('no','yes') NOT NULL DEFAULT 'no',
   `otp` MEDIUMTEXT NULL DEFAULT NULL,
   `sponsored_date` DATETIME DEFAULT NULL,
-  PRIMARY KEY (`pid`)
+  PRIMARY KEY (`pid`),
+  UNIQUE KEY person_psk (`psk`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_general_ci';
 
 --
@@ -1105,7 +1106,7 @@ CREATE TABLE pf_version (`id` INT NOT NULL PRIMARY KEY, `version` VARCHAR(11) NO
 
 CREATE TABLE radius_audit_log (
   `id` BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `created_at` TIMESTAMP NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `mac` char(17) NOT NULL,
   `ip` varchar(255) NULL,
   `computer_name` varchar(255) NULL,
@@ -1455,9 +1456,9 @@ CREATE TABLE `pki_profiles` (
   `revoked_valid_until` bigint(20) DEFAULT 14,
   `cloud_enabled` bigint(20) DEFAULT NULL,
   `cloud_service` longtext DEFAULT NULL,
-  `scep_server_enabled` bigint(20) DEFAULT 0,
   `scep_server_id` bigint(20) unsigned DEFAULT NULL,
-  `allow_duplicated_cn` bigint(20) DEFAULT 0,
+  `scep_server_enabled` bigint(20) DEFAULT 0,
+  `allow_duplicated_cn` bigint(20) unsigned DEFAULT 0,
   `maximum_duplicated_cn` bigint(20) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
@@ -1617,6 +1618,33 @@ DROP FUNCTION IF EXISTS ROUND_TO_MONTH;
 CREATE FUNCTION ROUND_TO_MONTH (d DATETIME)
     RETURNS DATETIME DETERMINISTIC
         RETURN DATE_ADD(DATE(d),interval -DAY(d)+1 DAY);
+
+
+--
+-- Create table node_tls
+--
+
+CREATE TABLE node_tls (
+  `mac` varchar(17) NOT NULL PRIMARY KEY,
+  `TLSCertSerial` varchar(255) default NULL,
+  `TLSCertExpiration` varchar(255) default NULL,
+  `TLSCertValidSince` varchar(255) default NULL,
+  `TLSCertSubject` varchar(255) default NULL,
+  `TLSCertIssuer` varchar(255) default NULL,
+  `TLSCertCommonName` varchar(255) default NULL,
+  `TLSCertSubjectAltNameEmail` varchar(255) default NULL,
+  `TLSClientCertSerial` varchar(255) default NULL,
+  `TLSClientCertExpiration` varchar(255) default NULL,
+  `TLSClientCertValidSince` varchar(255) default NULL,
+  `TLSClientCertSubject` varchar(255) default NULL,
+  `TLSClientCertIssuer` varchar(255) default NULL,
+  `TLSClientCertCommonName` varchar(255) default NULL,
+  `TLSClientCertSubjectAltNameEmail` varchar(255) default NULL,
+  `TLSClientCertX509v3ExtendedKeyUsage` varchar(255) default NULL,
+  `TLSClientCertX509v3SubjectKeyIdentifier` varchar(255) default NULL,
+  `TLSClientCertX509v3AuthorityKeyIdentifier` varchar(255) default NULL,
+  `TLSClientCertX509v3ExtendedKeyUsageOID` varchar(255) default NULL
+) ENGINE=InnoDB DEFAULT CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_general_ci';
 
 --
 -- Updating to current version

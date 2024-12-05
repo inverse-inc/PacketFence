@@ -1,11 +1,14 @@
 package main
 
 import (
+	"cmp"
 	"context"
 	"database/sql"
 	"fmt"
 	"net"
+	"runtime"
 	"strconv"
+	"sync/atomic"
 	"time"
 
 	cache "github.com/fdurand/go-cache"
@@ -23,7 +26,6 @@ import (
 )
 
 const DefaultTimeDuration = 5 * time.Minute
-const DefaultRadiusWorkers = 5
 const DefaultRadiusWorkQueueSize = 1000
 
 type radiusRequest struct {
@@ -52,6 +54,7 @@ type PfAcct struct {
 	StatsdOption         statsd.Option
 	StatsdClient         *statsd.Client
 	radiusRequests       []chan<- radiusRequest
+	overflows            []atomic.Int64
 	localSecret          string
 	StatsdOnce           tryableonce.TryableOnce
 	isProxied            bool
@@ -82,7 +85,6 @@ func NewPfAcct() *PfAcct {
 	pfAcct := &PfAcct{
 		Db:                  Database,
 		TimeDuration:        DefaultTimeDuration,
-		RadiusWorkers:       DefaultRadiusWorkers,
 		RadiusWorkQueueSize: DefaultRadiusWorkQueueSize,
 	}
 	pfAcct.SwitchInfoCache = cache.New(5*time.Minute, 10*time.Minute)
@@ -93,8 +95,10 @@ func NewPfAcct() *PfAcct {
 
 	pfAcct.SetupConfig(ctx)
 	pfAcct.radiusRequests = makeRadiusRequests(pfAcct, pfAcct.RadiusWorkers, pfAcct.RadiusWorkQueueSize)
+	pfAcct.overflows = make([]atomic.Int64, pfAcct.RadiusWorkers, pfAcct.RadiusWorkers)
 	pfAcct.AAAClient = jsonrpc2.NewAAAClientFromConfig(ctx)
 	//pfAcct.Dispatcher = NewDispatcher(16, 128)
+
 	pfAcct.runPing()
 	return pfAcct
 }
@@ -115,6 +119,7 @@ func makeRadiusRequests(h *PfAcct, requestFanOut, backlog int) []chan<- radiusRe
 }
 
 func (pfAcct *PfAcct) SetupConfig(ctx context.Context) {
+	numOfCpus := runtime.NumCPU()
 	var keyConfNet pfconfigdriver.PfconfigKeys
 	keyConfNet.PfconfigNS = "config::Network"
 	pfconfigdriver.FetchDecodeSocket(ctx, &keyConfNet)
@@ -174,6 +179,9 @@ func (pfAcct *PfAcct) SetupConfig(ctx context.Context) {
 		pfAcct.RadiusWorkers = int(i)
 	}
 
+	// If set to zero use twice the number of CPUs for the workers
+	pfAcct.RadiusWorkers = cmp.Or(pfAcct.RadiusWorkers, 2*numOfCpus)
+
 	if i, err := strconv.ParseInt(RadiusConfiguration.PfacctWorkQueueSize, 10, 64); err != nil {
 		logWarn(ctx, fmt.Sprintf("Invalid number '%s' pfacct_work_queue_size defaulting to '%d'", RadiusConfiguration.PfacctWorkQueueSize, pfAcct.RadiusWorkQueueSize))
 	} else {
@@ -228,6 +236,14 @@ func (pfAcct *PfAcct) runPing() {
 			}
 		}
 	}(pfAcct)
+}
+
+func (pfAcct *PfAcct) SendGauge(name string, val int) {
+	if pfAcct.StatsdClient == nil {
+		return
+	}
+
+	pfAcct.StatsdClient.Gauge(name, val)
 }
 
 func isProxied(pfAcct *PfAcct) bool {

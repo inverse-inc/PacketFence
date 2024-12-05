@@ -23,6 +23,7 @@ use pfconfig::namespaces::config;
 use pf::file_paths qw($authentication_config_file);
 use pf::util qw(isdisabled);
 use pf::constants::authentication;
+use pf::config::crypt;
 use pf::Authentication::constants;
 use pf::Authentication::Action;
 use pf::Authentication::Condition;
@@ -31,6 +32,7 @@ use pf::Authentication::utils;
 use Sort::Naturally qw(nsort);
 use List::MoreUtils qw(uniq);
 use pf::constants::authentication;
+use pf::config::crypt::object;
 
 use base 'pfconfig::namespaces::config';
 

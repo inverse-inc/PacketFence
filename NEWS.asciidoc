@@ -28,6 +28,9 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
 === New Features
 
  * Upgrade to FreeRADIUS 3.2.6 (#8290)
+ * NTLM Auth multi-threaded machine-accounts (#8335)
+ * OS based Cisco Switch Modules (#8365)
+ * Secrets encrypted at rest (#8406)
 
 === Enhancements
 
@@ -35,15 +38,34 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
  * Move SSO options to Firewall SSO from Advanced (#8303)
  * PKI - Multiple certificate with same Common Name (#8310)
  * Improved Ruckus Unbound DPSK (#8315)
+ * Improved Docker images (#8337)
+ * Support for case-insensitive LDAP Explorer attributes (#8366) @E-ThanG
+ * Custom taggable LDAP Explorer attributes (e6435e8)
+ * Performance improvements on pfacct (#8369)
+ * Added Aruba-MPSK-password attribute (#6957)
+ * Reduce time to flush the RADIUS log (#8397)
+ * Improve DPSK (#8356)
+ * Improve Mikrotik Disconnect (#8418)
+ * Select the first device that matches MFA (#8400)
+ * Improve pfdhcp DB connection (#8419)
+ * Track TLS certificate attributes per node (#8416)
+ * Kafka UI Config (#8421)
 
 === Bug Fixes
 
  * Don't generate all the time a mac address when using the GenericVPN switch module (#8270)
  * Add missing parameters for authentication rule match (#8306)
+ * Fixed the dynamic role assignment issue for Aruba switch modules (#8331)
+ * Show only registered nodes on status page (#8382)
+ * Fixed pfperl-api restart (#8391)
+ * Fixed deauthOnPrevious with webauth (#7319)
+ * Fixed IP resolution on LDAP SSL verification (#6808)
+ * Fixed NAS-Port to ifIndex on Comware v7 switches (#8062) @bmp96
+ * Fix Debian sudoers (#7908) @andrew-grasso
 
 === Security Fixes
 
- * Library updates (#8307)
+ * Library updates (#8307, #8328, #8329, #8336, #8341, #8353, #8371, #8404, #8405, #8407, #8408, #8409, #8410, #8412, #8422, #8423, #8424, #8425)
 
 == Version 14.0.0 released on 2024-09-06
 

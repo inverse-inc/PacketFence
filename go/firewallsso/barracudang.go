@@ -5,14 +5,15 @@ import (
 	"fmt"
 
 	"github.com/inverse-inc/go-utils/log"
+	"github.com/inverse-inc/packetfence/go/config/pfcrypt"
 	"golang.org/x/crypto/ssh"
 )
 
 type BarracudaNG struct {
 	FirewallSSO
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Port     string `json:"port"`
+	Username string              `json:"username"`
+	Password pfcrypt.CryptString `json:"password"`
+	Port     string              `json:"port"`
 }
 
 // Get an SSH session to the firewall
@@ -20,7 +21,7 @@ func (fw *BarracudaNG) getSshSession(ctx context.Context) (*ssh.Session, error) 
 	sshConfig := &ssh.ClientConfig{
 		User: fw.Username,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(fw.Password),
+			ssh.Password(fw.Password.String()),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}

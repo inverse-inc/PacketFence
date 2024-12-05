@@ -47,6 +47,7 @@ our (
     $local_secret_file,
     # Unified API system user password
     $unified_api_system_pass_file,
+    $system_init_key_file,
     #profiles.conf variables
     $profiles_config_file, $profiles_default_config_file,
     #Other configuraton files variables
@@ -134,6 +135,7 @@ our (
     $provisioning_filters_config_default_file,
     $provisioning_filters_meta_config_file,
     $provisioning_filters_meta_config_default_file,
+    $pfperl_api_restart_task,
 );
 
 BEGIN {
@@ -156,6 +158,7 @@ BEGIN {
         $oui_file $oui_url
         $local_secret_file
         $unified_api_system_pass_file
+        $system_init_key_file
         $profiles_config_file $profiles_default_config_file
         $switches_config_file $switches_default_config_file
         $template_switches_config_file $template_switches_default_config_file
@@ -242,6 +245,7 @@ BEGIN {
         $provisioning_filters_config_default_file
         $provisioning_filters_meta_config_file
         $provisioning_filters_meta_config_default_file
+        $pfperl_api_restart_task
     );
 }
 
@@ -274,6 +278,7 @@ $systemd_unit_dir   = "/usr/lib/systemd/system";
 $acme_challenge_dir = catdir($conf_dir,"ssl/acme-challenge");
 $conf_uploads = catdir($conf_dir, "uploads");
 $api_i18n_dir       = catdir($conf_dir, "I18N/api");
+$pfperl_api_restart_task   = catdir($var_dir, "pfperl-api/restart-task");
 
 $pfcmd_binary = catfile( $bin_dir, "pfcmd" );
 
@@ -282,6 +287,7 @@ $suricata_categories_file = catfile($conf_dir, "suricata_categories.txt");
 $nexpose_categories_file = catfile($conf_dir, "nexpose-responses.txt");
 $local_secret_file  = catfile($conf_dir, "local_secret");
 $unified_api_system_pass_file  = catfile($conf_dir, "unified_api_system_pass");
+$system_init_key_file = catfile($conf_dir, "system_init_key");
 $pf_doc_file        = catfile($conf_dir, "documentation.conf");
 $oauth_ip_file      = catfile($conf_dir, "oauth2-ips.conf");
 $ui_config_file     = catfile($conf_dir, "ui.conf");

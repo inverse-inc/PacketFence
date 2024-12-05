@@ -59,7 +59,7 @@ func TestApiAAALogin(t *testing.T) {
 
 func TestApiAAATokenInfo(t *testing.T) {
 	webservices := pfconfigdriver.GetStruct(ctx, "PfConfWebservices").(*pfconfigdriver.PfConfWebservices)
-	_, token, _ := apiAAA.authentication.Login(ctx, webservices.User, webservices.Pass)
+	_, token, _ := apiAAA.authentication.Login(ctx, webservices.User, webservices.Pass.String())
 	tokenInfo, _ := apiAAA.authorization.GetTokenInfo(ctx, token)
 
 	req, _ := http.NewRequest("GET", "/api/v1/token_info", nil)

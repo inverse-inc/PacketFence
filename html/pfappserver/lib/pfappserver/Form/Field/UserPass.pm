@@ -1,23 +1,32 @@
-package pf::Switch::Cisco::WLC_4400;
+package pfappserver::Form::Field::UserPass;
 
 =head1 NAME
 
-pf::Switch::Cisco::WLC_4400 - Object oriented module to parse SNMP traps and manage Cisco Wireless Controllers 4400 Series
+pfappserver::Form::Field::UserPass -
 
-=head1 STATUS
+=head1 DESCRIPTION
 
-This module is currently only a placeholder, see L<pf::Switch::Cisco::WLC> for relevant support items.
+pfappserver::Form::Field::UserPass
 
 =cut
 
 use strict;
 use warnings;
+use strict;
+use warnings;
+use HTML::FormHandler::Moose;
+extends 'HTML::FormHandler::Field::Compound';
+with 'pfappserver::Base::Form::Role::Help';
 
-use Net::SNMP;
+has_field 'user' => (
+    type     => 'Text',
+    label    => 'User',
+);
 
-use base ('pf::Switch::Cisco::WLC');
-
-sub description { 'Cisco Wireless (WLC) 4400 Series' }
+has_field 'pass' => (
+    type     => 'ObfuscatedText',
+    label    => 'Password',
+);
 
 =head1 AUTHOR
 
@@ -48,6 +57,3 @@ USA.
 
 1;
 
-# vim: set shiftwidth=4:
-# vim: set expandtab:
-# vim: set backspace=indent,eol,start:

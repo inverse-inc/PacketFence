@@ -1,14 +1,13 @@
-package pf::Switch::Cisco::WiSM2;
+package pf::Switch::Cisco::Cisco_WLC_IOS_XE;
 
 =head1 NAME
 
-pf::Switch::Cisco::WiSM2 - Object oriented module to parse SNMP traps and manage Cisco Wireless Services Module (WiSM2)
+pf::Switch::Cisco::Cisco_WLC_IOS_XE - Object oriented module to parse SNMP traps and 
+manage Cisco Wireless Controllers Series running on Cisco IOS XE.
 
 =head1 STATUS
 
-This module is currently only a placeholder, see L<pf::Switch::Cisco::WLC> for relevant support items.
-
-It should work on all 6500 WiSM2 modules and maybe 7500.
+This module is currently only a placeholder, see L<pf::Switch::Cisco::Cisco_WLC_AireOS> for relevant support items.
 
 =cut
 
@@ -17,9 +16,9 @@ use warnings;
 
 use Net::SNMP;
 
-use base ('pf::Switch::Cisco::WLC');
+use base ('pf::Switch::Cisco::Cisco_WLC_AireOS');
 
-sub description { 'Cisco WiSM2' }
+sub description { 'Cisco WLC (IOS XE)' }
 
 =head1 AUTHOR
 

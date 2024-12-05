@@ -93,7 +93,7 @@ sub is_lost_stolen {
 sub userIsAuthenticated : Private {
     my ( $self, $c ) = @_;
     my $pid     = $c->user_session->{"username"} // $c->{_session}->{username};
-    my @person_nodes = person_nodes($pid);
+    my @person_nodes = person_reg_nodes($pid);
     my @nodes;
     foreach my $person_node (@person_nodes) {
         my $node = node_view($person_node->{mac});
@@ -113,6 +113,9 @@ sub userIsAuthenticated : Private {
         foreach my $provisioner (@provisioners) {
             next unless $provisioner->isa("pf::provisioner::dpsk");
             my $dpsk = $provisioner->generate_dpsk($pid);
+            if (!$dpsk) {
+                $dpsk = "Error generating the PSK, contact your administrator";
+            }
             $c->stash( psk => $dpsk);
         }
     }

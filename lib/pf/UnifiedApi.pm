@@ -23,9 +23,13 @@ use JSON::MaybeXS qw();
    }
 }
 
+use pf::services;
+use pf::pfqueue::status_updater::redis;
+use pf::util::pfqueue qw(consumer_redis_client);
+
 use Mojo::Base 'Mojolicious';
 use pf::util qw(add_jitter);
-use pf::file_paths qw($log_conf_dir);
+use pf::file_paths qw($log_conf_dir $pfperl_api_restart_task);
 use pf::SwitchFactory;
 pf::SwitchFactory->preloadAllModules();
 use MojoX::Log::Log4perl;
@@ -33,6 +37,7 @@ use pf::UnifiedApi::Controller;
 use pf::UnifiedApi::Controller::Config::Switches;
 use pf::I18N::pfappserver;
 use pfconfig::refresh_last_touch_cache;
+use File::Slurp;
 our $MAX_REQUEST_HANDLED = 2000;
 our $REQUEST_HANDLED_JITTER = 500;
 
@@ -107,6 +112,39 @@ sub before_server_start {
             }
         );
     }
+
+    if (-e $pfperl_api_restart_task) {
+        my $task_id = read_file($pfperl_api_restart_task, {err_mode => 'quiet'});
+        unlink($pfperl_api_restart_task);
+        if (defined $task_id) {
+            chomp($task_id);
+            if ($task_id ne '') {
+                set_service_status($task_id, 'pfperl-api');
+            }
+        }
+    }
+}
+
+sub set_service_status {
+    my ($task_id, $service_id) = @_;
+    my $service = get_service($service_id);
+    if (!$service) {
+        return;
+    }
+
+    my $updater = pf::pfqueue::status_updater::redis->new( connection => consumer_redis_client(), task_id => $task_id );
+    my $pid = $service->pid();
+    $updater->completed({restart => $pid ? 1 : 0, pid => $pid});
+}
+
+sub get_service {
+    my ($service_id) = @_;
+    my $class = $pf::services::ALL_MANAGERS{$service_id};
+    if(defined($class) && $class->can('new')){
+        return $class;
+    }
+
+    return undef;
 }
 
 =head2 before_render_cb
@@ -323,6 +361,7 @@ sub setup_api_v1_config_routes {
     $self->setup_api_v1_config_clouds_routes($root);
     $self->setup_api_v1_config_firewalls_routes($root);
     $self->setup_api_v1_config_floating_devices_routes($root);
+    $self->setup_api_v1_config_kafka_routes($root);
     $self->setup_api_v1_config_maintenance_tasks_routes($root);
     $self->setup_api_v1_config_network_behavior_policies_routes($root);
     $self->setup_api_v1_config_misc_routes($root);
@@ -2327,6 +2366,14 @@ sub setup_api_v1_emails_route {
     $resource_route->register_sub_action({ method => 'POST', action => 'send_email', path => 'send'});
     $resource_route->register_sub_action({ method => 'POST', action => 'pfmailer', path => 'pfmailer'});
     return ;
+}
+
+sub setup_api_v1_config_kafka_routes {
+    my ($self, $root) = @_;
+    my $resource_route = $root->any("kafka")->to(controller => "Config::Kafka" )->name("api.v1.Config.Kafka");
+    $resource_route->register_sub_action({ method => 'PATCH', action => 'update', path => ''});
+    $resource_route->register_sub_action({ method => 'GET', action => 'get', path => ''});
+    $resource_route->register_sub_action({ method => 'OPTIONS', action => 'options', path => ''});
 }
 
 =head1 AUTHOR

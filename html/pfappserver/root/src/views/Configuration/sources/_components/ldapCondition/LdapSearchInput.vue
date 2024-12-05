@@ -27,9 +27,11 @@
       :options="inputOptions"
       :value="inputValue"
       :label="text"
+      :taggable="taggable"
       :track-by="text"
       :single-label="singleLabel"
       :on-select="onSelect"
+      :on-tag="onTag"
       :on-open="onOpen"
       :on-remove="onRemove"
       :on-close="onClose"
@@ -179,6 +181,10 @@ function setup(props, context) { // eslint-disable-line
     }
   }
 
+  function onTag(value) {
+    onSelect(valueToSelectValue(value))
+  }
+
   function onOpen() {
     if (selectedValue.value !== null) {
       inputOptions.value = [selectedValue.value]
@@ -206,6 +212,7 @@ function setup(props, context) { // eslint-disable-line
     isConnected,
     onSearch,
     onSelect,
+    onTag,
     onOpen,
     onClose,
     onRemove,

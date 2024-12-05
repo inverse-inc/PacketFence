@@ -7,6 +7,9 @@ const route = {
   name: 'login',
   component: TheView,
   beforeEnter: (to, from, next) => {
+    if (from.path && !['/', '/login', '/logout', '/expire'].includes(from.path)) {
+      localStorage.setItem('last_uri', from.path)
+    }
     resetVuexStore()
     next()
   }

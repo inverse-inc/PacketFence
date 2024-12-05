@@ -345,10 +345,10 @@ post-auth {
 
 		if (updated || ok || noop) {
 			request-timing
-			-sql
+			packetfence-audit-log-accept
 		} else {
 			request-timing
-			-sql_reject
+			packetfence-audit-log-reject
 		}
 	}
 	attr_filter.packetfence_post_auth
@@ -365,7 +365,7 @@ post-auth {
 	Post-Auth-Type REJECT {
 		request-timing
 		# log failed authentications in SQL, too.
-		-sql_reject
+		packetfence-audit-log-reject
 
 		attr_filter.access_reject
 		attr_filter.packetfence_post_auth

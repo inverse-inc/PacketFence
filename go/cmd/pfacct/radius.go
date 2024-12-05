@@ -75,7 +75,8 @@ func (h *PfAcct) HandleStatusServer(w radius.ResponseWriter, r *radius.Request) 
 
 func (h *PfAcct) HandleAccounting(w radius.ResponseWriter, r *radius.Request) {
 	ctx := r.Context()
-	defer h.NewTiming().Send("pfacct.HandleAccountingRequest")
+	timing := h.NewTiming()
+	defer timing.Send("pfacct.HandleAccountingRequest")
 	status := rfc2866.AcctStatusType_Get(r.Packet)
 	if status > rfc2866.AcctStatusType_Value_InterimUpdate {
 		outPacket := r.Response(radius.CodeAccountingResponse)
@@ -119,12 +120,23 @@ func (h *PfAcct) HandleAccounting(w radius.ResponseWriter, r *radius.Request) {
 
 func (h *PfAcct) sendRadiusRequestToQueue(rr radiusRequest) {
 	queueIndex := djb2Hash(rr.mac[:]) % uint64(len(h.radiusRequests))
-	h.radiusRequests[queueIndex] <- rr
+	select {
+	case h.radiusRequests[queueIndex] <- rr:
+	default:
+		go func() {
+			h.overflows[queueIndex].Add(1)
+			h.radiusRequests[queueIndex] <- rr
+			h.overflows[queueIndex].Add(-1)
+		}()
+	}
+
+	h.SendGauge(fmt.Sprintf("pfacct.radiusRequests[%d]", queueIndex), len(h.radiusRequests[queueIndex])+int(h.overflows[queueIndex].Load()))
 }
 
 func (h *PfAcct) handleAccountingRequest(rr radiusRequest) {
 	r, switchInfo, mac, status := rr.r, rr.switchInfo, rr.mac, rr.status
-	defer h.NewTiming().Send("pfacct.accounting." + rr.status.String())
+	timing := h.NewTiming()
+	defer timing.Send("pfacct.accounting." + rr.status.String())
 	ctx := r.Context()
 	in_bytes := int64(rfc2866.AcctInputOctets_Get(r.Packet))
 	out_bytes := int64(rfc2866.AcctOutputOctets_Get(r.Packet))
@@ -176,9 +188,9 @@ func (h *PfAcct) handleAccountingRequest(rr radiusRequest) {
 		}
 	}
 
-	h.sendRadiusAccounting(r, switchInfo)
 	h.handleTimeBalance(r, switchInfo, unique_session_id)
 	h.handleBandwidthBalance(r, switchInfo, in_bytes+out_bytes)
+	h.sendRadiusAccounting(rr, switchInfo)
 }
 
 func (h *PfAcct) handleTimeBalance(r *radius.Request, switchInfo *SwitchInfo, unique_session uint64) {
@@ -304,7 +316,11 @@ func (h *PfAcct) accountingUniqueSessionId(r *radius.Request) uint64 {
 	return hash.Sum64()
 }
 
-func (h *PfAcct) sendRadiusAccounting(r *radius.Request, switchInfo *SwitchInfo) {
+func (h *PfAcct) sendRadiusAccounting(rr radiusRequest, switchInfo *SwitchInfo) {
+	h.sendRadiusAccountingCall(rr.r)
+}
+
+func (h *PfAcct) sendRadiusAccountingCall(r *radius.Request) {
 	ctx := r.Context()
 	attr := packetToMap(ctx, r.Packet)
 	attr["PF_HEADERS"] = map[string]string{
@@ -317,7 +333,7 @@ func (h *PfAcct) sendRadiusAccounting(r *radius.Request, switchInfo *SwitchInfo)
 		logWarn(ctx, fmt.Sprintf("Empty NAS-IP-Address, using the source IP address of the packet (%s)", attr["NAS-IP-Address"]))
 	}
 
-	if _, err := h.AAAClient.Call(ctx, "radius_accounting", attr); err != nil {
+	if err := h.AAAClient.Notify(ctx, "radius_accounting", attr); err != nil {
 		logError(ctx, err.Error())
 	}
 }

@@ -1,24 +1,36 @@
-package pf::Switch::Cisco::WLC_5500;
+package pf::ConfigStore::All;
 
 =head1 NAME
 
-pf::Switch::Cisco::WLC_5500 - Object oriented module to parse SNMP traps and 
-manage Cisco Wireless Controllers 5500 Series
+pf::ConfigStore::All -
 
-=head1 STATUS
+=head1 DESCRIPTION
 
-This module is currently only a placeholder, see L<pf::Switch::Cisco::WLC> for relevant support items.
+pf::ConfigStore::All
 
 =cut
 
 use strict;
 use warnings;
+use Role::Tiny qw();
 
-use Net::SNMP;
+use Module::Pluggable
+  'search_path' => [qw(pf::ConfigStore)],
+  'sub_name'    => '_all_stores',
+  'require'     => 1,
+  'inner'       => 0,
+  ;
 
-use base ('pf::Switch::Cisco::WLC');
+our @STORES;
 
-sub description { 'Cisco Wireless (WLC) 5500 Series' }
+sub all_stores {
+    if (!@STORES) {
+        my @tmp_stores = __PACKAGE__->_all_stores();
+        @STORES = grep { $_ ne __PACKAGE__ && !Role::Tiny->is_role($_) && !$_->does('pf::ConfigStore::Group') && !$_->does('pf::ConfigStore::Filtered') } @tmp_stores;
+    }
+
+    return [@STORES];
+}
 
 =head1 AUTHOR
 
@@ -48,7 +60,3 @@ USA.
 =cut
 
 1;
-
-# vim: set shiftwidth=4:
-# vim: set expandtab:
-# vim: set backspace=indent,eol,start:

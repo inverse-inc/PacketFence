@@ -1,25 +1,36 @@
-package pf::Switch::Cisco::WiSM;
+package pfappserver::Form::Field::NameVal;
 
 =head1 NAME
 
-pf::Switch::Cisco::WiSM - Object oriented module to parse SNMP traps and manage Cisco Wireless Services Module (WiSM)
+pfappserver::Form::Field::NameVal -
 
-=head1 STATUS
+=head1 DESCRIPTION
 
-This module is currently only a placeholder, see L<pf::Switch::Cisco::WLC> for relevant support items.
-
-It should work on all 6500 WiSM modules and maybe 7500.
+pfappserver::Form::Field::NameVal
 
 =cut
 
 use strict;
 use warnings;
+use HTML::FormHandler::Moose;
+extends 'HTML::FormHandler::Field::Compound';
+with 'pfappserver::Base::Form::Role::Help';
 
-use Net::SNMP;
+=head2 name
 
-use base ('pf::Switch::Cisco::WLC');
+Name
 
-sub description { 'Cisco WiSM' }
+=cut
+
+has_field 'name' => (
+    type     => 'Text',
+    label    => 'Name',
+);
+
+has_field 'value' => (
+    type     => 'Text',
+    label    => 'Value',
+);
 
 =head1 AUTHOR
 
@@ -50,6 +61,3 @@ USA.
 
 1;
 
-# vim: set shiftwidth=4:
-# vim: set expandtab:
-# vim: set backspace=indent,eol,start:

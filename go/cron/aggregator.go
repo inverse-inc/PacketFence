@@ -1,15 +1,18 @@
 package maint
 
 import (
-	"cmp"
 	"context"
 	"database/sql"
 	"math"
 	"net/netip"
 	"time"
+
+	"github.com/inverse-inc/go-utils/log"
 )
 
 type EventKey struct {
+	DomainID  uint32
+	FlowSeq   uint32
 	SrcIp     netip.Addr
 	DstIp     netip.Addr
 	DstPort   uint16
@@ -53,9 +56,46 @@ type Aggregator struct {
 	db               *sql.DB
 }
 
+func updateMacs(ctx context.Context, f *PfFlow, stmt *sql.Stmt) {
+	if f.SrcMac != "00:00:00:00:00:00" && f.DstMac != "00:00:00:00:00:00" {
+		return
+	}
+
+	var srcMac, dstMac string
+	err := stmt.QueryRowContext(ctx, f.SrcIp.String(), f.DstIp.String()).Scan(&srcMac, &dstMac)
+	if err != nil {
+		log.LogErrorf(ctx, "updateMacs Database Error: %s", err.Error())
+	}
+
+	if f.SrcMac == "00:00:00:00:00:00" {
+		f.SrcMac = srcMac
+	}
+
+	if f.DstMac == "00:00:00:00:00:00" {
+		f.DstMac = dstMac
+	}
+}
+
+const updateMacsSql = `
+SELECT
+	COALESCE((SELECT mac FROM ip4log WHERE ip = ?), "00:00:00:00:00:00") as src_mac,
+	COALESCE((SELECT mac FROM ip4log WHERE ip = ?), "00:00:00:00:00:00") as dst_mac;
+`
+
 func (a *Aggregator) handleEvents() {
 	ctx := context.Background()
 	ticker := time.NewTicker(a.timeout)
+	stmt, err := new(sql.Stmt), error(nil)
+	//	if a.db != nil {
+	stmt, err = a.db.PrepareContext(ctx, updateMacsSql)
+	if err != nil {
+		log.LogErrorf(ctx, "handleEvents Database Error: %s %s", updateMacsSql, err.Error())
+		stmt = nil
+	} else {
+		defer stmt.Close()
+	}
+	//	}
+
 loop:
 	for {
 		select {
@@ -67,6 +107,11 @@ loop:
 					if a.Heuristics > 0 {
 						f.Heuristics()
 					}
+
+					if stmt != nil {
+						updateMacs(ctx, &f, stmt)
+					}
+
 					a.events[key] = append(val, f)
 				}
 			}
@@ -75,14 +120,12 @@ loop:
 			for _, events := range a.events {
 				startTime := int64(math.MaxInt64)
 				endTime := int64(0)
-				packetCount := uint64(0)
-				networkEvent := events[0].ToNetworkEvent()
-				if networkEvent == nil {
-					for _, e := range events[1:] {
-						networkEvent = e.ToNetworkEvent()
-						if networkEvent != nil {
-							break
-						}
+				connectionCount := uint64(0)
+				var networkEvent *NetworkEvent
+				for _, e := range events {
+					networkEvent = e.ToNetworkEvent()
+					if networkEvent != nil {
+						break
 					}
 				}
 
@@ -94,11 +137,14 @@ loop:
 				for _, e := range events {
 					startTime = min(startTime, e.StartTime)
 					endTime = max(endTime, e.EndTime)
-					ports[e.SessionKey()] = struct{}{}
-					packetCount += cmp.Or(e.PacketCount, 1)
+					sessionKey := e.SessionKey()
+					if _, ok := ports[sessionKey]; !ok {
+						ports[sessionKey] = struct{}{}
+						connectionCount += e.ConnectionCount
+					}
 				}
 
-				networkEvent.Count = len(ports)
+				networkEvent.Count = int(connectionCount)
 				if startTime != 0 {
 					networkEvent.StartTime = uint64(startTime)
 				}

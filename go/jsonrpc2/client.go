@@ -41,10 +41,10 @@ type Client struct {
 }
 
 type JsonRPC2Request struct {
-	Method   string      `json:"method"`
-	JsonRPC  string      `json:"jsonrpc"`
-	Params   interface{} `json:"params"`
-	Id       uint        `json:"id,omitempty"`
+	Method  string      `json:"method"`
+	JsonRPC string      `json:"jsonrpc"`
+	Params  interface{} `json:"params"`
+	Id      uint        `json:"id,omitempty"`
 }
 
 type JsonRPC2Error struct {
@@ -69,7 +69,7 @@ func NewClientFromConfig(ctx context.Context) *Client {
 	pfconfigdriver.FetchDecodeSocket(ctx, &webservices)
 	return &Client{
 		Username: webservices.User,
-		Password: webservices.Pass,
+		Password: webservices.Pass.String(),
 		Proto:    webservices.Proto,
 		Host:     webservices.Host,
 		Port:     webservices.Port,
@@ -83,20 +83,20 @@ func NewAAAClientFromConfig(ctx context.Context) *Client {
 	pfconfigdriver.FetchDecodeSocket(ctx, &ports)
 	return &Client{
 		Username: webservices.User,
-		Password: webservices.Pass,
+		Password: webservices.Pass.String(),
 		Proto:    webservices.AAAProto,
 		Host:     webservices.Host,
 		Port:     ports.AAA,
 	}
 }
 
-func (c *Client) Call(ctx context.Context, method string, args interface{} ) (interface{}, error) {
+func (c *Client) Call(ctx context.Context, method string, args interface{}) (interface{}, error) {
 	c.Id++
 	request := JsonRPC2Request{
-		Method:   method,
-		JsonRPC:  "2.0",
-		Params:   args,
-		Id:       c.Id,
+		Method:  method,
+		JsonRPC: "2.0",
+		Params:  args,
+		Id:      c.Id,
 	}
 
 	r, err := c.buildRequest(&request)
@@ -127,12 +127,12 @@ func (c *Client) Call(ctx context.Context, method string, args interface{} ) (in
 	return response.Result, nil
 }
 
-func (c *Client) Notify(ctx context.Context, method string, args interface{} ) error {
+func (c *Client) Notify(ctx context.Context, method string, args interface{}) error {
 	request := JsonRPC2Request{
-		Method:   method,
-		JsonRPC:  "2.0",
-		Params:   args,
-		Id:       0,
+		Method:  method,
+		JsonRPC: "2.0",
+		Params:  args,
+		Id:      0,
 	}
 
 	r, err := c.buildRequest(&request)

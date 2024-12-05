@@ -57,12 +57,13 @@ Requires: freeradius >= 3.2.6, freeradius-mysql >= 3.2.6, freeradius-perl >= 3.2
 Requires: make
 Requires: net-tools
 Requires: sscep
+Requires: util-linux
 Requires: net-snmp >= 5.3.2.2
 Requires: net-snmp-perl
 Requires: perl >= %{perl_version}
 Requires: packetfence-perl >= 1.2.4
-Requires: MariaDB-server >= 10.5.15, MariaDB-server < 10.6.0
-Requires: MariaDB-client >= 10.5.15, MariaDB-client < 10.6.0
+Requires: MariaDB-server >= 10.11
+Requires: MariaDB-client >= 10.11
 Requires: perl(DBD::mysql)
 Requires: perl(Sub::Exporter)
 Requires: perl(Cisco::AccessList::Parser)
@@ -694,7 +695,12 @@ if [ ! -f /usr/local/pf/conf/unified_api_system_pass ]; then
     date +%s | sha256sum | base64 | head -c 32 > /usr/local/pf/conf/unified_api_system_pass
 fi
 
-for service in httpd snmptrapd portreserve redis
+# Create server API system user password
+if [ ! -f /usr/local/pf/conf/system_init_key ]; then
+	hexdump -e '/1 "%x"' < /dev/urandom | head -c 32 > /usr/local/pf/conf/system_init_key
+fi
+
+for service in httpd snmptrapd portreserve redis netdata
 do
   if /bin/systemctl -a | grep $service > /dev/null 2>&1; then
     echo "Disabling $service startup script"
@@ -714,7 +720,7 @@ fi
 if [ ! -f /usr/local/pf/conf/pf.conf ]; then
   echo "Touch pf.conf because it doesnt exist"
   touch /usr/local/pf/conf/pf.conf
-  chown pf.pf /usr/local/pf/conf/pf.conf
+  chown pf:pf /usr/local/pf/conf/pf.conf
 else
   echo "pf.conf already exists, won't touch it!"
 fi
@@ -722,7 +728,7 @@ fi
 if [ ! -f /usr/local/pf/conf/pfconfig.conf ]; then
   echo "Touch pfconfig.conf because it doesnt exist"
   touch /usr/local/pf/conf/pfconfig.conf
-  chown pf.pf /usr/local/pf/conf/pfconfig.conf
+  chown pf:pf /usr/local/pf/conf/pfconfig.conf
 else
   echo "pfconfig.conf already exists, won't touch it!"
 fi
@@ -919,6 +925,7 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/addons/watchdog/*.sh
 %dir                    /usr/local/pf/bin
 %attr(6755, root, root) /usr/local/pf/bin/pfcmd
+%attr(6755, root, root) /usr/local/pf/bin/pfcrypt
 %attr(0755, root, root) /usr/local/pf/bin/ntlm_auth_wrapper
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd.pl
 %attr(0755, pf, pf)     /usr/local/pf/bin/pfcmd_vlan
@@ -934,18 +941,22 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/maintenance
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/node
 %dir                    /usr/local/pf/bin/pyntlm_auth
-%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/app.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/config_generator.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/config_loader.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/constants.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/entrypoint.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/flags.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/global_vars.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/gunicorn.conf.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/handlers.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/ms_event.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/ncache.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/redis_client.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/rpc.py
-%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/t_api.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/t_async_job.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/t_health_checker.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/t_sdnotify.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/t_worker_register.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/utils.py
 %attr(0755, pf, pf)     /usr/local/pf/sbin/galera-autofix
 %attr(0755, pf, pf)     /usr/local/pf/sbin/mysql-probe

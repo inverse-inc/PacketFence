@@ -46,9 +46,9 @@ sub apply_schema {
     if (!-e $schema) {
         die "schema '$schema' does not exists or symlink is broken\n";
     }
-    system("mysql -h$config->{host} -P$config->{port} -u$config->{user} -p$config->{pass} $config->{db} < $schema");
+    system("mysql -h$config->{host} -u$config->{user} -p$config->{pass} $config->{db} < $schema");
     if ($?) {
-        print STDERR "mysql -h$config->{host} -P$config->{port} -u$config->{user} -p\"$config->{pass}\" $config->{db} < $schema\n";
+        print STDERR "mysql -h$config->{host} -u$config->{user} -p\"$config->{pass}\" $config->{db} < $schema\n";
         die "Unable to apply schema\n";
     }
 }
@@ -74,7 +74,7 @@ EOS
 
 sub dsn_from_config {
     my ($config) = @_;
-    return "dbi:mysql:;host=$config->{host};port=$config->{port};mysql_client_found_rows=0;mysql_socket=/var/lib/mysql/mysql.sock";
+    return "dbi:mysql:;host=$config->{host};mysql_client_found_rows=0;mysql_socket=/var/lib/mysql/mysql.sock";
 }
 
 sub create_db {

@@ -4,9 +4,11 @@
     :value="inputValue"
     :label="text"
     :isLoading="isLoading"
+    :taggable="taggable"
     :track-by="text"
     :single-label="singleLabel"
     :on-select="onSelect"
+    :on-tag="onTag"
     :on-remove="onRemove"
     :on-open="onOpen"
     :on-close="onClose"
@@ -54,10 +56,7 @@ function setup(props, _) { // eslint-disable-line
   const isFocused = ref(false)
   const isLoading = computed(() => inject(ProvidedKeys.LdapAttributesLoading).value)
   const isConnected = computed(() => inject(ProvidedKeys.connectedToLdap).value)
-  const allOptions = computed(() => {
-    if (!isConnected.value) {
-      return []
-    }
+  const inputOptions = computed(() => {
     return moveSelectionToTop(inject(ProvidedKeys.LdapAttributes).value.map(valueToSelectValue))
   })
   const isDisabled = inject('isLoading')
@@ -109,6 +108,10 @@ function setup(props, _) { // eslint-disable-line
     validateChoice()
   }
 
+  function onTag(value) {
+    onSelect(valueToSelectValue(value))
+  }
+
   function onOpen() {
     isFocused.value = true
   }
@@ -124,12 +127,13 @@ function setup(props, _) { // eslint-disable-line
   validateChoice()
 
   return {
-    inputOptions: allOptions,
+    inputOptions,
     isDisabled,
     isFocused,
     isLoading,
     isConnected,
     onSelect,
+    onTag,
     onOpen,
     onClose,
     onRemove,

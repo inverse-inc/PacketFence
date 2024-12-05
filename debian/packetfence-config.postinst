@@ -24,10 +24,15 @@ case "$1" in
         if [ ! -f /usr/local/pf/conf/pfconfig.conf ]; then
             echo "pfconfig.conf doesnt exits"
             touch /usr/local/pf/conf/pfconfig.conf
-            chown pf.pf /usr/local/pf/conf/pfconfig.conf
+            chown pf:pf /usr/local/pf/conf/pfconfig.conf
         else
             echo "pfconfig.conf already exists, won't touch it!"
         fi
+
+        if [ ! -f /usr/local/pf/conf/system_init_key ]; then
+            hexdump -e '/1 "%x"' < /dev/urandom | head -c 32 > /usr/local/pf/conf/system_init_key
+        fi
+
 	/sbin/ldconfig
         if [ ${DIST} = "jessie" ] || [ ${DIST} = "stretch" ] || [ ${DIST} = "bullseye" ] || [ ${DIST} = "bookworm" ]; then
 	    systemctl enable packetfence-config

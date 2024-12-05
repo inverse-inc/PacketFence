@@ -71,10 +71,10 @@ has 'usernameattribute' => (isa => 'Str', is => 'rw', required => 1);
 has 'searchattributes' => (isa => 'ArrayRef[Str]', is => 'rw', required => 0);
 has 'append_to_searchattributes' => (isa => 'Maybe[Str]', is => 'rw', required => 0);
 has '_cached_connection' => (is => 'rw');
-has 'cache_match' => ( isa => 'Bool', is => 'rw', default => '0' );
+has 'cache_match' => ( isa => 'Bool', is => 'rw', default => 0 );
 has 'email_attribute' => (isa => 'Maybe[Str]', is => 'rw', default => 'mail');
-has 'monitor' => ( isa => 'Bool', is => 'rw', default => '1' );
-has 'shuffle' => ( isa => 'Bool', is => 'rw', default => '0' );
+has 'monitor' => ( isa => 'Bool', is => 'rw', default => 1 );
+has 'shuffle' => ( isa => 'Bool', is => 'rw', default => 0 );
 has 'dead_duration' => ( isa => 'Num', is => 'rw', default => $DEFAULT_LDAP_DEAD_DURATION);
 has 'client_cert_file' => ( isa => 'Maybe[Str]', is => 'rw', default => "");
 has 'client_key_file' => ( isa => 'Maybe[Str]', is => 'rw', default => "");
@@ -244,8 +244,14 @@ sub _connect {
   my $connection;
   my $logger = Log::Log4perl::get_logger(__PACKAGE__);
   my $LDAPServer;
-  # Lookup the server hostnames to IPs so they can be shuffled better and to improve the failure detection
-  my @LDAPServers = map { valid_ip($_) ? $_ : @{resolve($_) // []} } @{$self->{'host'} // []};
+  my @LDAPServers;
+  if ($self->{'encryption'} eq SSL && $self->{'verify'} eq 'require') {
+      # Not expanding hostnames in order to allow LDAPS to send SNI header and verify hostname header against certifcate (at the cost of IP based round robin)
+      @LDAPServers = @{$self->{'host'} // []};
+  } else {
+      # Lookup the server hostnames to IPs so they can be shuffled better and to improve the failure detection
+      @LDAPServers = map { valid_ip($_) ? $_ : @{resolve($_) // []} } @{$self->{'host'} // []};     
+  }
   if ($self->shuffle) {
       @LDAPServers = List::Util::shuffle @LDAPServers;
   }

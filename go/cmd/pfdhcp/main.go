@@ -32,9 +32,6 @@ import (
 // DHCPConfig global var
 var DHCPConfig *Interfaces
 
-// MySQLdatabase global var
-var MySQLdatabase *sql.DB
-
 // GlobalIPCache global var
 var GlobalIPCache *cache.Cache
 
@@ -97,12 +94,12 @@ func main() {
 	// Read DB config
 	configDatabase := pfconfigdriver.GetType[pfconfigdriver.PfConfDatabase](ctx)
 
-	connectDB(configDatabase)
+	MyDB := connectDB(configDatabase)
 
 	// Keep the db alive
-	go func() {
+	go func(*sql.DB) {
 		for {
-			err := MySQLdatabase.Ping()
+			err := MyDB.Ping()
 			if err != nil {
 				log.LoggerWContext(ctx).Error("Unable to ping DB: " + err.Error())
 			} else {
@@ -110,12 +107,12 @@ func main() {
 			}
 			time.Sleep(5 * time.Second)
 		}
-	}()
+	}(MyDB)
 
 	VIP = make(map[string]bool)
 	VIPIp = make(map[string]net.IP)
 
-	go func() {
+	go func(*sql.DB) {
 		var DHCPinterfaces pfconfigdriver.DHCPInts
 		pfconfigdriver.FetchDecodeSocket(ctx, &DHCPinterfaces)
 		var interfaces pfconfigdriver.ListenInts
@@ -132,11 +129,11 @@ func main() {
 		}
 
 		for {
-			DHCPConfig.detectVIP(sharedutils.RemoveDuplicates(append(interfaces.Element, intDhcp...)))
+			DHCPConfig.detectVIP(sharedutils.RemoveDuplicates(append(interfaces.Element, intDhcp...)), MyDB)
 
 			time.Sleep(3 * time.Second)
 		}
-	}()
+	}(MyDB)
 
 	go func() {
 		var err error
@@ -161,7 +158,7 @@ func main() {
 
 	// Read pfconfig
 	DHCPConfig = newDHCPConfig()
-	DHCPConfig.readConfig()
+	DHCPConfig.readConfig(MyDB)
 	webservices := pfconfigdriver.GetType[pfconfigdriver.PfConfWebservices](ctx)
 
 	// Queue value
@@ -202,22 +199,22 @@ func main() {
 			v.run(ctx, jobs)
 		}()
 	}
-
+	api := &API{DB: MyDB}
 	// Api
 	router := mux.NewRouter()
-	router.HandleFunc("/api/v1/dhcp/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleMac2Ip).Methods("GET")
-	router.HandleFunc("/api/v1/dhcp/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleReleaseIP).Methods("DELETE")
-	router.HandleFunc("/api/v1/dhcp/ip/{ip:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", handleIP2Mac).Methods("GET")
-	router.HandleFunc("/api/v1/dhcp/stats", handleAllStats).Methods("GET")
-	router.HandleFunc("/api/v1/dhcp/stats/{int:.*}/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", handleStats).Methods("GET")
-	router.HandleFunc("/api/v1/dhcp/stats/{int:.*}", handleStats).Methods("GET")
-	router.HandleFunc("/api/v1/dhcp/debug/{int:.*}/{role:(?:[^/]*)}", handleDebug).Methods("GET")
-	router.HandleFunc("/api/v1/dhcp/detect_duplicates/{int:.*}", handleDuplicates).Methods("GET")
-	router.HandleFunc("/api/v1/dhcp/options/network/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", handleOverrideNetworkOptions).Methods("POST")
-	router.HandleFunc("/api/v1/dhcp/options/network/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", handleRemoveNetworkOptions).Methods("DELETE")
-	router.HandleFunc("/api/v1/dhcp/options/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleOverrideOptions).Methods("POST")
-	router.HandleFunc("/api/v1/dhcp/options/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", handleRemoveOptions).Methods("DELETE")
-	http.Handle("/", httpauth.SimpleBasicAuth(webservices.User, webservices.Pass)(router))
+	router.HandleFunc("/api/v1/dhcp/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", api.handleMac2Ip).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", api.handleReleaseIP).Methods("DELETE")
+	router.HandleFunc("/api/v1/dhcp/ip/{ip:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", api.handleIP2Mac).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/stats", api.handleAllStats).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/stats/{int:.*}/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", api.handleStats).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/stats/{int:.*}", api.handleStats).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/debug/{int:.*}/{role:(?:[^/]*)}", api.handleDebug).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/detect_duplicates/{int:.*}", api.handleDuplicates).Methods("GET")
+	router.HandleFunc("/api/v1/dhcp/options/network/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", api.handleOverrideNetworkOptions).Methods("POST")
+	router.HandleFunc("/api/v1/dhcp/options/network/{network:(?:[0-9]{1,3}.){3}(?:[0-9]{1,3})}", api.handleRemoveNetworkOptions).Methods("DELETE")
+	router.HandleFunc("/api/v1/dhcp/options/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", api.handleOverrideOptions).Methods("POST")
+	router.HandleFunc("/api/v1/dhcp/options/mac/{mac:(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}}", api.handleRemoveOptions).Methods("DELETE")
+	http.Handle("/", httpauth.SimpleBasicAuth(webservices.User, webservices.Pass.String())(router))
 
 	srv := &http.Server{
 		Addr:        ":22222",
@@ -277,7 +274,7 @@ func (I *Interface) runUnicast(ctx context.Context, jobs chan job) {
 }
 
 // ServeDHCP function is the main function that will deal with the dhcp packet
-func (I *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.MessageType, srcIP net.Addr, srvIP net.IP) (answer Answer) {
+func (I *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.MessageType, srcIP net.Addr, srvIP net.IP, db *sql.DB) (answer Answer) {
 
 	var handler DHCPHandler
 	var NetScope net.IPNet
@@ -303,7 +300,7 @@ func (I *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 				if x, found := NodeCache.Get(answer.MAC.String()); found {
 					node = x.(NodeInfo)
 				} else {
-					node = NodeInformation(ctx, answer.MAC)
+					node = NodeInformation(ctx, answer.MAC, db)
 					NodeCache.Set(answer.MAC.String(), node, 3*time.Second)
 				}
 
@@ -558,7 +555,7 @@ func (I *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 			leaseDuration := handler.leaseDuration
 
 			// Add network options on the fly
-			x, err := decodeOptions(NetScope.IP.String())
+			x, err := decodeOptions(NetScope.IP.String(), db)
 			if err == nil {
 				for key, value := range x {
 					if key == dhcp.OptionIPAddressLeaseTime {
@@ -584,7 +581,7 @@ func (I *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 				leaseDuration = 0
 			}
 			// Add device (mac) options on the fly
-			x, err = decodeOptions(answer.MAC.String())
+			x, err = decodeOptions(answer.MAC.String(), db)
 			if err == nil {
 				for key, value := range x {
 					if key == dhcp.OptionIPAddressLeaseTime {
@@ -696,9 +693,9 @@ func (I *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 					GlobalOptions = options
 					leaseDuration := handler.leaseDuration
 					// Add network options
-					AddDevicesOptions(NetScope.IP.String(), &leaseDuration, GlobalOptions)
+					AddDevicesOptions(NetScope.IP.String(), &leaseDuration, GlobalOptions, db)
 					// Add device options
-					AddDevicesOptions(answer.MAC.String(), &leaseDuration, GlobalOptions)
+					AddDevicesOptions(answer.MAC.String(), &leaseDuration, GlobalOptions, db)
 					info = GetFromGlobalFilterCache(msgType.String(), answer.MAC.String(), Options)
 					// Add options on the fly from pffilter
 					reject := AddPffilterDevicesOptions(info, GlobalOptions)
@@ -723,7 +720,7 @@ func (I *Interface) ServeDHCP(ctx context.Context, p dhcp.Packet, msgType dhcp.M
 					// Update Global Caches
 					GlobalIPCache.Set(reqIP.String(), answer.MAC.String(), cacheDuration)
 					GlobalMacCache.Set(answer.MAC.String(), reqIP.String(), cacheDuration)
-					err := MysqlUpdateIP4Log(answer.MAC.String(), reqIP.String(), cacheDuration)
+					err := MysqlUpdateIP4Log(answer.MAC.String(), reqIP.String(), cacheDuration, db)
 					if err != nil {
 						log.LoggerWContext(ctx).Info(err.Error())
 					}

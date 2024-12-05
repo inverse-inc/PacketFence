@@ -106,6 +106,9 @@ conf/local_secret:
 conf/unified_api_system_pass:
 	date +%s | sha256sum | base64 | head -c 32 > conf/unified_api_system_pass
 
+conf/system_init_key:
+	hexdump -e '/1 "%x"' < /dev/urandom | head -c 32 > /usr/local/pf/conf/system_init_key
+
 bin/pfcmd: src/pfcmd.c
 	$(CC) -O2 -g -std=c99  -Wall $< -o $@
 
@@ -185,7 +188,8 @@ systemd:
 pf-dal:
 	perl /usr/local/pf/addons/dev-helpers/bin/generator-data-access-layer.pl
 
-devel: configurations conf/ssl/server.key conf/ssl/server.crt conf/local_secret bin/pfcmd raddb/certs/server.crt sudo translation mysql-schema raddb/sites-enabled fingerbank chown_pf permissions bin/ntlm_auth_wrapper conf/unified_api_system_pass
+devel: configurations conf/ssl/server.key conf/ssl/server.crt conf/local_secret bin/pfcmd raddb/certs/server.crt \
+	sudo translation mysql-schema raddb/sites-enabled fingerbank chown_pf permissions bin/ntlm_auth_wrapper conf/unified_api_system_pass conf/system_init_key
 
 test:
 	cd t && ./smoke.t

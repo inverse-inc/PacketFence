@@ -37,7 +37,9 @@ generate_material() {
     echo "Make config files available to start pfconfig container"
     make -C ${PF_SRC_DIR} configurations
     make -C ${PF_SRC_DIR} conf/unified_api_system_pass
+    make -C ${PF_SRC_DIR} conf/system_init_key
     make -C ${PF_SRC_DIR} conf/local_secret
+    mkdir -p ${PF_SRC_DIR}/result
 
     echo "Starting ${CONTAINER_NAME} container"
     docker run --detach --name=${CONTAINER_NAME} --rm -e PFCONFIG_PROTO=unix \
@@ -51,6 +53,7 @@ generate_material() {
            -v ${PF_SRC_DIR}/ci/lib:/usr/local/pf/ci/lib \
            -v ${PF_SRC_DIR}/config.mk:/usr/local/pf/config.mk \
            -v ${PF_SRC_DIR}/Makefile:/usr/local/pf/Makefile \
+           -v ${PF_SRC_DIR}/result:/usr/local/pf/result \
            ghcr.io/inverse-inc/packetfence/pfconfig:${IMAGE_TAG}
 
     echo "Let some time to container to start"
@@ -59,8 +62,8 @@ generate_material() {
     echo "Generating material.html file"
     docker exec ${CONTAINER_NAME} /usr/bin/make material
 
-    echo "Publishing material.html to git if necessary"
-    docker exec ${CONTAINER_NAME} /usr/local/pf/ci/lib/release/publish-to-git.sh ${SRC_FILE} ${DST_FILE}
+    #echo "Publishing material.html to git if necessary"
+    #docker exec ${CONTAINER_NAME} /usr/local/pf/ci/lib/release/publish-to-git.sh ${SRC_FILE} ${DST_FILE}
 }
 
 cleanup() {

@@ -32,6 +32,7 @@ export {
   BaseFormGroupInput            as FormGroupPostalCode,
   BaseFormGroupChosenOneProfile as FormGroupProfile,
   BaseFormGroupSwitch           as FormGroupRevokeOnRegistration,
+  BaseFormGroupSwitch           as FormGroupCertificateValidityTimeFromUnregDate,
   BaseFormGroupFileUpload       as FormGroupServerCertPath,
   BaseFormGroupInput            as FormGroupState,
   BaseFormGroupInput            as FormGroupStreetAddress,

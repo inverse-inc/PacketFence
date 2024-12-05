@@ -8,13 +8,14 @@ import (
 
 	"github.com/gorilla/rpc/v2/json2"
 	"github.com/inverse-inc/go-utils/log"
+	"github.com/inverse-inc/packetfence/go/config/pfcrypt"
 )
 
 type JSONRPC struct {
 	FirewallSSO
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Port     string `json:"port"`
+	Username string              `json:"username"`
+	Password pfcrypt.CryptString `json:"password"`
+	Port     string              `json:"port"`
 }
 
 type JSONRPC_Args struct {
@@ -54,7 +55,7 @@ func (fw *JSONRPC) makeRpcRequest(ctx context.Context, action string, info map[s
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.SetBasicAuth(fw.Username, fw.Password)
+	req.SetBasicAuth(fw.Username, fw.Password.String())
 
 	resp, err := fw.getHttpClient(ctx).Do(req)
 	if err != nil {

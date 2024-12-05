@@ -180,7 +180,7 @@ export const MysqlDatabase = {
     },
     bypass_acls: {
       type: MysqlString,
-      maxLength: 255,
+      maxLength: 16777215,
       default: null
     },
     voip: {

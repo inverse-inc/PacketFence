@@ -3,7 +3,7 @@ GO ?= go
 build_cmd = $(GO) build $(ARGS)
 
 .PHONY: all
-all: $(PF_BINARIES)
+all: $(PF_BINARIES) $(PF_GO_CMDS)
 
 .PHONY: go-env
 go-env:
@@ -25,12 +25,19 @@ $(ALL_BINARIES_RACE):
 	$(build_cmd) -C cmd/$(@:-race=) -o ../../$@ -race
 
 .PHONY: copy
-copy:
+copy: copy-sbin copy-bin
+
+.PHONY: copy-sbin
+copy-sbin:
 	cp -f $(PF_BINARIES) $(DESTDIR)$(SBINDIR)
+
+.PHONY: copy-bin
+copy-bin:
+	cp -f $(PF_GO_CMDS) $(DESTDIR)$(BINDIR)
 
 .PHONY: clean
 clean:
-	rm -f $(PF_BINARIES)
+	rm -f $(PF_BINARIES) $(PF_GO_CMDS)
 
 .PHONY: clean-coredns-src
 clean-coredns-src:

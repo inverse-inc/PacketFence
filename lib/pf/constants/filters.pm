@@ -212,7 +212,9 @@ our @OWNER_FIELDS = qw(
   owner.portal
   owner.source
   owner.nodes
-  owner.password
+  owner.otp
+  owner.potd
+  owner.psk
   owner.valid_from
   owner.expiration
   owner.access_duration

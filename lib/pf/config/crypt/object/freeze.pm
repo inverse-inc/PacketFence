@@ -1,21 +1,28 @@
-package pf::Switch::Cisco::WLC_2106;
+package pf::config::crypt::object::freeze;
 
 =head1 NAME
 
-pf::Switch::Cisco::WLC_2106
+pf::config::crypt::object::freeze -
 
-=head1 STATUS
+=head1 DESCRIPTION
 
-This module is currently only a placeholder, see L<pf::Switch::Cisco::WLC_2100> for relevant support items.
+pf::config::crypt::object::freeze
 
 =cut
 
 use strict;
 use warnings;
+use pf::config::crypt;
 
-use Net::SNMP;
+sub pf::config::crypt::object::FREEZE {
+    my ($self, $serializer) = @_;
+    my $data = $$self;
+    if (rindex($data, $pf::config::crypt::PREFIX, 0) == 0) {
+        return $data;
+    }
 
-use base ('pf::Switch::Cisco::WLC_2100');
+    return pf::config::crypt::pf_encrypt($data)
+}
 
 =head1 AUTHOR
 
@@ -46,6 +53,3 @@ USA.
 
 1;
 
-# vim: set shiftwidth=4:
-# vim: set expandtab:
-# vim: set backspace=indent,eol,start:

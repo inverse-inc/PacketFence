@@ -2,6 +2,7 @@
   <div class="base-flex-wrap" align-v="center">
     <ldap-attribute-selector ref="attributeComponentRef"
                              :namespace="`${namespace}.attribute`"
+                             taggable
     />
 
     <base-input-chosen-one ref="operatorComponentRef" v-if="attributeValue"
@@ -11,6 +12,7 @@
 
     <component :is="valueComponent" ref="valueComponentRef" v-if="operatorValue"
                :namespace="`${namespace}.value`"
+               taggable
                v-bind="valueBind"
     />
 

@@ -389,6 +389,10 @@ variables:
     DST_FILE: layouts/partials/about/material.html
   script:
     - ${BUILDDIR}/generate-material.sh
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - result/material.html
   tags:
     - shell
 
@@ -630,7 +634,6 @@ pfdeb_based_dev:
           - "httpd.aaa"
           - "httpd.admin_dispatcher"
           - "httpd.webservices"
-          - "radiusd"
           - "pfsetacls"
           - "pfsso"
           - "pfperl-api"
@@ -662,7 +665,20 @@ rad_based_dev:
   extends:
     - .build_img_container_job_dev
     - .build_img_container_devel_rules
-  needs: ["pfdeb_based_dev"]
+  needs: ["pfdeb_dev"]
+  variables:
+    IMAGE_TAGS: "${CI_COMMIT_REF_SLUG},latest"
+  parallel:
+    # /!\ Be sure to update this list in all other matrix /!\
+    matrix:
+      - IMAGE_NAME:
+          - "radiusd"
+
+rad_extend_dev:
+  extends:
+    - .build_img_container_job_dev
+    - .build_img_container_devel_rules
+  needs: ["rad_based_dev"]
   variables:
     IMAGE_TAGS: "${CI_COMMIT_REF_SLUG},latest"
   parallel:
@@ -714,7 +730,6 @@ pfdeb_based_br_maint:
           - "httpd.aaa"
           - "httpd.admin_dispatcher"
           - "httpd.webservices"
-          - "radiusd"
           - "pfsetacls"
           - "pfsso"
           - "pfperl-api"
@@ -746,7 +761,20 @@ rad_based_br_maint:
   extends:
     - .build_img_container_job_br_maint
     - .build_img_container_branches_and_maintenance_rules
-  needs: ["pfdeb_based_br_maint"]
+  needs: ["pfdeb_br_maint"]
+  variables:
+    IMAGE_TAGS: ${CI_COMMIT_REF_SLUG}
+  parallel:
+    # /!\ Be sure to update this list in all other matrix /!\
+    matrix:
+      - IMAGE_NAME:
+          - "radiusd"
+
+rad_extend_br_maint:
+  extends:
+    - .build_img_container_job_br_maint
+    - .build_img_container_branches_and_maintenance_rules
+  needs: ["rad_based_br_maint"]
   variables:
     IMAGE_TAGS: ${CI_COMMIT_REF_SLUG}
   parallel:
@@ -798,7 +826,6 @@ pfdeb_based_cloud_nac:
           - "httpd.aaa"
           - "httpd.admin_dispatcher"
           - "httpd.webservices"
-          - "radiusd"
           - "pfsetacls"
           - "pfsso"
           - "pfperl-api"
@@ -830,7 +857,20 @@ rad_based_cloud_nac:
   extends:
     - .build_img_container_job_cloud_nac
     - .build_img_container_cloud_nac_rules
-  needs: ["pfdeb_based_cloud_nac"]
+  needs: ["pfdeb_cloud_nac"]
+  variables:
+    IMAGE_TAGS: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
+  parallel:
+    # /!\ Be sure to update this list in all other matrix /!\
+    matrix:
+      - IMAGE_NAME:
+          - "radiusd"
+
+rad_extend_cloud_nac:
+  extends:
+    - .build_img_container_job_cloud_nac
+    - .build_img_container_cloud_nac_rules
+  needs: ["rad_based_cloud_nac"]
   variables:
     IMAGE_TAGS: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
   parallel:
@@ -882,7 +922,6 @@ pfdeb_based_rel:
           - "httpd.aaa"
           - "httpd.admin_dispatcher"
           - "httpd.webservices"
-          - "radiusd"
           - "pfsetacls"
           - "pfsso"
           - "pfperl-api"
@@ -914,7 +953,20 @@ rad_based_rel:
   extends:
     - .build_img_container_job_rel
     - .release_only_rules
-  needs: ["pfdeb_based_rel"]
+  needs: ["pfdeb_rel"]
+  variables:
+   IMAGE_TAGS: ${CI_COMMIT_TAG}
+  parallel:
+    # /!\ Be sure to update this list in all other matrix /!\
+    matrix:
+      - IMAGE_NAME:
+          - "radiusd"
+
+rad_extend_rel:
+  extends:
+    - .build_img_container_job_rel
+    - .release_only_rules
+  needs: ["rad_based_rel"]
   variables:
     IMAGE_TAGS: ${CI_COMMIT_TAG}
   parallel:
@@ -1105,14 +1157,14 @@ build_artifacts_website_release:
     - .release_only_rules
 
 # build_artificats_material job for development
-material_devel_and_branches:
+build_artifacts_material_devel_and_branches:
   image: ${PFBUILD_DEB_IMG}:${PFBUILD_DEFAULT_DEV_TAG}
   extends:
     - .build_artifacts_material_job
     - .build_artifacts_material_devel_and_branches_rules
 
 # build_artificats_material job for release
-material_release:
+build_artifacts_material_release:
   image: ${PFBUILD_DEB_IMG}:${CI_COMMIT_TAG}
   extends:
     - .build_artifacts_material_job

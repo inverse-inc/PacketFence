@@ -14,11 +14,35 @@ const POLL_RETRY_NUM = 20
 // delay between retries (seconds)
 const POLL_RETRY_INTERVAL = 3
 
-// grace period after initial command (seconds), avoid race-condition during pfperl-api restart
-const POLL_GRACE_PERIOD = 10
+const retry = ({ task_id, headers, expect }) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => { // debounce retries
+      pollTaskStatus({ task_id, headers, expect })
+        .then(resolve)
+        .catch(err => {
+          if (err.message) { // AxiosError
+            const data = i18n.t('{message}. No response after {timeout} seconds, gave up after {retries} retries.', { message: err.message, timeout: POLL_RETRY_NUM * POLL_RETRY_INTERVAL, retries: POLL_RETRY_NUM })
+            reject({ response: { data } })
+          }
+          else { // recursion
+            reject(err)
+          }
+        })
+    }, POLL_RETRY_INTERVAL * 1E3)
+  })
+}
 
-const pollTaskStatus = ({ task_id, headers, grace_period = 0 }) => {
+const pollTaskStatus = ({ task_id, headers, expect }) => {
   return apiCall.getQuiet(`pfqueue/task/${task_id}/status/poll`, { headers }).then(response => {
+    if (expect && !expect(response.data)) { // handle unexpected response
+      if (!(task_id in retries))
+        retries[task_id] = 0
+      else
+        retries[task_id]++
+      if (retries[task_id] >= POLL_RETRY_NUM) // give up after N retries
+        throw new Error('Unexpected response')
+      return retry({ task_id, headers, expect })
+    }
     if (task_id in retries)
       delete retries[task_id]
     return response.data
@@ -36,21 +60,7 @@ const pollTaskStatus = ({ task_id, headers, grace_period = 0 }) => {
         retries[task_id]++
       if (retries[task_id] >= POLL_RETRY_NUM) // give up after N retries
         throw error
-      return new Promise((resolve, reject) => {
-        setTimeout(() => { // debounce retries
-          pollTaskStatus({ task_id, headers })
-            .then(resolve)
-            .catch(err => {
-              if (err.message) { // AxiosError
-                const data = i18n.t('{message}. No response after {timeout} seconds, gave up after {retries} retries.', { message: err.message, timeout: POLL_RETRY_NUM * POLL_RETRY_INTERVAL, retries: POLL_RETRY_NUM })
-                reject({ response: { data } })
-              }
-              else { // recursion
-                reject(error)
-              }
-            })
-        }, (POLL_RETRY_INTERVAL + grace_period) * 1E3)
-      })
+      return retry({ task_id, headers, expect })
     }
   })
 }
@@ -92,10 +102,10 @@ const actions = {
       })
     })
   },
-  pollTaskStatus: ({ dispatch }, { task_id, headers }) => {
-    return api.pollTaskStatus({ task_id, headers }).then(data => { // 'poll' returns immediately, or timeout after 15s
+  pollTaskStatus: ({ dispatch }, { task_id, headers, expect }) => {
+    return api.pollTaskStatus({ task_id, headers, expect }).then(data => { // 'poll' returns immediately, or timeout after 15s
       if ('status' in data && data.status.toString() === '202') { // 202: in progress
-        return dispatch('pollTaskStatus', { task_id, headers, grace_period: POLL_GRACE_PERIOD }) // recurse
+        return dispatch('pollTaskStatus', { task_id, headers, expect }) // recurse
       }
       if ('error' in data) {
         throw new Error(data.error.message)

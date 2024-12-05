@@ -1042,7 +1042,7 @@ description=Radius Audit Log from redis to the database
 # schedule
 #
 # The schedule of task
-schedule=@every 1m
+schedule=@every 10s
 #
 # batch
 #
@@ -1052,7 +1052,7 @@ batch=100
 # timeout
 #
 # How long a flush_radius_audit_log job can run
-timeout=10s
+timeout=8s
 #
 # local
 #

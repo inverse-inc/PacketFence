@@ -21,22 +21,12 @@ const setup = (props, context) => {
 
   const loginSuccessful = ref(false)
 
-  // workaround: vue-router3 history not accessible w/ vue-composition-api
-  const previousRoute = ref(null)
-  const setPreviousRoute = route => {
-    if (['/login', '/logout', '/expire'].includes(route.path)) {
-      route.path = '/'
-    }
-    previousRoute.value = route
-  }
-
   const onLogin = () => {
     loginSuccessful.value = true
-    // Don't redirect to /login nor /logout
-    if (previousRoute.value.path &&
-      previousRoute.value.path !== '/login' &&
-      previousRoute.value.path !== '/logout') {
-      $router.replace(previousRoute.value)
+    const uri = localStorage.getItem('last_uri')
+    if (uri) {
+      $router.replace(uri)
+      localStorage.removeItem('last_uri')
     } else {
       $router.replace('/') // Go to the default/catch-all route
     }
@@ -44,8 +34,7 @@ const setup = (props, context) => {
 
   return {
     loginSuccessful,
-    onLogin,
-    setPreviousRoute
+    onLogin
   }
 }
 
@@ -54,9 +43,5 @@ export default {
   name: 'Login',
   components,
   setup,
-  // workaround: vue-router3 history not accessible w/ vue-composition-api
-  beforeRouteEnter(to, from, next) {
-    next(vm => vm.setPreviousRoute(from))
-  }
 }
 </script>

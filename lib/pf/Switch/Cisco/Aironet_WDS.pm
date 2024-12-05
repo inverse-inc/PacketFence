@@ -1,4 +1,5 @@
 package pf::Switch::Cisco::Aironet_WDS;
+
 =head1 NAME
 
 pf::Switch::Cisco::Aironet_WDS - Object oriented module to parse SNMP traps
@@ -6,7 +7,7 @@ and manage Cisco Aironet configured in Wireless Domain Services (WDS) mode.
 
 =head1 STATUS
 
-This module implements some changes on top of L<pf::Switch::Cisco::WLC>.
+This module implements some changes on top of L<pf::Switch::Cisco::Cisco_WLC_AireOS>.
 You should also consult the documentation over there if you experience issues.
 
 =over
@@ -52,7 +53,7 @@ use pf::log;
 use Net::SNMP;
 use Try::Tiny;
 
-use base ('pf::Switch::Cisco::WLC');
+use base ('pf::Switch::Cisco::Cisco_WLC_AireOS');
 
 use pf::util qw(format_mac_as_cisco);
 
@@ -70,7 +71,7 @@ sub description { 'Cisco Aironet (WDS)' }
 
 De-authenticate a MAC address from wireless network (including 802.1x).
 
-Diverges from L<pf::Switch::Cisco::WLC> in the following aspects:
+Diverges from L<pf::Switch::Cisco::Cisco_WLC_AireOS> in the following aspects:
 
 =over
 

@@ -4366,7 +4366,7 @@ sub generateAnsibleConfiguration {
     $vars{'switches'}{$switch_id}{'delete'} = $delete;
     switch($self->{'_type'}) {
             case /Cisco::ASA/ { $vars{'switches'}{$switch_id}{'ansible_network_os'} = "cisco.asa" }
-            case /Cisco::WLC/ { $vars{'switches'}{$switch_id}{'ansible_network_os'} = "aireos" }
+            case /Cisco::Cisco_WLC_AireOS/ { $vars{'switches'}{$switch_id}{'ansible_network_os'} = "aireos" }
             case /Cisco::/ { $vars{'switches'}{$switch_id}{'ansible_network_os'} = "cisco.ios.ios" }
             case /Aruba::CX/ { $vars{'switches'}{$switch_id}{'ansible_network_os'} = "arubanetworks.aoscx.aoscx" }
     }
@@ -4460,6 +4460,21 @@ Return implicit acl
 
 sub implicit_acl {
     my ($self) = @_;
+    return $FALSE;
+}
+
+=item populateAccessPointMACIP
+
+Fetch all the AP on the controller and cache it
+
+=cut
+
+
+sub populateAccessPointMACIP {
+    my ($self) = @_;
+    my $logger = $self->logger;
+    $logger->warn("populateAccessPointMACIP not implemented for this switch module");
+
     return $FALSE;
 }
 

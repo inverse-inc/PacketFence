@@ -50,12 +50,14 @@ Get the devices of the user
 sub check_user {
     my ($self, $username, $otp, $device) = @_;
     my $logger = get_logger();
+    my $message;
     if ($self->radius_mfa_method eq 'strip-otp' || $self->radius_mfa_method eq 'second-password') {
         if ($otp =~ /^\d{6,6}$/) {
             return $self->verify_otp($username, $otp);
         } else {
-            $logger->warn("Method not supported");
-            return $FALSE;
+            $message = "Method not supported for user $username";
+            $logger->warn($message);
+            return $FALSE, $message;
         }
     }
 }
@@ -63,19 +65,23 @@ sub check_user {
 sub verify_otp {
     my ($self, $username, $otp) = @_;
     my $logger = get_logger();
+    my $message;
     my $person = person_view($username);
     if (defined $person->{otp} && $person->{otp} ne '') {
         my $local_otp = $self->generateCurrentNumber($person->{otp});
         if ($otp == $local_otp) {
             $self->set_mfa_success($username);
-            $logger->info("OTP token match");
-            return $TRUE;
+            $message = "OTP token match for user $username";
+            $logger->info($message);
+            return $TRUE, $message;
         }
-        $logger->info("OTP token doesnt match");
-        return $FALSE;
+        $message = "OTP token doesnt match for user $username";
+        $logger->info($message);
+        return $FALSE, $message;
     }
-    $logger->info("The user who try to authenticate hasn't enrolled");
-    return $FALSE;
+    $message = "The user who try to authenticate hasn't enrolled";
+    $logger->info($message);
+    return $FALSE, $message;
 }
 
 sub generateCurrentNumber {

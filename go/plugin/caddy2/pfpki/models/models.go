@@ -1243,7 +1243,10 @@ func (c Cert) New() (types.Info, error) {
 
 	Subject := c.MakeSubject()
 
-	NotAfter := time.Now().AddDate(0, 0, prof.Validity)
+	NotAfter := c.ValidUntil
+	if c.ValidUntil.IsZero() {
+		NotAfter = time.Now().AddDate(0, 0, prof.Validity)
+	}
 
 	// Prepare certificate
 	cert := &x509.Certificate{
@@ -1268,6 +1271,7 @@ func (c Cert) New() (types.Info, error) {
 	if len(c.Mail) > 0 {
 		Email = c.Mail
 	}
+
 	if len(Email) > 0 {
 		for _, mail := range strings.Split(Email, ",") {
 			cert.EmailAddresses = append(cert.EmailAddresses, mail)
@@ -1304,7 +1308,7 @@ func (c Cert) New() (types.Info, error) {
 		Information.Status = http.StatusConflict
 		return Information, errors.New(dbError)
 	}
-
+	log.LoggerWContext(c.Ctx).Info("Certificate " + c.Cn + " has been generated from profile " + prof.Name + " and sign by " + prof.Ca.Cn)
 	c.DB.Select("id, cn, mail, street_address, organisation, organisational_unit, country, state, locality, postal_code, cert, profile_id, profile_name, ca_name, ca_id, valid_until, serial_number, dns_names, ip_addresses").Where("cn = ? AND profile_name = ?", c.Cn, prof.Name).First(&newcertdb)
 	Information.Entries = newcertdb
 	Information.Serial = SerialNumber.String()
@@ -2091,7 +2095,7 @@ func email(ctx context.Context, email EmailType) (types.Info, error) {
 			return err
 		}))
 	}
-	d := gomail.NewDialer(alerting.SMTPServer, alerting.SMTPPort, alerting.SMTPUsername, alerting.SMTPPassword)
+	d := gomail.NewDialer(alerting.SMTPServer, alerting.SMTPPort, alerting.SMTPUsername, alerting.SMTPPassword.String())
 
 	if alerting.SMTPVerifySSL == "disabled" || alerting.SMTPEncryption == "none" {
 		d.TLSConfig = &tls.Config{InsecureSkipVerify: true}

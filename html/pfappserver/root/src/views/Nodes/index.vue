@@ -63,28 +63,30 @@ const setup = (props, context) => {
         return {
           name: switchGroup.id || i18n.t('Default'),
           collapsable: true,
-          items: switchGroup.members.map(switchGroupMember => {
-            let conditionAdvanced
-            if ((/^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2})$/.exec(switchGroupMember.id))) { // CIDR
-              const [start, end] = network.cidrToRange(switchGroupMember.id)
-              conditionAdvanced = { op: 'and', values: [
-                { op: 'or', values: [{ field: 'locationlog.switch_ip', op: 'greater_than_equals', value: start }] },
-                { op: 'or', values: [{ field: 'locationlog.switch_ip', op: 'less_than_equals', value: end }] }
-              ] }
-            }
-            else if ((/^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})$/.exec(switchGroupMember.id))) { // IPv4
-              conditionAdvanced = { op: 'and', values: [{ op: 'or', values: [{ field: 'locationlog.switch_ip', op: 'equals', value: switchGroupMember.id }] }] }
-            }
-            else { // non-CIDR
-              conditionAdvanced = { op: 'and', values: [{ op: 'or', values: [{ field: 'locationlog.switch', op: 'equals', value: switchGroupMember.id }] }] }
-            }
-            return {
-              name: switchGroupMember.id,
-              caption: switchGroupMember.description,
-              path: { name: 'nodeSearch', query: { conditionAdvanced: JSON.stringify(conditionAdvanced) } }
-            }
-          })
-        }
+          items: switchGroup.members
+            .sort((a, b) => (a.description||a.id).localeCompare(b.description||b.id))
+            .map(switchGroupMember => {
+              let conditionAdvanced
+              if ((/^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2})$/.exec(switchGroupMember.id))) { // CIDR
+                const [start, end] = network.cidrToRange(switchGroupMember.id)
+                conditionAdvanced = { op: 'and', values: [
+                  { op: 'or', values: [{ field: 'locationlog.switch_ip', op: 'greater_than_equals', value: start }] },
+                  { op: 'or', values: [{ field: 'locationlog.switch_ip', op: 'less_than_equals', value: end }] }
+                ] }
+              }
+              else if ((/^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})$/.exec(switchGroupMember.id))) { // IPv4
+                conditionAdvanced = { op: 'and', values: [{ op: 'or', values: [{ field: 'locationlog.switch_ip', op: 'equals', value: switchGroupMember.id }] }] }
+              }
+              else { // non-CIDR
+                conditionAdvanced = { op: 'and', values: [{ op: 'or', values: [{ field: 'locationlog.switch', op: 'equals', value: switchGroupMember.id }] }] }
+              }
+              return {
+                name: switchGroupMember.id,
+                caption: switchGroupMember.description,
+                path: { name: 'nodeSearch', query: { conditionAdvanced: JSON.stringify(conditionAdvanced) } }
+              }
+            })
+          }
       })
     }
   ]))
