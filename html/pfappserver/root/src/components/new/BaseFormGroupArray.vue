@@ -30,8 +30,7 @@
       >{{ buttonLabel || $t('Add') }}</b-button>
 
       <div v-else
-        class="base-form-group-array-items mx-3"
-      >
+        class="base-form-group-array-items">
 
         <slot name="header"/>
 
@@ -42,10 +41,10 @@
             'is-lastchild': index === inputValue.length - 1
           }"
         >
-          <b-col class="text-center p-3">
+          <b-col class="text-center p-3" v-if="showIndex">
             <span class="col-form-label"><b-badge pill variant="light" class="py-1 px-2">{{ index + 1 }}</b-badge></span>
           </b-col>
-          <b-col cols="10" class="py-1">
+          <b-col :cols="(showIndex) ? 10 : 11" class="py-1">
 
             <component :is="childComponent"
               :namespace="`${namespace}.${index}`"
@@ -111,6 +110,10 @@ export const props = {
 
   buttonLabel: {
     type: String
+  },
+  showIndex: {
+    type: Boolean,
+    default: true
   }
 }
 
@@ -211,10 +214,12 @@ export default {
     &.has-invalid:not([data-num="0"]) {
       border-color: $form-feedback-invalid-color;
       box-shadow: 0 0 0 $input-focus-width rgba($form-feedback-invalid-color, .25);
+      padding: 1rem !important;
     }
     &.has-valid:not([data-num="0"]) {
       border-color: $form-feedback-valid-color;
       box-shadow: 0 0 0 $input-focus-width rgba($form-feedback-valid-color, .25);
+      padding: 1rem !important;
     }
   }
 }
