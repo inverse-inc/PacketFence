@@ -30,6 +30,7 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
  * Upgrade to FreeRADIUS 3.2.6 (#8290)
  * NTLM Auth multi-threaded machine-accounts (#8335)
  * OS based Cisco Switch Modules (#8365)
+ * Secrets encrypted at rest (#8406)
 
 === Enhancements
 
