@@ -18,6 +18,83 @@ export default [
             cols: 4
           },
           {
+            title: 'Registered devices per device type', // i18n defer
+            metric: 'packetfence.devices.registered_per_device_type',
+            library: libraries.D3PIE,
+            params: {
+              d3pie_smallsegmentgrouping_value: 0.5,
+              d3pie_smallsegmentgrouping_enabled: 'true',
+              decimal_digits: 0
+            },
+            cols: 4
+          },
+          {
+            title: 'Registered devices per device class', // i18n defer
+            metric: 'packetfence.devices.registered_per_device_class',
+            library: libraries.D3PIE,
+            params: {
+              d3pie_smallsegmentgrouping_value: 0.5,
+              d3pie_smallsegmentgrouping_enabled: 'true',
+              decimal_digits: 0
+            },
+            cols: 4
+          },
+          {
+            title: 'Registered devices per device manufacturer', // i18n defer
+            metric: 'packetfence.devices.registered_per_device_manufacturer',
+            library: libraries.D3PIE,
+            params: {
+              d3pie_smallsegmentgrouping_value: 0.5,
+              d3pie_smallsegmentgrouping_enabled: 'true',
+              decimal_digits: 0
+            },
+            cols: 4
+          },
+          {
+            title: 'Registered devices per vlan', // i18n defer
+            metric: 'packetfence.devices.registered_per_vlan',
+            library: libraries.D3PIE,
+            params: {
+              d3pie_smallsegmentgrouping_value: 0.5,
+              d3pie_smallsegmentgrouping_enabled: 'true',
+              decimal_digits: 0
+            },
+            cols: 4
+          },
+          {
+            title: 'Registered devices per connection type', // i18n defer
+            metric: 'packetfence.devices.registered_per_connection_type',
+            library: libraries.D3PIE,
+            params: {
+              d3pie_smallsegmentgrouping_value: 0.5,
+              d3pie_smallsegmentgrouping_enabled: 'true',
+              decimal_digits: 0
+            },
+            cols: 4
+          },
+          {
+            title: 'Registered devices per ssid', // i18n defer
+            metric: 'packetfence.devices.registered_per_ssid',
+            library: libraries.D3PIE,
+            params: {
+              d3pie_smallsegmentgrouping_value: 0.5,
+              d3pie_smallsegmentgrouping_enabled: 'true',
+              decimal_digits: 0
+            },
+            cols: 4
+          },
+          {
+            title: 'Registered devices per switch', // i18n defer
+            metric: 'packetfence.devices.registered_per_switch',
+            library: libraries.D3PIE,
+            params: {
+              d3pie_smallsegmentgrouping_value: 0.5,
+              d3pie_smallsegmentgrouping_enabled: 'true',
+              decimal_digits: 0
+            },
+            cols: 4
+          },
+          {
             title: 'Connected devices per connection type', // i18n defer
             metric: 'packetfence.devices.connected_per_connection_type',
             library: libraries.D3PIE,

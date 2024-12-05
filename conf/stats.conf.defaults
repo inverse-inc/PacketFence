@@ -41,6 +41,69 @@ interval=60s
 randomize=true
 management=true
 
+[metric 'total number of registered devices per device type']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_device_type
+mysql_query=select ifnull(device_type, 'unknown'), count(distinct mac) from node where status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by device_type
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per device class']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_device_class
+mysql_query=select ifnull(device_class, 'unknown'), count(distinct mac) from node where status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by device_class
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per device manufacturer']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_device_manufacturer
+mysql_query=select ifnull(device_manufacturer, 'unknown'), count(distinct mac) from node where status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by device_manufacturer
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per vlan']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_vlan
+mysql_query=select vlan, count(distinct node.mac) from locationlog left join node on node.mac=locationlog.mac and node.status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by locationlog.vlan
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per connection type']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_connection_type
+mysql_query=select connection_type, count(distinct node.mac) from locationlog left join node on node.mac=locationlog.mac and node.status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by locationlog.connection_type
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per ssid']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_ssid
+mysql_query=select ssid, count(distinct node.mac) from locationlog left join node on node.mac=locationlog.mac and node.status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by locationlog.ssid
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per switch']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_switch
+mysql_query=select switch, count(distinct node.mac) from locationlog left join node on node.mac=locationlog.mac and node.status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by locationlog.switch
+interval=60s
+randomize=true
+management=true
+
 [metric 'total number of connected devices per connection type']
 type=mysql_query
 statsd_type=gauge
