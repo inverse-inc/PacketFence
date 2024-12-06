@@ -49,8 +49,8 @@
       <b-row class="align-items-center mb-3">
         <b-col cols="4" align-h="start">
           <b-input-group class="flex-grow-1">
-            <base-input v-model="filter"
-              :placeholder="$i18n.t('Filter')" />
+            <b-form-input v-model="filter"
+              :placeholder="$i18n.t('Filter Metrics')" />
             <template v-slot:append>
               <b-button
                 :disabled="filter==''"
@@ -109,15 +109,13 @@
 import Badge from './Badge'
 import Chart, { palettes } from './Chart'
 import {
-  BaseButtonService,
-  BaseInput
+  BaseButtonService
 } from '@/components/new/'
 
 const components = {
   Badge,
   Chart,
-  BaseButtonService,
-  BaseInput
+  BaseButtonService
 }
 
 const props = {
