@@ -146,6 +146,7 @@ const setup = (props, context) => {
   })
 
   const tabIndex = ref(0)
+  const tabCurrent = ref(0)
   const pingNetdataTimer = ref(false)
   const pingNetdataInterval = ref(30 * 1E3) // 30s
   const getAlarmsTimer = ref(false)
@@ -322,6 +323,16 @@ const setup = (props, context) => {
   watch([tabIndex, () => i18n.locale, showAfter, filter], () => {
     nextTick(() => {
       window.NETDATA.updatedDom()
+    })
+  })
+
+  watch(tabIndex, () => {
+    tabCurrent.value = filteredSections.value[tabIndex.value].name
+  }, { immediate:true })
+
+  watch(filteredSections, () => {
+    nextTick(() => {
+      tabIndex.value = Math.max(0, filteredSections.value.findIndex(f => f.name == tabCurrent.value))
     })
   })
 
