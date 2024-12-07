@@ -25,7 +25,7 @@ def expand_machine_account_list():
     return r
 
 
-def cleanup_machine_account_binding():
+def cleanup_machine_account_binding(force=False):
     machine_accounts = expand_machine_account_list()
 
     for m in machine_accounts:
@@ -77,6 +77,9 @@ def cleanup_machine_account_binding():
         except Exception as e:
             print(f"error occurred when trying to read process info: pid: {bind_pid}, {str(e)}")
             continue
+
+        if force:
+            cleanup_flag = True
 
         if cleanup_flag:
             try:

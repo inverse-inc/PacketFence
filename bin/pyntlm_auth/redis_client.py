@@ -1,9 +1,10 @@
+import os
 import redis
 
 import global_vars
 
 r = None
-namespace = "ntlm-auth"
+namespace = f"ntlm-auth:{os.getenv('IDENTIFIER')}"
 
 
 def init_connection():

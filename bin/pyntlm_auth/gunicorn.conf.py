@@ -11,6 +11,23 @@ import t_health_checker
 import t_sdnotify
 import t_worker_register
 
+import logging
+from gunicorn import glogging
+
+
+class HealthCheckFilter(logging.Filter):
+    def filter(self, record):
+        return 'GET /ping' not in record.getMessage()
+
+
+class CustomGunicornLogger(glogging.Logger):
+    def setup(self, cfg):
+        super().setup(cfg)
+
+        logger = logging.getLogger("gunicorn.access")
+        logger.addFilter(HealthCheckFilter())
+
+
 NAME = "NTLM Auth API"
 
 try:
@@ -38,6 +55,7 @@ graceful_timeout = 10
 accesslog = '-'
 errorlog = '-'
 loglevel = 'info'
+logger_class = CustomGunicornLogger
 capture_output = False
 access_log_format = '%(h)s %(l)s %(u)s %(p)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
 
@@ -52,6 +70,15 @@ limit_request_fields = 100
 limit_request_field_size = 8190
 
 reload = False
+
+
+def on_starting(server):
+    server.log.info("master process starting, machine account binding cleanup started.")
+    if not redis_client.init_connection():
+        server.log.error("unable to initialize redis connection, terminated.")
+        server.stop()
+    config_loader.cleanup_machine_account_binding(True)
+    server.log.info("machine account binding clean up done.")
 
 
 def on_exit(server):
