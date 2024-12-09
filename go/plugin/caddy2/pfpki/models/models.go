@@ -136,7 +136,7 @@ type (
 		ScepServer            SCEPServer              `json:"-"`
 		ScepServerID          uint                    `json:"scep_server_id,omitempty,string" gorm:"INDEX:scep_server_id"`
 		AllowDuplicatedCN     int                     `json:"allow_duplicated_cn,omitempty" gorm:"default:0"`
-		MaximumDuplicatedCN   int                     `json:"maximum_duplicated_cn,omitempty" gorm:"default:0"`
+		MaximumDuplicatedCN   int                     `json:"maximum_duplicated_cn,omitempty,string" gorm:"default:0"`
 	}
 
 	// Cert struct
