@@ -62,6 +62,7 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
  * Fixed IP resolution on LDAP SSL verification (#6808)
  * Fixed NAS-Port to ifIndex on Comware v7 switches (#8062) @bmp96
  * Fix Debian sudoers (#7908) @andrew-grasso
+ * Fix Clickatell Messages (#7623)
 
 === Security Fixes
 
