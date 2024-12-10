@@ -102,6 +102,14 @@ loop:
 		case pfflowsArray := <-ChanPfFlow:
 			for _, pfflows := range pfflowsArray {
 				for _, f := range *pfflows.Flows {
+					log.LogInfof(
+						ctx,
+						"Received Type:%d SrcMac: %s, SrcIP: %s, SrcPort: %d, DstMac: %s, DstIp: %s, DstPort: %d, BiFlow: %d",
+						pfflows.Header.FlowType,
+						f.SrcMac, f.SrcIp.String(), f.SrcPort,
+						f.DstMac, f.DstIp.String(), f.DstPort,
+						f.BiFlow,
+					)
 					key := f.Key(&pfflows.Header)
 					val := a.events[key]
 					if a.Heuristics > 0 {
