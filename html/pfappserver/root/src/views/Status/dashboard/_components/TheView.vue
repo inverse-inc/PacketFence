@@ -17,11 +17,14 @@
             <!-- Named groups are rendered inside a card -->
             <component :is="group.name ? 'b-card' : 'div'" class="mt-3" :key="`${group.name}-${groupIndex}`" :title="$i18n.t(group.name)">
               <b-row align-h="center">
-                <template v-for="(chart, chartIndex) in group.items">
-                <b-col class="mt-3" :md="cols(chart.cols, group.items.length)" v-for="(host, index) in chartHosts(chart)" :key="`${chart.metric}${host}-${chartIndex}`">
-                  <chart store-name="$_status" :definition="chart" :host="host" :data-colors="palette(index)"></chart>
+                <b-col class="mt-3 chart" v-for="chart in group.items" :key="chart.metric" :md="cols(chart.cols, group.items.length)">
+                  <small class="text-muted cursor-pointer pb-3">
+                    {{ chart.title }}
+                  </small>
+                  <div class="mt-2">
+                    <chart :definition="chart" host="/netdata/127.0.0.1" :data-colors="palette(0)"></chart>
+                  </div>
                 </b-col>
-                </template>
               </b-row>
             </component>
           </template>
@@ -32,7 +35,7 @@
 
 <script>
 import Badge from './Badge'
-import Chart, { modes, palettes } from './Chart'
+import Chart, { palettes } from './Chart'
 import {
   BaseButtonService
 } from '@/components/new/'
@@ -161,28 +164,6 @@ const setup = (props, context) => {
     }
   }
 
-  const chartHosts = chart => {
-    const { metric, mode, params = {} } = chart
-    let hosts = []
-    if (mode === modes.COMBINED) {
-      // Cluster data is aggregated into one chart
-      hosts = [$store.getters[`$_status/hostsForChart`](metric).map(host => `/netdata/${host}`).join(',')]
-      params['friendly-host-names'] = Object.values(cluster.value).filter(server => {
-        return $store.getters[`$_status/hostsForChart`](metric).includes(server.management_ip)
-      }).map(server => {
-        return `/netdata/${server.management_ip}=${server.host}`
-      }).join(',')
-      chart.params = params
-    } else if (mode === modes.SINGLE) {
-      // Each cluster member has a chart
-      hosts = $store.getters[`$_status/hostsForChart`](metric).map(host => `/netdata/${host}`)
-    } else if (mode === modes.LOCAL) {
-      // Only check localhost
-      hosts = ['/netdata/127.0.0.1']
-    }
-    return hosts
-  }
-
   const cols = (count, siblings) => {
     return siblings === 1 ? 12 : (count || 6)
   }
@@ -215,7 +196,6 @@ const setup = (props, context) => {
     filteredSections,
     tabIndex,
     chartsError,
-    chartHosts,
     cluster,
     cols,
     palette

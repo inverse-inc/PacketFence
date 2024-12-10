@@ -5,6 +5,7 @@ import StatusStore from '../_store'
 
 import AssetsRoutes from '../assets/_router'
 import DashboardRoutes from '../dashboard/_router'
+import MonitoringRoutes from '../monitoring/_router'
 import QueueRoutes from '../queue/_router'
 import NetworkCommunicationRoutes from '../network_communication/_router'
 import NetworkThreatsRoutes from '../network_threats/_router'
@@ -21,6 +22,7 @@ const beforeEnter = (to, from, next) => {
 
 const children = [
   ...DashboardRoutes,
+  ...MonitoringRoutes,
   ...AssetsRoutes,
   ...QueueRoutes,
   ...NetworkCommunicationRoutes,

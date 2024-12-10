@@ -41,6 +41,69 @@ interval=60s
 randomize=true
 management=true
 
+[metric 'total number of registered devices per device type']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_device_type
+mysql_query=select ifnull(device_type, 'unknown'), count(distinct mac) from node where status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by device_type
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per device class']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_device_class
+mysql_query=select ifnull(device_class, 'unknown'), count(distinct mac) from node where status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by device_class
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per device manufacturer']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_device_manufacturer
+mysql_query=select ifnull(device_manufacturer, 'unknown'), count(distinct mac) from node where status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by device_manufacturer
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per vlan']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_vlan
+mysql_query=select vlan, count(distinct node.mac) from locationlog left join node on node.mac=locationlog.mac and node.status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by locationlog.vlan
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per connection type']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_connection_type
+mysql_query=select connection_type, count(distinct node.mac) from locationlog left join node on node.mac=locationlog.mac and node.status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by locationlog.connection_type
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per ssid']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_ssid
+mysql_query=select ssid, count(distinct node.mac) from locationlog left join node on node.mac=locationlog.mac and node.status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by locationlog.ssid
+interval=60s
+randomize=true
+management=true
+
+[metric 'total number of registered devices per switch']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.registered_per_switch
+mysql_query=select switch, count(distinct node.mac) from locationlog left join node on node.mac=locationlog.mac and node.status='reg' and (unregdate >= NOW() or unregdate = '0000-00-00 00:00:00') group by locationlog.switch
+interval=60s
+randomize=true
+management=true
+
 [metric 'total number of connected devices per connection type']
 type=mysql_query
 statsd_type=gauge
@@ -49,11 +112,60 @@ mysql_query=select connection_type, count(distinct mac) from locationlog where e
 interval=720s
 management=true
 
+[metric 'total number of connected devices per device class']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_device_class
+mysql_query=select ifnull(device_class, 'unknown') , count(distinct node.mac) from locationlog right join node on node.mac=locationlog.mac where end_time is null group by device_class
+interval=720s
+management=true
+
+[metric 'total number of connected devices per device manufacturer']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_device_manufacturer
+mysql_query=select ifnull(device_manufacturer, 'unknown') , count(distinct node.mac) from locationlog right join node on node.mac=locationlog.mac where end_time is null group by device_manufacturer
+interval=720s
+management=true
+
+[metric 'total number of connected devices per device type']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_device_type
+mysql_query=select ifnull(device_type, 'unknown') , count(distinct node.mac) from locationlog right join node on node.mac=locationlog.mac where end_time is null group by device_type
+interval=720s
+management=true
+
+[metric 'total number of connected devices per role']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_role
+mysql_query=select ifnull(name, 'none'), count(distinct node.mac) from locationlog right join node on node.mac=locationlog.mac left join node_category on node.category_id=node_category.category_id group by name
+interval=60s
+randomize=true
+management=true
+
 [metric 'total number of connected devices per ssid']
 type=mysql_query
 statsd_type=gauge
 statsd_ns=source.packetfence.devices.connected_per_ssid
-mysql_query= select ssid, count(distinct mac) from locationlog where ssid != '' and end_time is null group by ssid
+mysql_query=select ssid, count(distinct mac) from locationlog where ssid != '' and end_time is null group by ssid
+interval=720s
+management=true
+
+[metric 'total number of connected devices per switch']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_switch
+mysql_query=select switch, count(distinct mac) from locationlog where switch != '' and end_time is null group by switch
+interval=720s
+management=true
+
+[metric 'total number of connected devices per vlan']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected_per_vlan
+mysql_query=select vlan, count(distinct mac) from locationlog where vlan != '' and end_time is null group by vlan
 interval=720s
 management=true
 
@@ -62,6 +174,15 @@ type=mysql_query
 statsd_type=gauge
 statsd_ns=source.packetfence.devices.unregistered
 mysql_query=select count(distinct mac) from node where status='unreg'
+interval=60s
+randomize=true
+management=true
+
+[metric 'number of devices currently connected']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.devices.connected
+mysql_query=select count(distinct mac) from locationlog where vlan != '' and end_time is null
 interval=60s
 randomize=true
 management=true
@@ -142,6 +263,15 @@ interval=60s
 randomize=true
 management=true
 
+[metric 'number of pending security events']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.security_events_pending
+mysql_query=select count(distinct mac) from security_event where status='pending'
+interval=60s
+randomize=true
+management=true
+
 [metric 'number of successful radius authentications in the last day']
 type=mysql_query
 statsd_type=gauge
@@ -204,18 +334,39 @@ interval=60s
 randomize=true
 management=true
 
+[metric 'Errors in packetfence.log']
+type=tail_file
+file=/usr/local/pf/logs/packetfence.log
+match=WARN,ERROR,httpd.portal.*Unable to match MAC address to IP.*ip2mac.*
+statsd_ns=source.packetfence.packetfence_error_log.warn,source.packetfence.packetfence_error_log.error,source.packetfence.packetfence_error_log.portal.ip2mac
+management=false
+
 [metric 'Events in packetfence.log']
 type=tail_file
 file=/usr/local/pf/logs/packetfence.log
-match=ERROR,httpd.portal.*Unable to match MAC address to IP.*ip2mac.*
-statsd_ns=source.packetfence.packetfence_log.error,source.packetfence.packetfence_log.portal.ip2mac
+match=pfcmd,httpd.aaa,httpd.portal,httpd.webservices
+statsd_ns=source.packetfence.packetfence_log.pfcmd,source.packetfence.packetfence_log.httpd-aaa,source.packetfence.packetfence_log.httpd-portal,source.packetfence.packetfence_log.httpd-webservices
+management=false
+
+[metric 'Events in pfconnector-server.log']
+type=tail_file
+file=/usr/local/pf/logs/pfconnector-server.log
+match=lvl=dbug,lvl=info,lvl=warn,lvl=eror
+statsd_ns=source.packetfence.pfconnector_server_log.debug,source.packetfence.pfconnector_server_log.info,source.packetfence.pfconnector_server_log.warning,source.packetfence.pfconnector_server_log.error,
+management=false
+
+[metric 'Events in pfconnector-client.log']
+type=tail_file
+file=/usr/local/pf/logs/pfconnector-client.log
+match=lvl=dbug,lvl=info,lvl=warn,lvl=eror
+statsd_ns=source.packetfence.pfconnector_client_log.debug,source.packetfence.pfconnector_client_log.info,source.packetfence.pfconnector_client_log.warning,source.packetfence.pfconnector_client_log.error,
 management=false
 
 [metric 'Events in pfdhcp.log']
 type=tail_file
 file=/usr/local/pf/logs/pfdhcp.log
-match=DHCPDISCOVER,DHCPOFFER,DHCPREQUEST,DHCPACK,DHCPNAK,DHCPDECLINE,DHCPRELEASE,DHCPINFORM
-statsd_ns=source.packetfence.pfdhcp_log.dhcpdiscover,source.packetfence.pfdhcp_log.dhcpoffer,source.packetfence.pfdhcp_log.dhcprequest,source.packetfence.pfdhcp_log.dhcpack,source.packetfence.pfdhcp_log.dhcpnak,source.packetfence.pfdhcp_log.dhcpdecline,source.packetfence.pfdhcp_log.dhcprelease,source.packetfence.pfdhcp_log.dhcpinform
+match=lvl=info,DHCPDISCOVER,DHCPOFFER,DHCPREQUEST,DHCPACK,DHCPNAK,DHCPDECLINE,DHCPRELEASE,DHCPINFORM
+statsd_ns=source.packetfence.pfdhcp_log.info,source.packetfence.pfdhcp_log.dhcpdiscover,source.packetfence.pfdhcp_log.dhcpoffer,source.packetfence.pfdhcp_log.dhcprequest,source.packetfence.pfdhcp_log.dhcpack,source.packetfence.pfdhcp_log.dhcpnak,source.packetfence.pfdhcp_log.dhcpdecline,source.packetfence.pfdhcp_log.dhcprelease,source.packetfence.pfdhcp_log.dhcpinform
 management=false
 
 [metric 'Events in load_balancer.log']
@@ -259,3 +410,11 @@ file=/usr/local/pf/logs/fingerbank.log
 match=An error occured while interrogating upstream Fingerbank project
 statsd_ns=source.packetfence.fingerbank_log.api_error
 management=true
+
+[metric 'Events in httpd.apache']
+type=tail_file
+file=/usr/local/pf/logs/httpd.apache
+match=api-frontend-docker-wrapper,httpd.dispatcher-docker-wrapper,httpd.admin_dispatcher-docker-wrapper,httpd.portal-docker-wrapper,httpd.webservices-docker-wrapper
+statsd_ns=source.packetfence.httpd_apache.admin-dispatcher,source.packetfence.httpd_apache.httpd.dispatcher,source.packetfence.httpd_apache.httpd.portal,source.packetfence.httpd_apache.httpd.portal,source.packetfence.httpd_apache.httpd.webservices
+management=false
+

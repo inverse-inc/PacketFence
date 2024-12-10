@@ -2,12 +2,11 @@
   <span>
     <div class="pf-counter-over-chart" v-if="counter">
       <div :id="id" class="display-4" />
-      <div class="pf-counter-chart-title">{{ $i18n.t(chart.title) }}</div>
     </div>
     <div
       :data-netdata="chart.metric"
       :data-host="host"
-      :data-title="title"
+      :data-title="' '"
       :data-chart-library="chart.library"
       :data-height="chart.height"
       v-bind="attrs"
@@ -16,17 +15,12 @@
 </template>
 
 <script>
-export const modes = {
-  LOCAL: 'local', // no_cluster
-  SINGLE: 'single', // graph_per_host
-  COMBINED: 'combined' // default
-}
-
 export const libraries = {
   DYGRAPH: 'dygraph',
   DYGRAPH_COUNTER: 'dygraph-counter',
   EASYPIECHART: 'easypiechart',
   GAUGE: 'gauge',
+  GOOGLE: 'google',
   D3PIE: 'd3pie',
   SPARKLINE: 'sparkline',
   PEITY: 'peity'
@@ -70,7 +64,6 @@ const setup = (props, context) => {
     title: i18n.t('Untitled'),
     metric: null,
     library: libraries.DYGRPAH,
-    mode: modes.COMBINED,
     height: '225px',
     params: {}
   })
@@ -83,13 +76,6 @@ const setup = (props, context) => {
 
   const id = computed(() => {
     return (chart.value.metric + host.value).replace(/\./g, '_')
-  })
-
-  const title = computed(() => {
-    if (chart.value.mode === modes.SINGLE)
-      return [i18n.t(chart.value.title), i18n.t('on'), host.value.replace(/^\/netdata\//, '')].join(' ')
-    else
-      return i18n.t(chart.value.title)
   })
 
   watch(definition, () => {
@@ -113,7 +99,6 @@ const setup = (props, context) => {
     chart,
     counter,
     id,
-    title,
     attrs,
   }
 }

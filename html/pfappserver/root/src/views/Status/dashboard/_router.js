@@ -27,7 +27,6 @@ export default [
     path: 'dashboard',
     name: 'statusDashboard',
     component: TheView,
-    props: { storeName: '$_status' },
     beforeEnter,
     meta: {
       can

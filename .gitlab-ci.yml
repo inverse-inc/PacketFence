@@ -646,6 +646,7 @@ pfdeb_based_dev:
           - "pfldapexplorer"
           - "kafka"
           - "ntlm-auth-api"
+          - "netdata"
 
 img_dev:
   extends:
@@ -741,6 +742,7 @@ pfdeb_based_br_maint:
           - "pfldapexplorer"
           - "kafka"
           - "ntlm-auth-api"
+          - "netdata"
 
 img_br_maint:
   extends:
@@ -836,6 +838,7 @@ pfdeb_based_cloud_nac:
           - "pfldapexplorer"
           - "kafka"
           - "ntlm-auth-api"
+          - "netdata"
 
 img_cloud_nac:
   extends:
@@ -931,6 +934,7 @@ pfdeb_based_rel:
           - "pfldapexplorer"
           - "kafka"
           - "ntlm-auth-api"
+          - "netdata"
 
 img_rel:
   extends:

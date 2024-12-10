@@ -1,12 +1,3 @@
-// .netdata-container-with-legend {
-//     .netdata-legend-value,
-//     .netdata-legend-toolbox,
-//     .netdata-legend-toolbox-button,
-//     .netdata-legend-resize-handler {
-//         background-color: $body-bg;
-//     }
-// }
-
 .pf-counter-over-chart {
     position: absolute;
     top: 0;
@@ -26,4 +17,12 @@
     fill: $gray-700;
     font-size: $font-size-sm;
     line-height: 1em;
+}
+
+.dygraph__history-tip-content {
+    display: none !important;
+}
+
+.netdata-message {
+    background-color: rgb(248, 248, 248) !important;
 }

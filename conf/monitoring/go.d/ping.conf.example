@@ -1,0 +1,23 @@
+## All available configuration options, their descriptions and default values:
+## https://github.com/netdata/netdata/tree/master/src/go/collectors/go.d.plugin/modules/ping#readme
+
+jobs:
+  - name: packetfence-cluster
+    autodetection_retry: 60
+    interval: 1s
+    hosts: [%%hosts_cluster_members%%]
+
+  - name: packetfence-dns
+    autodetection_retry: 60
+    interval: 1s
+    hosts: [%%hosts_dns%%]
+
+  - name: packetfence-domains
+    autodetection_retry: 60
+    interval: 1s
+    hosts: [%%hosts_domains%%]
+
+  - name: packetfence-sources
+    autodetection_retry: 60
+    interval: 1s
+    hosts: [%%hosts_sources%%]

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/inverse-inc/go-utils/log"
 )
@@ -75,6 +76,10 @@ func (tam *TokenAuthenticationMiddleware) BearerRequestIsAuthorized(ctx context.
 }
 
 func (tam *TokenAuthenticationMiddleware) tokenFromRequest(ctx context.Context, r *http.Request) string {
+	authCookie, err := r.Cookie("token")
+	if err == nil {
+		return authCookie.Value
+	}
 	authHeader := r.Header.Get("Authorization")
 	return strings.TrimPrefix(authHeader, "Bearer ")
 }
@@ -83,8 +88,13 @@ func (tam *TokenAuthenticationMiddleware) IsAuthenticated(ctx context.Context, t
 	return tam.tokenBackend.TokenIsValid(token), nil
 }
 
-func (tam *TokenAuthenticationMiddleware) TouchTokenInfo(ctx context.Context, r *http.Request) {
-	tam.tokenBackend.TouchTokenInfo(tam.tokenFromRequest(ctx, r))
+func (tam *TokenAuthenticationMiddleware) TouchTokenInfo(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	token := tam.tokenFromRequest(ctx, r)
+	tam.tokenBackend.TouchTokenInfo(token)
+
+	expire := time.Now().Add(15 * time.Minute)
+	cookie := http.Cookie{Name: "token", Value: token, Path: "/", Expires: expire, MaxAge: 90000}
+	http.SetCookie(w, &cookie)
 }
 
 func (tam *TokenAuthenticationMiddleware) ExtractUserIdentity(r *http.Request) (string, string, bool) {
@@ -110,3 +120,5 @@ func (tam *TokenAuthenticationMiddleware) ExtractUserIdentity(r *http.Request) (
 
 	return pair[0], pair[1], true
 }
+
+

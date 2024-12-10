@@ -58,6 +58,7 @@ var pathAdminRolesMap = []adminRoleMapping{
 	adminRoleMapping{prefix: apiPrefix + "/services", role: "SERVICES"},
 
 	adminRoleMapping{prefix: apiPrefix + "/reports/", role: "REPORTS"},
+	adminRoleMapping{prefix: apiPrefix + "/monitoring/", role: "SYSTEM"},
 
 	adminRoleMapping{prefix: apiPrefixV1_1 + "/reports", role: "REPORTS"},
 	adminRoleMapping{prefix: apiPrefixV1_1 + "/report/", role: "REPORTS"},
@@ -157,10 +158,12 @@ func NewTokenAuthorizationMiddleware(tb TokenBackend) *TokenAuthorizationMiddlew
 }
 
 func (tam *TokenAuthorizationMiddleware) TokenFromBearerRequest(ctx context.Context, r *http.Request) string {
+	authCookie, err := r.Cookie("token")
+	if err == nil {
+		return authCookie.Value
+	}
 	authHeader := r.Header.Get("Authorization")
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-
-	return token
+	return strings.TrimPrefix(authHeader, "Bearer ")
 }
 
 // Checks whether or not that request is authorized based on the path and method

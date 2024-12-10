@@ -17,13 +17,27 @@ const components = {
 
 import { computed } from '@vue/composition-api'
 import i18n from '@/utils/locale'
-const setup = () => {
+const setup = (props, context) => {
+
+  const { root: { $store } = {} } = context
+
+  const cluster = computed(() => $store.state.cluster.servers)
+
+  const monitoringHosts = computed(() => Object.values(cluster.value).map(({ host }) => {
+    return { name: host, path: `/status/monitoring/${host}`, class: 'no-saas' }
+  }))
 
   const sections = computed(() => ([
     {
       name: i18n.t('Dashboard'),
       path: '/status/dashboard',
       class: 'no-saas'
+    },
+    {
+      name: i18n.t('Monitoring'),
+      path: '/status/monitoring',
+      class: 'no-saas',
+      items: monitoringHosts.value
     },
     {
       name: i18n.t('Assets'),
