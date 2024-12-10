@@ -722,7 +722,6 @@ sub returnRadiusAccessAccept {
         }
     }
 
-    my $status = $RADIUS::RLM_MODULE_OK;
     if (!isenabled($args->{'unfiltered'})) {
         my $filter = pf::access_filter::radius->new;
         my $rule = $filter->test('returnRadiusAccessAccept', $args);
