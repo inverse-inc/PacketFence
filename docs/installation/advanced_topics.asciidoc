@@ -393,3 +393,5 @@ Then restart `packetfence-iptables` and `packetfence-pfacct` services for it
 to take effect.
 
 include::kafka.asciidoc[]
+
+include::monitoring.asciidoc[]
