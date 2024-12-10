@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/inverse-inc/go-utils/log"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/compress"
 	"github.com/segmentio/kafka-go/sasl/plain"
@@ -117,6 +118,7 @@ func (s *KafkaSubmiter) send(events []*NetworkEvent) {
 		filteredEvents = events
 	}
 
+	ctx := context.Background()
 	messages := make([]kafka.Message, 0, len(filteredEvents))
 	for i := 0; i < len(filteredEvents); i++ {
 		data, err := json.Marshal(events[i])
@@ -124,6 +126,11 @@ func (s *KafkaSubmiter) send(events []*NetworkEvent) {
 			//TODO log error
 			continue
 		}
+		log.LogInfof(
+			ctx,
+			"Sending SrcIp: %s, DstIp: %s, DstPort: %d, Direction: %s",
+			events[i].SourceIp, events[i].DestIp, events[i].DestPort, events[i].Direction,
+		)
 		messages = append(messages, kafka.Message{Value: data})
 	}
 
