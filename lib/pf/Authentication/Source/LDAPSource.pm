@@ -791,7 +791,7 @@ sub _makefilter {
     }
 
     if($append_search eq '') {
-        return "($self->{'usernameattribute'}=$username)";
+        return '(' . "$self->{'usernameattribute'}=$username" . ')';
     }
 
     return $append_search;
