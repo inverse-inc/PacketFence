@@ -50,6 +50,7 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
  * Improve pfdhcp DB connection (#8419)
  * Track TLS certificate attributes per node (#8416)
  * Kafka UI Config (#8421)
+ * Netdata Upgrade (#8399)
 
 === Bug Fixes
 
