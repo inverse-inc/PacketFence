@@ -174,6 +174,7 @@ func main() {
 	for i := 1; i <= maxWorkers; i++ {
 		go func(i int) {
 			for j := range jobs {
+				j.db = MyDB
 				doWork(i, j)
 			}
 		}(i)
