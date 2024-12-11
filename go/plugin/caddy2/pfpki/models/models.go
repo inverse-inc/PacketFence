@@ -701,13 +701,12 @@ func revokeNeeded(cn string, profile string, allowTime int, c *gorm.DB) (bool, e
 
 	var profiledb []Profile
 	c.Select("id, name, ca_id, ca_name, mail, street_address, organisation, organisational_unit, country, state, locality, postal_code, validity, key_type, key_size, digest, key_usage, extended_key_usage, ocsp_url, p12_mail_password, p12_mail_subject, p12_mail_from, p12_mail_header, p12_mail_footer, scep_enabled, scep_challenge_password, scep_days_before_renewal, days_before_renewal, renewal_mail, days_before_renewal_mail, renewal_mail_subject, renewal_mail_from, renewal_mail_header, renewal_mail_footer, revoked_valid_until, cloud_enabled, cloud_service, scep_server_enabled, scep_server_id, allow_duplicated_cn, maximum_duplicated_cn").Where("name = ?", profile).First(&profiledb)
-
 	if profiledb[0].AllowDuplicatedCN == 1 {
 		// Allow duplicated CN in the DB for this profile
 		if profiledb[0].MaximumDuplicatedCN == 0 {
 			return true, nil
 		}
-		if CertDB = c.Where("Cn = ? AND profile_name = ?", cn, profile).Find(&certifs); CertDB.Error != nil {
+		if CertDB = c.Where("cn = ? AND profile_name = ?", cn, profile).Find(&certifs); CertDB.Error == nil {
 			// Do we have to revoke some of them ?
 			i := 0
 			for _, certificat := range certifs {
@@ -736,7 +735,6 @@ func revokeNeeded(cn string, profile string, allowTime int, c *gorm.DB) (bool, e
 			return true, nil
 		}
 	}
-
 	if CertDB = c.Where("Cn = ? AND profile_name = ?", cn, profile).Find(&certif); CertDB.Error != nil {
 		// There is no certificate with this CN in the DB
 		return true, nil
@@ -748,7 +746,6 @@ func revokeNeeded(cn string, profile string, allowTime int, c *gorm.DB) (bool, e
 	certif.DB = *c
 
 	store := make(map[pemutil.BlockType]interface{})
-
 	pemutil.Decode(store, []byte(certif.Cert))
 	for _, pemUtil := range store {
 		cert := pemUtil.(*x509.Certificate)
