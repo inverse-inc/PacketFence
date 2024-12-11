@@ -427,8 +427,8 @@ loop:
 		select {
 		case pfflowsArray := <-ChanPfFlow:
 			for _, pfflows := range pfflowsArray {
+				log.LogInfof(ctx, "Received %d flows of FlowType %s", len(*pfflows.Flows), flowType(pfflows.Header.FlowType))
 				for _, f := range *pfflows.Flows {
-					logPfFlow(ctx, &pfflows.Header, &f)
 					key := f.Key(&pfflows.Header)
 					val := a.events[key]
 					if a.Heuristics > 0 {
