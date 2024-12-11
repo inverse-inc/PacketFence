@@ -117,7 +117,7 @@ func (f *PfFlow) SessionKey() AggregatorSession {
 func (f *PfFlow) NetworkEventDirection() NetworkEventDirection {
 	switch f.BiFlow {
 	default:
-		return NetworkEventDirection("")
+		return NetworkEventDirectionBiDirectional
 	case 1:
 		return NetworkEventDirectionInBound
 	case 2:
