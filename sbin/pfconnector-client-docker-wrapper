@@ -5,7 +5,7 @@ source /usr/local/pf/containers/systemd-service
 name=pfconnector-client
 
 args=`base_args $name`
-args="$args -v/usr/local/pf/conf/:/usr/local/pf/conf/"
+args="$args -v /usr/local/pf/conf/system_init_key:/usr/local/pf/conf/system_init_key"
 args="$args --network=host"
 
 unified_api_system_pass=`cat /usr/local/pf/conf/unified_api_system_pass`
