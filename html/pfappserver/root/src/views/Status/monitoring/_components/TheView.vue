@@ -34,7 +34,7 @@
             </b-dropdown>
           </b-button-group>
         </b-row>
-        <b-row align-h="center" align-v="center" :key="`${showChart.metric}-${showAfter}`">
+        <b-row align-h="center" align-v="center" :key="`${showChart.metric}-${showAfter}-modal`">
           <b-col md="12" v-for="({ management_ip, host}) in cluster" :key="management_ip">
             <div class="p-3">
               <small class="text-muted">{{ host }}</small>
@@ -91,7 +91,7 @@
           <!-- Named groups are rendered inside a card -->
           <component :is="group.name ? 'b-card' : 'div'" class="mt-3" :key="`${group.name}-${groupIndex}`" :title="$i18n.t(group.name)">
             <b-row align-h="center">
-              <b-col class="mt-3 chart" v-for="(chart, chartIndex) in group.items" :key="`${chart.metric}-${chartIndex}`" :md="cols(chart.cols, group.items.length)">
+              <b-col class="mt-3 chart" v-for="(chart, chartIndex) in group.items" :key="`${chart.metric}-${chartIndex}-main`" :md="cols(chart.cols, group.items.length)">
                 <small class="text-muted cursor-pointer pb-3" @click="chartZoom(section, group, chart)" v-b-tooltip.hover.bottom.d300 :title="chart.metric">
                   <icon name="expand" class="text-primary mr-1" @click="chartZoom(section, group, chart)" />
                   {{ chart.title }} <b-badge class="float-right ml-1" variant="light">{{ chart.metric }}</b-badge>

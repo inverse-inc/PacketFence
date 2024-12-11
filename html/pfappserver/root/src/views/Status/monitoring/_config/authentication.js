@@ -39,6 +39,64 @@ export default [
         ]
       },
       {
+        name: 'RADIUS Logs per Switch ID', // i18n defer
+        items: [
+          {
+            title: 'Accept Requests', // i18n defer
+            metric: 'packetfence.radius_audit_log.accept_per_switch_id',
+            library: libraries.DYGRAPH,
+            cols: 6
+          },
+          {
+            title: 'Reject Requests', // i18n defer
+            metric: 'packetfence.radius_audit_log.reject_per_switch_id',
+            library: libraries.DYGRAPH,
+            cols: 6
+          },
+          {
+            title: 'CoA Requests', // i18n defer
+            metric: 'packetfence.radius_audit_log.coa_per_switch_id',
+            library: libraries.DYGRAPH,
+            cols: 6
+          },
+          {
+            title: 'Disconnect Requests', // i18n defer
+            metric: 'packetfence.radius_audit_log.disconnect_per_switch_id',
+            library: libraries.DYGRAPH,
+            cols: 6
+          }
+        ]
+      },
+      {
+        name: 'RADIUS Logs per Connection Type', // i18n defer
+        items: [
+          {
+            title: 'Accept Requests', // i18n defer
+            metric: 'packetfence.radius_audit_log.accept_per_connection_type',
+            library: libraries.DYGRAPH,
+            cols: 6
+          },
+          {
+            title: 'Reject Requests', // i18n defer
+            metric: 'packetfence.radius_audit_log.reject_per_connection_type',
+            library: libraries.DYGRAPH,
+            cols: 6
+          },
+          {
+            title: 'CoA Requests', // i18n defer
+            metric: 'packetfence.radius_audit_log.coa_per_connection_type',
+            library: libraries.DYGRAPH,
+            cols: 6
+          },
+          {
+            title: 'Disconnect Requests', // i18n defer
+            metric: 'packetfence.radius_audit_log.disconnect_per_connection_type',
+            library: libraries.DYGRAPH,
+            cols: 6
+          }
+        ]
+      },
+      {
         name: 'NTLM Auth API', // i18n defer
         items: [
           {
