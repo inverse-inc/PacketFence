@@ -59,7 +59,7 @@ Once connected to Netdata Cloud, Netdata alerts will be sent to the email addres
 To attach all members of a cluster, each member has its own unique session id; where each must be used to login to Netdata Cloud manually.
 
 
-===== Reatarting Service
+===== Restarting Service
 
 ```
 systemctl restart packetfence-netdata
