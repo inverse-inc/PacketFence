@@ -126,13 +126,14 @@ func (s *KafkaSubmiter) send(events []*NetworkEvent) {
 			//TODO log error
 			continue
 		}
-		log.LogInfof(
-			ctx,
-			"Sending SrcIp: %s, DstIp: %s, DstPort: %d, Direction: %s",
-			events[i].SourceIp, events[i].DestIp, events[i].DestPort, events[i].Direction,
-		)
 		messages = append(messages, kafka.Message{Value: data})
 	}
+
+	log.LogInfof(
+		ctx,
+		"Sending %d network events to kafka",
+		len(messages),
+	)
 
 	s.writer.WriteMessages(context.Background(), messages...)
 }
