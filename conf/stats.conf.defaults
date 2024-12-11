@@ -418,3 +418,10 @@ match=api-frontend-docker-wrapper,httpd.dispatcher-docker-wrapper,httpd.admin_di
 statsd_ns=source.packetfence.httpd_apache.admin-dispatcher,source.packetfence.httpd_apache.httpd.dispatcher,source.packetfence.httpd_apache.httpd.portal,source.packetfence.httpd_apache.httpd.portal,source.packetfence.httpd_apache.httpd.webservices
 management=false
 
+[metric 'number of rows per table in mysql pf database']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.mysql.table_rows
+mysql_query=SELECT table_name, TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'pf'
+interval=60s
+management=true
