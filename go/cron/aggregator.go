@@ -56,8 +56,12 @@ type Aggregator struct {
 	db               *sql.DB
 }
 
+func emptyMac(mac string) bool {
+	return mac == "00:00:00:00:00:00" || mac == ""
+}
+
 func updateMacs(ctx context.Context, f *PfFlow, stmt *sql.Stmt) {
-	if f.SrcMac != "00:00:00:00:00:00" && f.DstMac != "00:00:00:00:00:00" {
+	if !emptyMac(f.SrcMac) && !emptyMac(f.DstMac) {
 		return
 	}
 
@@ -67,11 +71,11 @@ func updateMacs(ctx context.Context, f *PfFlow, stmt *sql.Stmt) {
 		log.LogErrorf(ctx, "updateMacs Database Error: %s", err.Error())
 	}
 
-	if f.SrcMac == "00:00:00:00:00:00" {
+	if emptyMac(f.SrcMac) {
 		f.SrcMac = srcMac
 	}
 
-	if f.DstMac == "00:00:00:00:00:00" {
+	if emptyMac(f.DstMac) {
 		f.DstMac = dstMac
 	}
 }
@@ -429,14 +433,14 @@ loop:
 			for _, pfflows := range pfflowsArray {
 				log.LogInfof(ctx, "Received %d flows of FlowType %s", len(*pfflows.Flows), flowType(pfflows.Header.FlowType))
 				for _, f := range *pfflows.Flows {
+					if stmt != nil {
+						updateMacs(ctx, &f, stmt)
+					}
+
 					key := f.Key(&pfflows.Header)
 					val := a.events[key]
 					if a.Heuristics > 0 {
 						f.Heuristics()
-					}
-
-					if stmt != nil {
-						updateMacs(ctx, &f, stmt)
 					}
 
 					a.events[key] = append(val, f)
