@@ -17,6 +17,8 @@ func TestAggregator(t *testing.T) {
 			},
 			Flows: &[]PfFlow{
 				{
+					SrcMac:          "00:11:22:33:44:55",
+					DstMac:          "00:11:22:33:44:56",
 					SrcIp:           netip.AddrFrom4([4]byte{1, 1, 1, 2}),
 					DstIp:           netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 					SrcPort:         80,
@@ -26,6 +28,8 @@ func TestAggregator(t *testing.T) {
 					ConnectionCount: 2,
 				},
 				{
+					SrcMac:          "00:11:22:33:44:56",
+					DstMac:          "00:11:22:33:44:55",
 					SrcIp:           netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 					DstIp:           netip.AddrFrom4([4]byte{1, 1, 1, 2}),
 					SrcPort:         1024,
@@ -35,6 +39,8 @@ func TestAggregator(t *testing.T) {
 					ConnectionCount: 2,
 				},
 				{
+					SrcMac:          "00:11:22:33:44:55",
+					DstMac:          "00:11:22:33:44:56",
 					SrcIp:           netip.AddrFrom4([4]byte{1, 1, 1, 2}),
 					DstIp:           netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 					SrcPort:         80,
@@ -44,6 +50,8 @@ func TestAggregator(t *testing.T) {
 					ConnectionCount: 2,
 				},
 				{
+					SrcMac:          "00:11:22:33:44:56",
+					DstMac:          "00:11:22:33:44:55",
 					SrcIp:           netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 					DstIp:           netip.AddrFrom4([4]byte{1, 1, 1, 2}),
 					SrcPort:         1025,
@@ -91,6 +99,8 @@ func TestAggregator(t *testing.T) {
 		{
 			Flows: &[]PfFlow{
 				{
+					SrcMac:  "00:11:22:33:44:55",
+					DstMac:  "00:11:22:33:44:56",
 					SrcIp:   netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 					DstIp:   netip.AddrFrom4([4]byte{1, 1, 1, 2}),
 					SrcPort: 1024,
@@ -99,6 +109,8 @@ func TestAggregator(t *testing.T) {
 					BiFlow:  0,
 				},
 				{
+					SrcMac:  "00:11:22:33:44:55",
+					DstMac:  "00:11:22:33:44:56",
 					SrcIp:   netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 					DstIp:   netip.AddrFrom4([4]byte{1, 1, 1, 2}),
 					SrcPort: 1025,
@@ -107,6 +119,8 @@ func TestAggregator(t *testing.T) {
 					BiFlow:  0,
 				},
 				{
+					SrcMac:  "00:11:22:33:44:55",
+					DstMac:  "00:11:22:33:44:56",
 					SrcIp:   netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 					DstIp:   netip.AddrFrom4([4]byte{1, 1, 1, 2}),
 					SrcPort: 1024,
