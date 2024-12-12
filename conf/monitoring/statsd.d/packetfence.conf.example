@@ -393,3 +393,122 @@
     type = line
     dimension = pattern 'source.packetfence.httpd_apache.*' '' last 1 1
 
+[mysql.table_rows]
+    name = mysql.table_rows
+    title = mysql table rows
+    family = packetfence
+    context = chart.context
+    units = # of rows
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.mysql.table_rows.*' '' last 1 1
+
+[mysql.innodb_buffer_pool_pages]
+    name = mysql.innodb_buffer_pool_pages
+    title = mysql innodb buffer pool pages
+    family = packetfence
+    context = chart.context
+    units = # of pages
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.mysql.innodb_buffer_pool_pages.*' '' last 1 1
+
+[mysql.innodb_buffer_pool_bytes]
+    name = mysql.innodb_buffer_pool_bytes
+    title = mysql innodb buffer pool bytes
+    family = packetfence
+    context = chart.context
+    units = # of bytes
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.mysql.innodb_buffer_pool_bytes.*' '' last 1 1
+
+[mysql.innodb_buffer_pool_read_write]
+    name = mysql.innodb_buffer_pool_read_write
+    title = mysql innodb buffer pool r/w
+    family = packetfence
+    context = chart.context
+    units = # of ops
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.mysql.innodb_buffer_pool_read_write.*' '' last 1 1
+
+[radius_audit_log.accept_per_switch_id]
+    name = radius_audit_log.accept_per_switch_id
+    title = RADIUS Audit Log Accept requests per switch id
+    family = packetfence
+    context = chart.context
+    units = # of requests
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.radius_audit_log.accept_per_switch_id.*' '' last 1 1
+
+[radius_audit_log.reject_per_switch_id]
+    name = radius_audit_log.reject_per_switch_id
+    title = RADIUS Audit Log Reject requests per switch id
+    family = packetfence
+    context = chart.context
+    units = # of requests
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.radius_audit_log.reject_per_switch_id.*' '' last 1 1
+
+[radius_audit_log.coa_per_switch_id]
+    name = radius_audit_log.coa_per_switch_id
+    title = RADIUS Audit Log CoA requests per switch id
+    family = packetfence
+    context = chart.context
+    units = # of requests
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.radius_audit_log.coa_per_switch_id.*' '' last 1 1
+
+[radius_audit_log.disconnect_per_switch_id]
+    name = radius_audit_log.disconnect_per_switch_id
+    title = RADIUS Audit Log Disconnect requests per switch id
+    family = packetfence
+    context = chart.context
+    units = # of requests
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.radius_audit_log.disconnect_per_switch_id.*' '' last 1 1
+
+[radius_audit_log.accept_per_connection_type]
+    name = radius_audit_log.accept_per_connection_type
+    title = RADIUS Audit Log Accept requests per connection type
+    family = packetfence
+    context = chart.context
+    units = # of requests
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.radius_audit_log.accept_per_connection_type.*' '' last 1 1
+
+[radius_audit_log.reject_per_connection_type]
+    name = radius_audit_log.reject_per_connection_type
+    title = RADIUS Audit Log Reject requests per connection type
+    family = packetfence
+    context = chart.context
+    units = # of requests
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.radius_audit_log.reject_per_connection_type.*' '' last 1 1
+
+[radius_audit_log.coa_per_connection_type]
+    name = radius_audit_log.coa_per_connection_type
+    title = RADIUS Audit Log CoA requests per connection type
+    family = packetfence
+    context = chart.context
+    units = # of requests
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.radius_audit_log.coa_per_connection_type.*' '' last 1 1
+
+[radius_audit_log.disconnect_per_connection_type]
+    name = radius_audit_log.disconnect_per_connection_type
+    title = RADIUS Audit Log Disconnect requests per connection type
+    family = packetfence
+    context = chart.context
+    units = # of requests
+    priority = 91000
+    type = line
+    dimension = pattern 'source.packetfence.radius_audit_log.disconnect_per_connection_type.*' '' last 1 1
