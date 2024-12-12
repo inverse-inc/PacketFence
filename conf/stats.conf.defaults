@@ -426,6 +426,33 @@ mysql_query=SELECT table_name, TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE T
 interval=60s
 management=true
 
+[metric 'innodb buffer pool pages']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.mysql.innodb_buffer_pool_pages
+mysql_query=
+mysql_query=SHOW GLOBAL STATUS WHERE VARIABLE_NAME IN ('Innodb_buffer_pool_pages_data', 'Innodb_buffer_pool_pages_dirty', 'Innodb_buffer_pool_pages_flushed', 'Innodb_buffer_pool_pages_free', 'Innodb_buffer_pool_pages_made_not_young', 'Innodb_buffer_pool_pages_made_young', 'Innodb_buffer_pool_pages_old', 'Innodb_buffer_pool_pages_total', 'Innodb_buffer_pool_pages_lru_flushed', 'Innodb_buffer_pool_pages_lru_freed');
+interval=60s
+management=true
+
+[metric 'innodb buffer pool bytes']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.mysql.innodb_buffer_pool_bytes
+mysql_query=
+mysql_query=SHOW GLOBAL STATUS WHERE VARIABLE_NAME IN ('Innodb_buffer_pool_bytes_data', 'Innodb_buffer_pool_bytes_dirty');
+interval=60s
+management=true
+
+[metric 'innodb buffer pool r/w']
+type=mysql_query
+statsd_type=gauge
+statsd_ns=source.packetfence.mysql.innodb_buffer_pool_read_write
+mysql_query=
+mysql_query=SHOW GLOBAL STATUS WHERE VARIABLE_NAME IN ('Innodb_buffer_pool_read_ahead_rnd', 'Innodb_buffer_pool_read_ahead', 'Innodb_buffer_pool_read_ahead_evicted', 'Innodb_buffer_pool_read_requests', 'Innodb_buffer_pool_reads', 'Innodb_buffer_pool_write_requests');
+interval=60s
+management=true
+
 [metric 'total number of RADIUS Accept requests per switch id']
 type=mysql_query
 statsd_type=gauge

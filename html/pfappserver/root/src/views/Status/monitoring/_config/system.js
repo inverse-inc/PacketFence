@@ -148,35 +148,6 @@ export default [
             cols: 4
           }
         ]
-      },
-      {
-        name: 'Database', // i18n defer
-        items: [
-          {
-            title: 'Database queries', // i18n defer
-            metric: 'mysql_PacketFence_Database.queries',
-            library: libraries.DYGRAPH,
-            cols: 6
-          },
-          {
-            title: 'Database handlers', // i18n defer
-            metric: 'mysql_PacketFence_Database.handlers',
-            library: libraries.DYGRAPH,
-            cols: 6
-          },
-          {
-            title: 'Database threads', // i18n defer
-            metric: 'mysql_PacketFence_Database.threads',
-            library: libraries.DYGRAPH,
-            cols: 6
-          },
-          {
-            title: 'Database connections', // i18n defer
-            metric: 'mysql_PacketFence_Database.connections',
-            library: libraries.DYGRAPH,
-            cols: 6
-          }
-        ]
       }
     ]
   }
