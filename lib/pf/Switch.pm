@@ -4231,6 +4231,7 @@ sub format_acl {
                 $acl_line =~ s/$mac/$ip/g;
             } else {
                 get_logger->warn("Bypass ACL because no ip lookup available: ".$acl_line);
+                next;
             }
         }
         if ($acl_line =~ /^(in\||out\|)(.*)/) {
