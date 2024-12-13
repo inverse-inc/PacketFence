@@ -54,7 +54,7 @@ LOCAL_REGISTRY = packetfence
 #
 GOVERSION = go1.23.4
 PF_BINARIES = pfhttpd pfqueue-go pfdhcp pfdns pfstats pfdetect galera-autofix pfacct pfcron mysql-probe pfconnector sdnotify-proxy
-PF_GO_CMDS = pfcrypt
+PF_GO_CMDS = pfcrypt pfkafka
 
 #
 # PF versions
