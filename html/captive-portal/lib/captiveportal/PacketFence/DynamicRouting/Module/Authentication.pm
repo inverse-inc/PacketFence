@@ -29,7 +29,7 @@ use pf::constants::role qw($REJECT_ROLE);
 
 has 'source' => (is => 'rw', isa => 'pf::Authentication::Source|Undef');
 
-has 'source_id' => (is => 'rw', trigger => \&_build_source);
+has 'source_id' => (is => 'rw', trigger => \&_rebuild_source);
 
 has 'required_fields' => (is => 'rw', isa => 'ArrayRef[Str]', builder => '_build_required_fields', lazy => 1);
 
@@ -129,13 +129,13 @@ sub _build_request_fields {
     return \%request_fields;
 }
 
-=head2 _build_source
+=head2 _rebuild_source
 
 Builder for the source using the source_id attribute
 
 =cut
 
-sub _build_source {
+sub _rebuild_source {
     my ($self) = @_;
     $self->source(pf::authentication::getAuthenticationSource($self->{source_id}));
 }

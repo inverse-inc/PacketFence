@@ -24,7 +24,11 @@ use pf::auth_log;
 
 has '+pid_field' => (default => sub { "telephone" });
 
-has '+source' => (isa => 'pf::Authentication::Source::SMSSource|pf::Authentication::Source::TwilioSource|pf::Authentication::Source::ClickatellSource');
+has '+source' => (
+    isa => 'pf::Authentication::Source::SMSSource|pf::Authentication::Source::TwilioSource|pf::Authentication::Source::ClickatellSource',
+    lazy => 1,
+    builder => '_build_source',
+);
 
 =head2 allowed_urls_auth_module
 
@@ -326,6 +330,11 @@ sub auth_source_params_child {
     return {
         telephone => $self->session->{telephone}
     };
+}
+
+sub _build_source {
+    my ($self) = @_;
+    return $self->app->profile->getSourceByType('SMS');
 }
 
 =head1 AUTHOR
