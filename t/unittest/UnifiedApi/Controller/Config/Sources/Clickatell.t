@@ -20,7 +20,7 @@ BEGIN {
     use setup_test_config;
 }
 
-use Test::More tests => 7;
+use Test::More tests => 10;
 
 #This test will running last
 use Test::NoWarnings;
@@ -73,10 +73,17 @@ $t->patch_ok("$base_url/$id1" =>
   ->status_is(200)
   ;
 
+$t->get_ok("$base_url/$id1")
+    ->status_is(200)
+    ->json_is(
+        '/item/message',
+        qq{Hello
+        World},
+    );
+
 $t->get_ok("$collection_base_url")
   ->status_is(200)
   ;
-use Data::Dumper; print Dumper($t->tx->res->json);
 
 
 =head1 AUTHOR
