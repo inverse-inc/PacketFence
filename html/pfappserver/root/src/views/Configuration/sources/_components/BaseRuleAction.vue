@@ -38,6 +38,9 @@ const components = {
   BaseInputChosenOne
 }
 
+import i18n from '@/utils/locale'
+const sortOptions = ({text: a}, {text: b}) => i18n.t(a).localeCompare(i18n.t(b))
+
 import { computed, inject, nextTick, ref, unref, watch } from '@vue/composition-api'
 import {
   pfComponentType as componentType,
@@ -67,6 +70,7 @@ const setup = (props, context) => {
   watch( // when `type` is mutated
     () => unref(inputValue) && unref(inputValue).type,
     () => {
+      unref(inputValue).value = undefined
       const { isFocus = false } = typeComponentRef.value
       if (isFocus) { // and `type` isFocus
         const { ['default']: _default } = unref(action)
@@ -97,7 +101,7 @@ const setup = (props, context) => {
   const typeOptions = computed(() => unref(actions).map(action => {
     const { text, value } = action
     return { text, value }
-  }))
+  }).sort(sortOptions))
 
   const valueComponent = computed(() => {
     if (action.value) {

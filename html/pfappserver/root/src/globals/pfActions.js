@@ -186,7 +186,6 @@ const pfActionSchema = yup.object({
   value: yup.string()
     .when('type', type => {
       switch (true) {
-        case !type:
         case type === 'set_role':
         case pfActions[type].types.includes(fieldType.NONE):
         case pfActions[type].types.includes(fieldType.HIDDEN):
@@ -205,7 +204,7 @@ const pfActionSchema = yup.object({
           // break
         case type === 'set_access_level':
         case type === 'set_access_level_by_acl_user':
-          return yup.array().nullable()
+          return yup.array().ensure()
             .of(yup.string().nullable())
             .required(i18n.t('Level(s) required.'))
           // break
