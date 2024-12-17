@@ -24,7 +24,8 @@ use pfconfig::undef_element;
 use pf::log;
 use pfconfig::constants;
 use IO::Socket::UNIX;
-use Sereal::Decoder;
+use pf::Sereal qw($DECODER);
+use Sereal::Decoder qw(sereal_decode_with_object);
 use Readonly;
 use JSON::MaybeXS qw(encode_json);
 use pfconfig::config;
@@ -81,8 +82,7 @@ sub fetch_decode_socket {
 
     my $decoder = Sereal::Decoder->new;
     my $response = fetch_socket($socket, $payload);
-    return $decoder->decode($response);
-
+    return sereal_decode_with_object($DECODER, $response);
 }
 
 sub socket_expire {

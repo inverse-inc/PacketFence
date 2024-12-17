@@ -31,6 +31,7 @@ use JSON::MaybeXS;
 use pf::log;
 use pf::IniFiles;
 use List::MoreUtils qw(uniq);
+use pf::config::crypt::object;
 
 use base 'pfconfig::namespaces::resource';
 

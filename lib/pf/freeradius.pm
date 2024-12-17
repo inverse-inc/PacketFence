@@ -245,7 +245,7 @@ sub _build_radius_nas_row {
             $range_length = $end_ip - $start_ip + 1;
         }
     }
-    [ $id, $id, $data->{radiusSecret}, $id . " (" . $data->{'type'} .")", $timestamp, $start_ip, $end_ip, $range_length]
+    [ $id, $id, "$data->{radiusSecret}", $id . " (" . $data->{'type'} .")", $timestamp, $start_ip, $end_ip, $range_length]
 }
 
 =back

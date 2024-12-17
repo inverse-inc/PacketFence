@@ -50,6 +50,7 @@ use pf::constants::user;
 use pfconfig::git_storage;
 use pf::config::crypt;
 use pf::config::crypt::object;
+use pf::config::crypt::object::freeze;
 use Scalar::Util qw(reftype);
 
 my $ordered_prefix = "ORDERED::";

@@ -22,6 +22,7 @@ use Try::Tiny;
 use pf::log;
 use pf::Sereal qw($DECODER $ENCODER_FREEZER);
 use pf::config::crypt::object;
+use pf::config::crypt::object::freeze;
 
 use base 'pfconfig::backend';
 
