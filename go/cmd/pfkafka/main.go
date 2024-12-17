@@ -2,33 +2,35 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"time"
 
 	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/sasl"
 	"github.com/segmentio/kafka-go/sasl/plain"
 )
 
 func main() {
 	// to consume messages
-	topic := ""
+	topic := "network_events"
 	user := ""
 	pass := ""
-	broker := ""
-	if len(os.Args) != 5 {
-		panic("Not enough args")
-	}
-	broker = os.Args[1]
-	user = os.Args[2]
-	pass = os.Args[3]
-	topic = os.Args[4]
+	broker := "localhost:9092"
+	flag.StringVar(&topic, "topic", topic, "topic")
+	flag.StringVar(&broker, "broker", broker, "broker")
+	flag.StringVar(&user, "user", user, "user")
+	flag.StringVar(&pass, "password", pass, "password")
+	flag.Parse()
 	fmt.Fprintf(os.Stderr, "listening to %s on %s\n", topic, broker)
-
-	mechanism := plain.Mechanism{
-		Username: user,
-		Password: pass,
+	var mechanism sasl.Mechanism
+	if user != "" && pass != "" {
+		mechanism = plain.Mechanism{
+			Username: user,
+			Password: pass,
+		}
 	}
 
 	dialer := &kafka.Dialer{
