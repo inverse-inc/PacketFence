@@ -14,7 +14,11 @@ use Moose;
 extends 'captiveportal::DynamicRouting::Module::Authentication';
 with 'captiveportal::Role::FieldValidation';
 
-has '+source' => (isa => 'pf::Authentication::Source::EmailSource');
+has '+source' => (
+    isa => 'pf::Authentication::Source::EmailSource',
+    lazy => 1,
+    builder => '_build_source',
+);
 
 use pf::auth_log;
 use pf::config qw(%Config);
@@ -169,6 +173,11 @@ sub auth_source_params_child {
     return {
         user_email => $self->app->session->{email},
     };
+}
+
+sub _build_source {
+    my ($self) = @_;
+    return $self->app->profile->getSourceByType('Email');
 }
 
 =head1 AUTHOR
