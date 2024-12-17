@@ -11,6 +11,7 @@ pfqueue-go
 galera-autofix
 mysql-probe
 pfcrypt
+pfkafka
 !pfhttpd/
 !pfdns/
 !pfdhcp/
@@ -22,6 +23,7 @@ pfcrypt
 !galera-autofix/
 !mysql-probe/
 !pfcrypt/
+!pfkafka/
 Caddyfile
 acct-tester/db-tester/db-tester
 acct-tester/radius-tester/radius-tester
