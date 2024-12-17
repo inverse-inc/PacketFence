@@ -416,9 +416,8 @@ const setup = (props, context) => {
   const form = ref({})
   const schema = computed(() => schemaFn(props, form.value))
 
-  const user = computed(() => $store.state.$_users.users[pid.value] || {})
-  watch(user, () => {
-    form.value = { ...user.value } // dereference
+  watch(() => $store.state.$_users.users[pid.value], () => {
+    form.value = JSON.parse(JSON.stringify($store.state.$_users.users[pid.value] || {})) // dereference
   }, { deep: true, immediate: true })
 
   const tabIndex = ref(0)
