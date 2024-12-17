@@ -319,7 +319,7 @@ sub auth_source_params_child {
 
 sub _build_source {
     my ($self) = @_;
-    return $self->app->profile->getSourceByType('Sponsor');
+    return $self->app->profile->getSourceByType('SponsorEmail');
 }
 
 =head1 AUTHOR
