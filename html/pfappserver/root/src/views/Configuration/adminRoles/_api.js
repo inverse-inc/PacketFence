@@ -2,8 +2,8 @@ import apiCall from '@/utils/api'
 
 export default {
   list: params => {
-    return apiCall.get('config/admin_roles', { params }).then(response => {
-      return response.data
+    return apiCall.get('config/admin_roles', { params }).then(({data}) => {
+      return { ...data, items: data.items.filter(({id}) => !['NONE', 'ALL', 'ALL_PF_ONLY'].includes(id)) }
     })
   },
   listOptions: () => {
