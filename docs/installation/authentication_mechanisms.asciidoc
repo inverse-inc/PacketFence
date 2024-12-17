@@ -61,6 +61,41 @@ NOTE: If you are using PacketFence in cluster mode, you must save the domain set
 
 NOTE: after version 14.0, the PacketFence domain.conf will be updated, domain identifier is changed from previously single identifier to "hostname + identifier". If you are running PacketFence in a cluster, please check the corresponding sections for each node.
 
+==== Domain Joining on A PacketFence cluster
+
+We've changed the structure of `domain.conf` configuration file. Since v14.0, each node in a cluster will have their own section.
+They will find and store their domain configurations under sections starts with their hostnames. +
+This change allows each node in a cluster have their indivudual domain configuration. For example, a node doesn't have to use %h as part of the machine
+account created on the domain controller, they now have the ability to fully customize the machine account name. +
+However, due to the isolation of domain.conf on each of the node, they also lost the ability of sharing configuration across the nodes.
+If you are running PacketFence cluster of v14.0, you'll have to join Windows AD on each of the node - this will create a corresponding machine account
+for each of the node when you create the domain profile.
+
+Here is the steps you'll need to follow to create a domain profile in cluster after v14.0:
+Assuming that we have a PacketFence cluster of 3 nodes, and we are about to join "domain.com"
+
+ . Open PacketFence Admin UI, and navigate to "Status" -> "Services" -> "API redirect" or
+ . Access the Admin UI form "https://node_ip:1443" directly.
+
+Either the steps will allow you to create the domain profile on the selected node.
+
+NOTE: Windows does not allow machine account to be shared when initialize secure connection. Therefore, each node in a cluster has to use a unique machine account.
+You can either include %h as part of the machine account or use a unique fully customized machine account name for each of the node. For example, if you use "A" as
+machine account name in node1's domain profile creation, and continued using "A" as machine account name to create a domain profile from another node,
+this will eventually cause node1 and node2 trying to bind the same machine onto its own secure connection, and cause NTLM authentication interruptions and failures.
+
+After we changed the node that handles the API request or we choosed the node manually (method 2), do the following steps:
+
+ . navigate to "Configuration" -> "Policies and Access Control" -> "Active Directory Domains"
+ . fill in the information required to create the domain profile and then click "Create".
+ . PacketFence will create the domain profile for the node *only* that handles the API request.
+ . switch back to API redirect and select another node in the cluster
+ . back to "Configuration" -> "Policies and Access Control" -> "Active Directory Domains" and create the domain profile for another node.
+ . Repeat the previous steps until all the nodes are done with domain profile creation.
+
+
+
+
 ==== Troubleshooting
 
 * In order to troubleshoot unsuccessful binds, please refer to the following file : `/usr/local/pf/log/packetfence.log`. Search for "ntlm-auth-api-domain" for all ntlm-auth-api entries.
