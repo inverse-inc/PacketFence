@@ -77,6 +77,8 @@ Assuming that we have a PacketFence cluster of 3 nodes, and we are about to join
  . Open PacketFence Admin UI, and navigate to "Status" -> "Services" -> "API redirect" or
  . Access the Admin UI form "https://node_ip:1443" directly.
 
+image::api-redirect.jpg[scaledwidth="100%",alt="API redirect in configuration"]
+
 Either the steps will allow you to create the domain profile on the selected node.
 
 NOTE: Windows does not allow machine account to be shared when initialize secure connection. Therefore, each node in a cluster has to use a unique machine account.
