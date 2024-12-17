@@ -20,6 +20,7 @@ use warnings;
 use base 'pfconfig::backend';
 use CHI;
 use pfconfig::empty_string;
+use pf::Sereal qw($DECODER $ENCODER_FREEZER);
 
 my $empty_string = pfconfig::empty_string->new;
 
@@ -31,7 +32,14 @@ initialize the cache
 
 sub init {
     my ($self) = @_;
-    $self->{cache} = CHI->new(driver => 'Memory', datastore => {},'serializer' => 'Sereal');
+    $self->{cache} = CHI->new(
+        driver       => 'Memory',
+        datastore    => {},
+        'serializer' => {
+            serializer => 'Sereal',
+            options    => { encoder => $ENCODER_FREEZER, decoder => $DECODER }
+        }
+    );
 }
 
 =head2 set
@@ -42,7 +50,6 @@ Set value in the CHI cache
 
 sub set {
     my ( $self, $key, $value ) = @_;
-
     # There is an issue writing empty strings with CHI Memory driver
     # We workaround it using a class that represents an empty string
     if ( defined($value) && "$value" eq '' ) {
