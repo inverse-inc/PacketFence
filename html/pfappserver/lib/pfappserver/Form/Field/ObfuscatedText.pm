@@ -48,13 +48,19 @@ sub element_attributes {
 
 sub deflate {
     my ($self, $value ) = @_;
-    $value = pf::config::crypt::pf_encrypt($value);
+    if (defined $value && length($value) == 0) {
+        $value = pf::config::crypt::pf_encrypt($value);
+    }
+
     return $value;
 }
 
 sub inflate {
     my ($self, $value ) = @_;
-    $value = pf::config::crypt::pf_decrypt($value);
+    if (defined $value) {
+        $value = pf::config::crypt::pf_decrypt($value);
+    }
+
     return $value;
 }
 
