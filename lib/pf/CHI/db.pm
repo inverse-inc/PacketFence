@@ -21,6 +21,7 @@ use pf::file_paths qw(
     $pf_default_file
     $pf_config_file
 );
+use pf::config::crypt;
 
 our ($DBH, $LAST_CONNECT, $CONFIG);
 our $logger = get_logger();
@@ -46,6 +47,7 @@ sub db_connect {
 
     $logger->debug("(Re)Connecting to MySQL (pid: $$)");
     my ($dsn, $user, $pass) = db_data_source_info();
+    $pass = pf::config::crypt::pf_decrypt($pass);
     # make sure we have a database handle
     if ($DBH = DBI->connect($dsn, $user, $pass, { RaiseError => 0, PrintError => 0, mysql_auto_reconnect => 1 })) {
         $logger->debug("connected");
