@@ -29,7 +29,11 @@ use captiveportal::Base::Actions;
 use pf::nodecategory;
 use pf::util;
 
-has '+source' => (isa => 'pf::Authentication::Source::SponsorEmailSource');
+has '+source' => (
+    isa => 'pf::Authentication::Source::SponsorEmailSource',
+    lazy => 1,
+    builder => '_build_source',
+);
 
 has 'forced_sponsor' => ('is' => 'rw');
 
@@ -311,6 +315,11 @@ sub auth_source_params_child {
     return {
         user_email => $self->app->session->{email},
     };
+}
+
+sub _build_source {
+    my ($self) = @_;
+    return $self->app->profile->getSourceByType('SponsorEmail');
 }
 
 =head1 AUTHOR
