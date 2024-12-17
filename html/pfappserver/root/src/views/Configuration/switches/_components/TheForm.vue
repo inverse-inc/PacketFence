@@ -15,6 +15,7 @@
 
         <form-group-identifier namespace="id"
           :column-label="$i18n.t('IP Address/MAC Address/Range (CIDR)')"
+          :disabled="!isNew && !isClone"
         />
 
         <form-group-description namespace="description"
