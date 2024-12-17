@@ -42,11 +42,10 @@ type Remote struct {
 	LastTouched                         time.Time
 	LocalHost, LocalPort, LocalProto    string
 	RemoteHost, RemotePort, RemoteProto string
-	Dynamic, Socks, Reverse, Stdio      bool
 	Handler                             string
 	ReusedTcpListener                   *net.TCPListener
 	ReusedUdpConn                       *net.UDPConn
-	ReusePort                           bool
+	Dynamic, Socks, Reverse, Stdio      bool
 }
 
 const revPrefix = "R:"
@@ -172,7 +171,7 @@ func (r *Remote) setupLocalPort() error {
 		tl := l.(*net.TCPListener)
 		r.LocalPort = strconv.Itoa(tl.Addr().(*net.TCPAddr).Port)
 		r.ReusedTcpListener = tl
-		r.ReusePort = true
+		r.Dynamic = true
 		return nil
 	}
 
@@ -185,7 +184,7 @@ func (r *Remote) setupLocalPort() error {
 		uc := l.(*net.UDPConn)
 		r.LocalPort = strconv.Itoa(uc.LocalAddr().(*net.UDPAddr).Port)
 		r.ReusedUdpConn = uc
-		r.ReusePort = true
+		r.Dynamic = true
 		return nil
 	}
 	return errors.New("Proto not supported")
