@@ -80,15 +80,15 @@
     <form-group-monitor namespace="monitor"
                         :column-label="$i18n.t('Monitor')"
                         :text="$i18n.t('Do you want to monitor this source?')"
-                        :enabled-value="1"
-                        :disabled-value="0"
+                        enabled-value="1"
+                        disabled-value="0"
     />
 
     <form-group-shuffle namespace="shuffle"
                         :column-label="$i18n.t('Shuffle')"
                         :text="$i18n.t('Randomly choose LDAP server to query.')"
-                        :enabled-value="1"
-                        :disabled-value="0"
+                        enabled-value="1"
+                        disabled-value="0"
     />
 
     <form-group-use-connector namespace="use_connector"
