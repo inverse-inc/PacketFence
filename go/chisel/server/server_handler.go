@@ -23,7 +23,6 @@ import (
 	"github.com/inverse-inc/packetfence/go/pfconfigdriver"
 	"github.com/inverse-inc/packetfence/go/pfk8s"
 	"github.com/inverse-inc/packetfence/go/unifiedapiclient"
-	"github.com/phayes/freeport"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
 )
@@ -261,14 +260,8 @@ func (s *Server) handleDynReverse(w http.ResponseWriter, req *http.Request) {
 	if o, ok := activeTunnels.Load(connectorId); ok {
 		for i := 0; i < DYNREVERSE_BIND_ATTEMPTS; i++ {
 			tun := o.(*tunnel.Tunnel)
-			dynPort, err := freeport.GetFreePort()
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				json.NewEncoder(w).Encode(unifiedapiclient.ErrorReply{Status: http.StatusInternalServerError, Message: fmt.Sprintf("Unable to find available port: %s", err)})
-				return
-			}
 			to := payload.To
-			remoteStr := fmt.Sprintf("R:%d:%s", dynPort, to)
+			remoteStr := fmt.Sprintf("R:0:%s", to)
 			remote, err := settings.DecodeRemote(remoteStr)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
@@ -276,8 +269,8 @@ func (s *Server) handleDynReverse(w http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			remote.Dynamic = true
 			remote.LastTouched = time.Now()
+			dynPort := remote.LocalPort
 			settings.ActiveDynReverse.Store(cacheKey, remote)
 			bindErrChan := make(chan error)
 			go func() {
