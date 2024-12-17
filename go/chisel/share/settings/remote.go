@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"context"
 	"errors"
 	"net"
 	"net/url"
@@ -9,6 +10,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/inverse-inc/packetfence/go/reuseport"
 )
 
 // short-hand conversions (see remote_test)
@@ -41,6 +44,9 @@ type Remote struct {
 	RemoteHost, RemotePort, RemoteProto string
 	Dynamic, Socks, Reverse, Stdio      bool
 	Handler                             string
+	ReusedTcpListener                   *net.TCPListener
+	ReusedUdpConn                       *net.UDPConn
+	ReusePort                           bool
 }
 
 const revPrefix = "R:"
@@ -87,6 +93,9 @@ func DecodeRemote(s string) (*Remote, error) {
 
 		if isPort(p) {
 			if !r.Socks && r.RemotePort == "" {
+				if p == "0" {
+					return nil, errors.New("Invalid port")
+				}
 				r.RemotePort = p
 			}
 			r.LocalPort = p
@@ -143,7 +152,43 @@ func DecodeRemote(s string) (*Remote, error) {
 	if r.Stdio && r.Reverse {
 		return nil, errors.New("stdio cannot be reversed")
 	}
+
+	if r.Reverse && r.LocalPort == "0" {
+		if err := r.setupLocalPort(); err != nil {
+			return nil, errors.New("Cannot bind to a local port")
+		}
+	}
+
 	return r, nil
+}
+
+func (r *Remote) setupLocalPort() error {
+	if r.LocalProto == "tcp" {
+		l, err := reuseport.ReusePortListenConfig.Listen(context.Background(), "tcp", r.LocalHost+":0")
+		if err != nil {
+			return err
+		}
+
+		tl := l.(*net.TCPListener)
+		r.LocalPort = strconv.Itoa(tl.Addr().(*net.TCPAddr).Port)
+		r.ReusedTcpListener = tl
+		r.ReusePort = true
+		return nil
+	}
+
+	if r.LocalProto == "udp" {
+		l, err := reuseport.ReusePortListenConfig.ListenPacket(context.Background(), "udp", r.LocalHost+":0")
+		if err != nil {
+			return err
+		}
+
+		uc := l.(*net.UDPConn)
+		r.LocalPort = strconv.Itoa(uc.LocalAddr().(*net.UDPAddr).Port)
+		r.ReusedUdpConn = uc
+		r.ReusePort = true
+		return nil
+	}
+	return errors.New("Proto not supported")
 }
 
 func isPort(s string) bool {
@@ -151,7 +196,7 @@ func isPort(s string) bool {
 	if err != nil {
 		return false
 	}
-	if n <= 0 || n > 65535 {
+	if n < 0 || n > 65535 {
 		return false
 	}
 	return true

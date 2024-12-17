@@ -1,6 +1,8 @@
 package settings
 
-import "testing"
+import (
+	"testing"
+)
 
 func testString(t *testing.T, name, got, expected string) {
 	if got != expected {
@@ -29,5 +31,27 @@ func TestL4Proto(t *testing.T) {
 		testString(t, "head", head, test.head)
 		testString(t, "proto", proto, test.proto)
 		testString(t, "handler", handler, test.handler)
+	}
+}
+
+func TestLocalTcp(t *testing.T) {
+	remote, err := DecodeRemote("R:0:1813/tcp")
+	if err != nil {
+		t.Fatalf("%s", err.Error())
+	}
+
+	if remote.LocalPort == "0" {
+		t.Fatalf("The local port was not resolved")
+	}
+}
+
+func TestLocalUdp(t *testing.T) {
+	remote, err := DecodeRemote("R:0:1813/udp")
+	if err != nil {
+		t.Fatalf("%s", err.Error())
+	}
+
+	if remote.LocalPort == "0" {
+		t.Fatalf("The local port was not resolved")
 	}
 }
