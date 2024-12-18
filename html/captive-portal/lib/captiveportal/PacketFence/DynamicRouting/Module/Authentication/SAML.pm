@@ -21,7 +21,11 @@ use pf::constants::realm;
 
 has 'landing_template' => ('is' => 'rw', default => sub {'saml.html'});
 
-has '+source' => (isa => 'pf::Authentication::Source::SAMLSource');
+has '+source' => (
+    isa => 'pf::Authentication::Source::SAMLSource',
+    lazy => 1,
+    builder => '_build_source',
+);
 
 has '+route_map' => (default => sub {
     tie my %map, 'Tie::IxHash', (
@@ -106,6 +110,11 @@ sub assertion {
         $self->app->error($msg);
         pf::auth_log::change_record_status($self->source->id, $self->current_mac, $pf::auth_log::FAILED, $self->app->profile->name);
     }
+}
+
+sub _build_source {
+    my ($self) = @_;
+    return $self->app->profile->getSourceByType('SAML');
 }
 
 =head1 AUTHOR
