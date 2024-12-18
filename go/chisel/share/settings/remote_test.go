@@ -43,6 +43,10 @@ func TestLocalTcp(t *testing.T) {
 	if remote.LocalPort == "0" {
 		t.Fatalf("The local port was not resolved")
 	}
+
+	if remote.ReusedTcpListener == nil {
+		t.Fatalf("TCPListener not saved")
+	}
 }
 
 func TestLocalUdp(t *testing.T) {
@@ -53,5 +57,9 @@ func TestLocalUdp(t *testing.T) {
 
 	if remote.LocalPort == "0" {
 		t.Fatalf("The local port was not resolved")
+	}
+
+	if remote.ReusedUdpConn == nil {
+		t.Fatalf("UdpConn not saved")
 	}
 }

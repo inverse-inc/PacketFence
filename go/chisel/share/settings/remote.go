@@ -1,8 +1,8 @@
 package settings
 
 import (
-	"context"
 	"errors"
+	"fmt"
 	"net"
 	"net/url"
 	"regexp"
@@ -10,8 +10,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/inverse-inc/packetfence/go/reuseport"
 )
 
 // short-hand conversions (see remote_test)
@@ -163,12 +161,16 @@ func DecodeRemote(s string) (*Remote, error) {
 
 func (r *Remote) setupLocalPort() error {
 	if r.LocalProto == "tcp" {
-		l, err := reuseport.ReusePortListenConfig.Listen(context.Background(), "tcp", r.LocalHost+":0")
+		addr, err := net.ResolveTCPAddr("tcp", r.LocalHost+":"+r.LocalPort)
+		if err != nil {
+			return fmt.Errorf("resolve: %w", err)
+		}
+
+		tl, err := net.ListenTCP("tcp", addr)
 		if err != nil {
 			return err
 		}
 
-		tl := l.(*net.TCPListener)
 		r.LocalPort = strconv.Itoa(tl.Addr().(*net.TCPAddr).Port)
 		r.ReusedTcpListener = tl
 		r.Dynamic = true
@@ -176,14 +178,17 @@ func (r *Remote) setupLocalPort() error {
 	}
 
 	if r.LocalProto == "udp" {
-		l, err := reuseport.ReusePortListenConfig.ListenPacket(context.Background(), "udp", r.LocalHost+":0")
+		addr, err := net.ResolveUDPAddr("udp", r.Local())
 		if err != nil {
 			return err
 		}
 
-		uc := l.(*net.UDPConn)
-		r.LocalPort = strconv.Itoa(uc.LocalAddr().(*net.UDPAddr).Port)
-		r.ReusedUdpConn = uc
+		conn, err := net.ListenUDP("udp", addr)
+		if err != nil {
+			return err
+		}
+		r.LocalPort = strconv.Itoa(conn.LocalAddr().(*net.UDPAddr).Port)
+		r.ReusedUdpConn = conn
 		r.Dynamic = true
 		return nil
 	}
