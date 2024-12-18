@@ -23,7 +23,7 @@ testcases:
 - name: remove PUBLIC user from mysql.user
   steps:
   - type: exec
-    script: "mysql -e'DROP USER IF EXISTS PUBLIC;'"
+    script: "mysql -e'DELETE FROM mysql.user WHERE User=\"PUBLIC\"';"
 
 - name: create exportable backup
   steps:
