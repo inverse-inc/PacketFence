@@ -32,6 +32,8 @@ use JSON::MaybeXS;
 use pf::SwitchFactory;
 use Linux::Systemd::Daemon 'sd_ready';
 use pf::constants::pfqueue qw($PFQUEUE_WEIGHTS $PFQUEUE_MAX_TASKS_DEFAULT $PFQUEUE_TASK_JITTER_DEFAULT);
+use pf::config::crypt::object;
+use pf::config::crypt::object::freeze;
 
 our $PROGRAM_NAME = $0 = basename($0);
 $SIG{PIPE} = 'IGNORE';
