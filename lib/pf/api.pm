@@ -85,6 +85,8 @@ use pf::constants::domain qw($NTLM_REDIS_CACHE_HOST $NTLM_REDIS_CACHE_PORT);
 use pf::Redis;
 use pf::acls_push;
 use Digest::MD5 qw(md5_base64);
+use pf::config::crypt::object;
+use pf::config::crypt::object::freeze;
 
 my $logger = pf::log::get_logger();
 
@@ -146,7 +148,8 @@ sub echo : Public {
 
 sub switch_freeradius_populate_nas_config : Public {
     my ($class) = @_;
-    pf::freeradius::freeradius_populate_nas_config(pfconfig::manager->new->get_namespace("config::Switch")->build());
+    my $switches = pfconfig::manager->new->config_builder("config::Switch");
+    pf::freeradius::freeradius_populate_nas_config($switches);
     return;
 }
 
