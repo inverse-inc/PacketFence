@@ -15,7 +15,11 @@ extends 'captiveportal::DynamicRouting::Module::Authentication::OAuth';
 
 has '+token_scheme' => (default => "auth-header:Bearer");
 
-has '+source' => (isa => 'pf::Authentication::Source::WindowsLiveSource');
+has '+source' => (
+    isa => 'pf::Authentication::Source::WindowsLiveSource',
+    lazy => 1,
+    builder => '_build_source',
+);
 
 =head2 _extract_username_from_response
 
@@ -26,6 +30,11 @@ Get the username from the response
 sub _extract_username_from_response {
     my ($self, $info) = @_;
     return $info->{emails}->{account};
+}
+
+sub _build_source {
+    my ($self) = @_;
+    return $self->app->profile->getSourceByType('WindowsLive');
 }
 
 =head1 AUTHOR

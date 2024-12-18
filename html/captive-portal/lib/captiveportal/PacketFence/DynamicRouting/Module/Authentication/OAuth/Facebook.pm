@@ -13,7 +13,16 @@ Facebook OAuth module
 use Moose;
 extends 'captiveportal::DynamicRouting::Module::Authentication::OAuth';
 
-has '+source' => (isa => 'pf::Authentication::Source::FacebookSource');
+has '+source' => (
+    isa => 'pf::Authentication::Source::FacebookSource',
+    lazy => 1,
+    builder => '_build_source',
+);
+
+sub _build_source {
+    my ($self) = @_;
+    return $self->app->profile->getSourceByType('Facebook');
+}
 
 =head1 AUTHOR
 

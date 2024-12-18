@@ -14,7 +14,11 @@ use Moose;
 use pf::person qw(person_view);
 extends 'captiveportal::DynamicRouting::Module::Authentication::OAuth';
 
-has '+source' => (isa => 'pf::Authentication::Source::OpenIDSource');
+has '+source' => (
+    isa => 'pf::Authentication::Source::OpenIDSource',
+    lazy => 1,
+    builder => '_build_source',
+);
 
 has 'token_scheme' => (is => 'rw', default => sub {"auth-header:Bearer"});
 
@@ -39,6 +43,11 @@ sub auth_source_params_child {
     my ($self) = @_;
     my $info = person_view($self->username());
     return $self->source->map_from_person($info);
+}
+
+sub _build_source {
+    my ($self) = @_;
+    return $self->app->profile->getSourceByType('OpenID');
 }
 
 =head1 AUTHOR

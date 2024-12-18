@@ -17,7 +17,11 @@ use JSON::MaybeXS;
 
 has '+token_scheme' => (default => 'auth-header:Bearer');
 
-has '+source' => (isa => 'pf::Authentication::Source::LinkedInSource');
+has '+source' => (
+    isa => 'pf::Authentication::Source::LinkedInSource',
+    lazy => 1,
+    builder => '_build_source',
+);
 
 =head2 _decode_response
 
@@ -29,6 +33,11 @@ sub _decode_response {
     my ($self, $response) = @_;
     my $data = decode_json($response->content());
     return {email => $data->{elements}->[0]->{'handle~'}->{emailAddress}};
+}
+
+sub _build_source {
+    my ($self) = @_;
+    return $self->app->profile->getSourceByType('LinkedIn');
 }
 
 =head1 AUTHOR

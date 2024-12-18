@@ -13,7 +13,11 @@ Github OAuth module
 use Moose;
 extends 'captiveportal::DynamicRouting::Module::Authentication::OAuth';
 
-has '+source' => (isa => 'pf::Authentication::Source::GithubSource');
+has '+source' => (
+    isa => 'pf::Authentication::Source::GithubSource',
+    lazy => 1,
+    builder => '_build_source',
+);
 
 has '+token_scheme' => (default => "auth-header:token");
 
@@ -26,6 +30,11 @@ Create a generic username if no e-mail is in the response
 sub _extract_username_from_response {
     my ($self, $info) = @_;
     return $info->{email} || $info->{login}.'@github';
+}
+
+sub _build_source {
+    my ($self) = @_;
+    return $self->app->profile->getSourceByType('Github');
 }
 
 =head1 AUTHOR
