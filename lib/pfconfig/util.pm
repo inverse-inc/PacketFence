@@ -80,7 +80,6 @@ sub fetch_decode_socket {
     }
     die "cannot connect to the server $!n" unless $socket;
 
-    my $decoder = Sereal::Decoder->new;
     my $response = fetch_socket($socket, $payload);
     return sereal_decode_with_object($DECODER, $response);
 }
