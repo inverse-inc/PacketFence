@@ -32,7 +32,7 @@ def info(msg):
 
 
 def warning(msg):
-    logger.info(msg)
+    logger.warning(msg)
 
 
 def error(msg):

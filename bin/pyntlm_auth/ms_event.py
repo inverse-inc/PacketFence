@@ -2,6 +2,8 @@ import json
 
 import ncache
 import utils
+import log
+
 
 EVENT_TYPE_USER_CREATED = 4720
 EVENT_TYPE_USER_ENABLED = 4722
@@ -40,7 +42,7 @@ def process_event_password_reset(event):
     account = event['TargetUserName']
     event['EventTime'] = event_time
 
-    print(f"  ---- handling event password reset : happens on {utils.to_ymd_hms(event_time)} ({event_time}) for ID {record_id}: {account}@{domain} ")
+    log.debug(f"handling event password reset : happens on {utils.to_ymd_hms(event_time)} ({event_time}) for ID {record_id}: {account}@{domain} ")
 
     key_root = ncache.build_cache_key(domain, account)
     cache_entry_root = ncache.get_cache_entry(key_root)
@@ -76,7 +78,7 @@ def process_event_password_change(event):
     account = event['TargetUserName']
     event['EventTime'] = event_time
 
-    print(f"  ---- handling event password change: happens on {utils.to_ymd_hms(event_time)} ({event_time}) for ID {record_id}: {account}@{domain} ")
+    log.debug(f"handling event password change: happens on {utils.to_ymd_hms(event_time)} ({event_time}) for ID {record_id}: {account}@{domain} ")
 
     key_root = ncache.build_cache_key(domain, account)
     cache_entry_root = ncache.get_cache_entry(key_root)

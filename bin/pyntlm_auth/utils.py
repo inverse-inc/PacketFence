@@ -3,6 +3,8 @@ import re
 import constants
 import dns.resolver
 import pytz
+import log
+
 
 # simplified IPv4 validator.
 def is_ipv4(address):
@@ -81,13 +83,13 @@ def find_ldap_servers(domain, dns_server):
         return ldap_servers
 
     except dns.resolver.NoAnswer:
-        print(f'No SRV records found for {query_name}')
+        log.debug(f'No SRV records found for {query_name}')
         return []
     except dns.resolver.NXDOMAIN:
-        print(f'Domain {domain} does not exist')
+        log.debug(f'Domain {domain} does not exist')
         return []
     except Exception as e:
-        print(f'An error occurred: {e}')
+        log.debug(f'An error occurred: {e}')
         return []
 
 
