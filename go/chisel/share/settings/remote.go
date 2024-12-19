@@ -152,7 +152,7 @@ func DecodeRemote(s string) (*Remote, error) {
 
 	if r.Reverse && r.LocalPort == "0" {
 		if err := r.setupLocalPort(); err != nil {
-			return nil, errors.New("Cannot bind to a local port")
+			return nil, fmt.Errorf("Cannot bind to a local port: %w", err)
 		}
 	}
 
@@ -161,14 +161,14 @@ func DecodeRemote(s string) (*Remote, error) {
 
 func (r *Remote) setupLocalPort() error {
 	if r.LocalProto == "tcp" {
-		addr, err := net.ResolveTCPAddr("tcp", r.LocalHost+":"+r.LocalPort)
+		addr, err := net.ResolveTCPAddr("tcp", r.Local())
 		if err != nil {
 			return fmt.Errorf("resolve: %w", err)
 		}
 
 		tl, err := net.ListenTCP("tcp", addr)
 		if err != nil {
-			return err
+			return fmt.Errorf("net.ListenTCP: %w", err)
 		}
 
 		r.LocalPort = strconv.Itoa(tl.Addr().(*net.TCPAddr).Port)
@@ -180,18 +180,20 @@ func (r *Remote) setupLocalPort() error {
 	if r.LocalProto == "udp" {
 		addr, err := net.ResolveUDPAddr("udp", r.Local())
 		if err != nil {
-			return err
+			return fmt.Errorf("resolve: %w", err)
 		}
 
 		conn, err := net.ListenUDP("udp", addr)
 		if err != nil {
-			return err
+			return fmt.Errorf("net.ListenUDP: %w", err)
 		}
+
 		r.LocalPort = strconv.Itoa(conn.LocalAddr().(*net.UDPAddr).Port)
 		r.ReusedUdpConn = conn
 		r.Dynamic = true
 		return nil
 	}
+
 	return errors.New("Proto not supported")
 }
 
