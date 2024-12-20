@@ -38,6 +38,10 @@ RUN find /usr/share/doc -depth -type f ! -name copyright -exec rm {} \; && \
     rm -rf /usr/share/groff/* /usr/share/info/* && \
     rm -rf /usr/share/lintian/* /usr/share/linda/* /var/cache/man/*
 
+# Resinstall impacket to be remove later
+RUN apt-get -qq reinstall python3-impacket -y && \
+    ls -la /usr/share/doc/python3-impacket/examples
+
 RUN useradd -U -r -d "/usr/local/pf" -s /bin/sh -c "PacketFence" -M pf
 
 RUN mkdir -p /usr/local/pf/lib/ && \
