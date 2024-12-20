@@ -14,10 +14,10 @@ COPY ./addons/ntlm-auth-api/openssl.cnf /etc/ssl/openssl.cnf
 
 RUN ln -s /usr/local/pf/bin/pfcmd.pl /usr/local/pf/bin/pfcmd && \
     ln -s /usr/local/pf/bin/impacket/impacket-addcomputer.py /usr/local/pf/bin/impacket-addcomputer && \
-    chmod +x /usr/local/pf/bin/impacket-addcomputer && \
-    mkdir -p   /usr/local/pf/var/run/  && \
-    chmod 0744 /usr/local/pf/var/run/  && \
-    mkdir -p /usr/local/pf/var/control && \
+    chmod +x ./bin/impacket/impacket-addcomputer.py && \
+    mkdir -p   ./var/run/  && \
+    chmod 0744 ./var/run/  && \
+    mkdir -p ./var/control && \
     bash -c 'cd /usr/local/pf/db && export VERSIONSQL=$(ls pf-schema-* |sort --version-sort -r | head -1) && ln -f -s $VERSIONSQL ./pf-schema.sql'
 
 ENTRYPOINT /usr/local/pf/sbin/pfperl-api prefork -m production -l http://127.0.0.1:22224 -l http://100.64.0.1:22224 --pid-file /usr/local/pf/var/run/pfperl-api.pid
