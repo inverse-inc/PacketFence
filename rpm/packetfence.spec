@@ -959,6 +959,9 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/t_sdnotify.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/t_worker_register.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/utils.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/impacket_addcomputer.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/impacket_logger.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/impacket_utils.py
 %attr(0755, pf, pf)     /usr/local/pf/sbin/galera-autofix
 %attr(0755, pf, pf)     /usr/local/pf/sbin/mysql-probe
 %attr(0755, pf, pf)     /usr/local/pf/sbin/pfconnector
