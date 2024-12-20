@@ -102,6 +102,8 @@ def init_secure_connection():
         if error_code == 0xc0000022:
             log.warning("Are you using a wrong password for a machine account?")
             log.warning("If you are in a cluster, did you re-used the machine account and reset with another password?")
+        if error_code == 0xc0000122:
+            log.warning(f"This is usually due to a incorrect AD FQDN. The current AD FQDN you are using is: {server_name}")
 
         log.debug("Parameter used in establish secure channel are:")
         log.debug(f"  lp.netbios_name: {netbios_name}")
