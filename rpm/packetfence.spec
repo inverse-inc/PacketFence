@@ -941,6 +941,10 @@ fi
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/pfupdate
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/maintenance
 %attr(0755, pf, pf)     /usr/local/pf/bin/cluster/node
+%dir                    /usr/local/pf/bin/impacket
+%attr(0755, pf, pf)     /usr/local/pf/bin/impacket/impacket_addcomputer.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/impacket/impacket_logger.py
+%attr(0755, pf, pf)     /usr/local/pf/bin/impacket/impacket_utils.py
 %dir                    /usr/local/pf/bin/pyntlm_auth
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/config_generator.py
 %attr(0755, pf, pf)     /usr/local/pf/bin/pyntlm_auth/config_loader.py
