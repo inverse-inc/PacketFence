@@ -48,8 +48,7 @@ func (s *FortiGateDhcpParser) Parse(line string) ([]ApiCall, error) {
 	if err := s.NotRateLimited(mac + ":" + ip); err != nil {
 		return nil, err
 	}
-
-	return []ApiCall{
+	apiCall := []ApiCall{
 		&PfqueueApiCall{
 			Method: "update_ip4log",
 			Params: []interface{}{
@@ -58,15 +57,17 @@ func (s *FortiGateDhcpParser) Parse(line string) ([]ApiCall, error) {
 				"lease_length", lease,
 			},
 		},
-		&PfqueueApiCall{
+	}
+	if hostname != "N/A" {
+		apiCall = append(apiCall, &PfqueueApiCall{
 			Method: "modify_node",
 			Params: []interface{}{
 				"mac", mac,
 				"computername", hostname,
 			},
-		},
-	}, nil
-
+		})
+	}
+	return apiCall, nil
 }
 
 func NewFortiGateDhcpParser(config *PfdetectConfig) (Parser, error) {
