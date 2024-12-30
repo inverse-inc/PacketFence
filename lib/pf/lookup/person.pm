@@ -26,7 +26,7 @@ use pf::authentication;
 use pf::pfqueue::producer::redis;
 use pf::CHI;
 
-my $CHI_CACHE = pf::CHI->new( namespace => 'person_lookup' );
+our $CHI_CACHE = pf::CHI->new( namespace => 'person_lookup' );
 
 =head2 lookup_person
 
@@ -89,6 +89,14 @@ sub async_lookup_person {
     my ($pid, $source_id, $context) = @_;
     my $client = pf::pfqueue::producer::redis->new();
     $client->submit("general", person_lookup => {pid => $pid, source_id => $source_id, context => $context});
+}
+
+sub clear_lookup_person {
+    my ($pid, $source_id, $context) = @_;
+    my $logger = get_logger();
+    my $cache_key = "$source_id.$pid.$context";
+    $CHI_CACHE->remove($cache_key);
+    $logger->info("Clear cache for pid $pid with key $cache_key");
 }
 
 =head1 AUTHOR
