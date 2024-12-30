@@ -23,9 +23,12 @@ use pf::security_event;
 use pf::constants;
 use pf::person qw(person_security_events person_unassign_nodes person_delete person_modify);
 use pf::node;
+use pf::lookup::person;
 use pf::constants qw($default_pid);
+use pf::constants::realm;
 use pf::error qw(is_error is_success);
 use pf::UnifiedApi::Search::Builder::Users;
+use pf::lookup::person qw();
 
 has 'search_builder_class' => 'pf::UnifiedApi::Search::Builder::Users';
 
@@ -656,6 +659,16 @@ sub _can_remove {
     else {
         return (200, '');
     }
+}
+
+sub post_delete {
+    my ($self) = @_;
+    my $item = $self->item;
+    my $source = $item->{source};
+    for my $ctx ('', @pf::constants::realm::CONTEXTS) {
+        pf::lookup::person::clear_lookup_person($self->id, $item->{source}, $ctx);
+    }
+
 }
 
 =head1 AUTHOR
