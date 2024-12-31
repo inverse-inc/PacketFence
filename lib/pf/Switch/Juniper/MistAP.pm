@@ -298,8 +298,6 @@ sub radiusDisconnect {
         # to ensure the VLAN is actually changed to the isolation VLAN.
         if ( $self->shouldUseCoA({role => $role}) ) {
             $logger->info("Returning ACCEPT with Role: $role");
-            
-            
             my $vsa = [
                 {
                 vendor => "Cisco",
@@ -419,32 +417,14 @@ sub parseExternalPortalRequest {
 }
 
 
-=head2 generate_dpsk_attribute_value
-
-Generates the RADIUS attribute value for Ruckus-DPSK given an SSID name and the passphrase
-
-=cut
-
-sub generate_dpsk_attribute_value {
-    my ($self, $ssid, $dpsk) = @_;
-
-    my $pbkdf2 = Crypt::PBKDF2->new(
-        iterations => 4096,
-        output_len => 32,
-    );
-
-    my $hash = $pbkdf2->PBKDF2_hex($ssid, $dpsk);
-    return "0x00".$hash;
-}
-
 sub find_user_by_psk {
     my ($self, $radius_request, $args) = @_;
     my $ssid = $radius_request->{'Eleven-EAPOL-SSID'};
-    my $bssid = pack("H*", sprintf("%v02x", $radius_request->{"Eleven-EAPOL-APMAC"}) =~ s/\.//rg);
-    my $username = pack("H*", sprintf("%v02x", $radius_request->{'Eleven-EAPOL-STMAC'}) =~ s/\.//rg);
-    my $anonce = pack('H*', sprintf("%v02x", $radius_request->{'Eleven-EAPOL-Anonce'}) =~ s/\.//rg);
-    my $snonce = pf::util::wpa::snonce_from_eapol_key_frame(pack("H*",sprintf("%v02x",$radius_request->{"Eleven-EAPOL-Frame-2"}) =~ s/\.//rg));
-    my $eapol_key_frame = pack("H*", sprintf("%v02x", $radius_request->{"Eleven-EAPOL-Frame-2"}) =~ s/\.//rg);
+    my $bssid = pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Eleven-EAPOL-APMAC"}));
+    my $username = pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{'Eleven-EAPOL-STMAC'}));
+    my $anonce = pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{'Eleven-EAPOL-Anonce'}));
+    my $snonce = pf::util::wpa::snonce_from_eapol_key_frame(pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Eleven-EAPOL-Frame-2"})));
+    my $eapol_key_frame = pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Eleven-EAPOL-Frame-2"}));
 
     my $cache = $self->cache;
     if (exists $args->{'owner'} && $args->{'owner'}->{'pid'} ne "" && exists $args->{'owner'}->{'psk'} && defined $args->{'owner'}->{'psk'} && $args->{'owner'}->{'psk'} ne "") {
