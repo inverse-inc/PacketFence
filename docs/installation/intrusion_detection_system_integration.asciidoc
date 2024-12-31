@@ -57,7 +57,6 @@ Action -
 
 PacketFence is able to receive DHCP information from the FortiGate firewall.
 
-
 On the PacketFence server:
 
 Modify rsyslog configuration to allow incoming UDP packets by uncommenting the following two lines in [filename]`/etc/rsyslog.conf`:
@@ -65,7 +64,7 @@ Modify rsyslog configuration to allow incoming UDP packets by uncommenting the f
   $ModLoad imudp
   $UDPServerRun 514
 
-Configure [filename]`/etc/rsyslog.d/fortigate.conf` so it contains the following which will redirect fortigate log entries and stop further processing of current matched message:
+Configure [filename]`/etc/rsyslog.d/fortigate.conf` so it contains the following which will redirect fortigate log entries and stop further processing of current matched message (in that case 192.168.40.1 is the ip of the FortiGate):
 
   if $fromhost-ip=='192.168.40.1' then /usr/local/pf/var/fortigate
   & ~
@@ -77,6 +76,10 @@ Make sure the receiving alert pipe (FIFO) exists
 Restart the rsyslog daemon
 
   service rsyslog restart
+
+On the FortiGate side make sure to configure the syslog configuration as the following:
+
+image::fortigate_syslog.png[scaledwidth="100%",alt="FortiGate Syslog"]
 
 === Suricata IDS
 
