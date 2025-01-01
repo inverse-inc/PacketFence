@@ -3,6 +3,7 @@ components:
   parameters:
     Async:
       description: Asyncronous request.
+      in: query
       name: async
       required: true
       schema:
@@ -19,6 +20,7 @@ components:
     cursor:
       description: The cursor pointer to fetch paginated results (from `prevCursor`
         and `nextCursor`).
+      in: query
       name: cursor
       schema:
         example: 0
@@ -29,6 +31,7 @@ components:
         calling the nodes endpoints, setting 'ip4log.ip' into this field will provide
         the latest IP address of the device in the 'ip4log.ip' field of every node
         that is returned.
+      in: query
       name: fields
       required: true
       schema:
@@ -64,6 +67,7 @@ components:
         type: string
     limit:
       description: The maximum amount of entries to get.
+      in: query
       name: limit
       schema:
         enum:
@@ -85,6 +89,7 @@ components:
         to the rest of the cluster. A value of '0' forwards the request and either
         a missing or alternate value does not forward the request to the rest of the
         cluster.
+      in: query
       name: local
       required: true
       schema:
@@ -187,6 +192,7 @@ components:
         type: string
     sort:
       description: The sort and order of the paginated entries.
+      in: query
       name: sort
       required: true
       schema:
@@ -45278,7 +45284,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-      tags: ~
+      tags: []
     description: |-
       pf::UnifiedApi::Controller::Config::SyslogParsers
 
@@ -45306,7 +45312,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-      tags: ~
+      tags: []
     options:
       deprecated: true
       description: Get meta for an item.
@@ -45329,7 +45335,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-      tags: ~
+      tags: []
     patch:
       deprecated: true
       description: Update an item.
@@ -45357,7 +45363,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-      tags: ~
+      tags: []
     put:
       deprecated: true
       description: Replace an item.
@@ -45385,7 +45391,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-      tags: ~
+      tags: []
   /api/v1/config/syslog_parsers:
     description: |-
       pf::UnifiedApi::Controller::Config::SyslogParsers
@@ -45406,7 +45412,7 @@ paths:
           description: Request successful. Response contains a list of resources.
         '401':
           $ref: '#/components/responses/Forbidden'
-      tags: ~
+      tags: []
     options:
       deprecated: true
       description: Get meta for a new item.
@@ -45423,7 +45429,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-      tags: ~
+      tags: []
     post:
       deprecated: true
       description: Create a new item.
@@ -45445,7 +45451,7 @@ paths:
           $ref: '#/components/responses/Duplicate'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-      tags: ~
+      tags: []
   /api/v1/config/syslog_parsers/bulk_delete:
     description: |-
       pf::UnifiedApi::Controller::Config::SyslogParsers
@@ -45479,7 +45485,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-      tags: ~
+      tags: []
   /api/v1/config/syslog_parsers/bulk_import:
     description: |-
       pf::UnifiedApi::Controller::Config::SyslogParsers
@@ -45512,7 +45518,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-      tags: ~
+      tags: []
   /api/v1/config/syslog_parsers/bulk_update:
     description: |-
       pf::UnifiedApi::Controller::Config::SyslogParsers
@@ -45545,7 +45551,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-      tags: ~
+      tags: []
   /api/v1/config/syslog_parsers/dry_run:
     description: pf::UnifiedApi::Controller::Config::SyslogParsers
     post:
@@ -45570,7 +45576,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-      tags: ~
+      tags: []
   /api/v1/config/syslog_parsers/search:
     description: |-
       pf::UnifiedApi::Controller::Config::SyslogParsers
@@ -45619,7 +45625,7 @@ paths:
           description: Request successful. Response contains a list of resources.
         '401':
           $ref: '#/components/responses/Forbidden'
-      tags: ~
+      tags: []
   /api/v1/config/syslog_parsers/sort_items:
     description: |-
       pf::UnifiedApi::Controller::Config::SyslogParsers
@@ -45642,7 +45648,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-      tags: ~
+      tags: []
   /api/v1/config/system/dns_servers:
     get:
       responses:
