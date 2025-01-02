@@ -95,15 +95,15 @@ def init_secure_connection():
     except NTSTATUSError as e:
         error_code = e.args[0]
         error_message = e.args[1]
-        log.warning(f"Error in init secure connection: NTError: {hex(error_code)}, {error_message}.")
+        log.error(f"Error in init secure connection: NTError: {hex(error_code)}, {error_message}.")
 
         if error_code == 0xc0000001:
-            log.warning("Did you give the wrong 'workstation' parameter in domain configuration ?")
+            log.error("Did you give the wrong 'workstation' parameter in domain configuration ?")
         if error_code == 0xc0000022:
-            log.warning("Are you using a wrong password for a machine account?")
-            log.warning("If you are in a cluster, did you re-used the machine account and reset with another password?")
+            log.error("Are you using a wrong password for a machine account?")
+            log.error("If you are in a cluster, did you re-used the machine account and reset with another password?")
         if error_code == 0xc0000122:
-            log.warning(f"This is usually due to a incorrect AD FQDN. The current AD FQDN you are using is: {server_name}")
+            log.error(f"This is usually due to a incorrect AD FQDN. The current AD FQDN you are using is: {server_name}")
 
         log.debug("Parameter used in establish secure channel are:")
         log.debug(f"  lp.netbios_name: {netbios_name}")
@@ -119,7 +119,7 @@ def init_secure_connection():
     except Exception as e:
         error_code = e.args[0]
         error_message = e.args[1]
-        log.warning(f"Error in init secure connection: ErrCode: {error_code}, {error_message}.")
+        log.error(f"Error in init secure connection: ErrCode: {error_code}, {error_message}.")
     return global_vars.s_secure_channel_connection, global_vars.s_machine_cred, error_code, error_message
 
 
