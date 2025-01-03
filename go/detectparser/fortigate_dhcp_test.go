@@ -13,7 +13,7 @@ func TestFortiGateDhcpParse(t *testing.T) {
 				&PfqueueApiCall{
 					Method: "update_ip4log",
 					Params: []interface{}{
-						"mac", "B0:2A:43:C1:97:DC",
+						"mac", "b0:2a:43:c1:97:dc",
 						"ip", "192.168.41.249",
 						"lease_length", "300",
 					},
@@ -21,7 +21,7 @@ func TestFortiGateDhcpParse(t *testing.T) {
 				&PfqueueApiCall{
 					Method: "modify_node",
 					Params: []interface{}{
-						"mac", "B0:2A:43:C1:97:DC",
+						"mac", "b0:2a:43:c1:97:dc",
 						"computername", "Laptop",
 					},
 				},
