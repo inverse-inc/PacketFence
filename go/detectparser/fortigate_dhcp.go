@@ -1,7 +1,9 @@
 package detectparser
 
 import (
+	"errors"
 	"regexp"
+	"strings"
 
 	"github.com/inverse-inc/go-utils/sharedutils"
 )
@@ -9,7 +11,7 @@ import (
 var fortiGateDhcpRegexPattern1 = regexp.MustCompile(`(\w+)="([^"]*)"|(\w+)=([^\s]+)`)
 
 type FortiGateDhcpParser struct {
-	Pattern1, Pattern2 *regexp.Regexp
+	Pattern1 *regexp.Regexp
 	parser
 }
 
@@ -19,7 +21,7 @@ func (s *FortiGateDhcpParser) Parse(line string) ([]ApiCall, error) {
 	var err error
 
 	attributes := make(map[string]string)
-
+	hostname = "N/A"
 	for _, match := range matches {
 		if match[1] != "" {
 			attributes[match[1]] = match[2]
@@ -30,7 +32,7 @@ func (s *FortiGateDhcpParser) Parse(line string) ([]ApiCall, error) {
 
 	for key, value := range attributes {
 		if key == "mac" {
-			mac = value
+			mac = strings.ToLower(value)
 		} else if key == "ip" {
 			ip = value
 		} else if key == "lease" {
@@ -42,12 +44,12 @@ func (s *FortiGateDhcpParser) Parse(line string) ([]ApiCall, error) {
 		}
 	}
 
-	if ack == "" || ack != "Ack" {
-		return nil, nil
+	if ack != "Ack" {
+		return nil, errors.New("Not an Ack message")
 	}
 
 	if ip, err = sharedutils.CleanIP(ip); err != nil {
-		return nil, nil
+		return nil, errors.New("Invalid IP")
 	}
 
 	if err := s.NotRateLimited(mac + ":" + ip); err != nil {
@@ -63,7 +65,7 @@ func (s *FortiGateDhcpParser) Parse(line string) ([]ApiCall, error) {
 			},
 		},
 	}
-	if hostname != "N/A" {
+	if hostname != "N/A" || hostname != "" {
 		apiCall = append(apiCall, &PfqueueApiCall{
 			Method: "modify_node",
 			Params: []interface{}{
