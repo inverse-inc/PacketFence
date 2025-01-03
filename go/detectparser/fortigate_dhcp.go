@@ -66,7 +66,7 @@ func (s *FortiGateDhcpParser) Parse(line string) ([]ApiCall, error) {
 			},
 		},
 	}
-	if hostname != "N/A" || hostname != "" {
+	if hostname != "N/A" && hostname != "" {
 		apiCall = append(apiCall, &PfqueueApiCall{
 			Method: "modify_node",
 			Params: []interface{}{
