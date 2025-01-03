@@ -45,7 +45,8 @@ func (s *FortiGateDhcpParser) Parse(line string) ([]ApiCall, error) {
 	}
 
 	if ack != "Ack" {
-		return nil, errors.New("Not an Ack message")
+		// Silent error to avoid spamming logs
+		return nil, nil // errors.New("Not an Ack")
 	}
 
 	if ip, err = sharedutils.CleanIP(ip); err != nil {
