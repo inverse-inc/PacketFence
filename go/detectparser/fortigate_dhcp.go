@@ -30,18 +30,20 @@ func (s *FortiGateDhcpParser) Parse(line string) ([]ApiCall, error) {
 		}
 	}
 
-	for key, value := range attributes {
-		if key == "mac" {
-			mac = strings.ToLower(value)
-		} else if key == "ip" {
-			ip = value
-		} else if key == "lease" {
-			lease = value
-		} else if key == "hostname" {
-			hostname = value
-		} else if key == "dhcp_msg" {
-			ack = value
-		}
+	if value, ok := attributes["mac"]; ok {
+		mac = strings.ToLower(value)
+	}
+	if value, ok := attributes["ip"]; ok {
+		ip = value
+	}
+	if value, ok := attributes["lease"]; ok {
+		lease = value
+	}
+	if value, ok := attributes["hostname"]; ok {
+		hostname = value
+	}
+	if value, ok := attributes["dhcp_msg"]; ok {
+		ack = value
 	}
 
 	if ack != "Ack" {
