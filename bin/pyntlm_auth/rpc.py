@@ -8,6 +8,7 @@ import datetime
 from samba.dcerpc.netlogon import (netr_Authenticator, MSV1_0_ALLOW_WORKSTATION_TRUST_ACCOUNT, MSV1_0_ALLOW_MSVCHAPV2)
 import binascii
 from samba.net import Net
+import log
 
 
 def find_dc(lp):
@@ -94,22 +95,31 @@ def init_secure_connection():
     except NTSTATUSError as e:
         error_code = e.args[0]
         error_message = e.args[1]
-        print(f"Error in init secure connection: NT_Error, error_code={error_code}, error_message={error_message}.")
-        print("Parameter used in establish secure channel are:")
-        print(f"  lp.netbios_name: {netbios_name}")
-        print(f"  lp.realm: {realm}")
-        print(f"  lp.server_string: {server_string}")
-        print(f"  lp.workgroup: {workgroup}")
-        print(f"  workstation: {workstation}")
-        print(f"  username: {username}")
-        print(f"  password: {utils.mask_password(password)}")
-        print(f"  set_NT_hash_flag: True")
-        print(f"  domain: {domain}")
-        print(f"  server_name(ad_fqdn): {server_name}")
+        log.error(f"Error in init secure connection: NTError: {hex(error_code)}, {error_message}.")
+
+        if error_code == 0xc0000001:
+            log.error("Did you give the wrong 'workstation' parameter in domain configuration ?")
+        if error_code == 0xc0000022:
+            log.error("Are you using a wrong password for a machine account?")
+            log.error("If you are in a cluster, did you re-used the machine account and reset with another password?")
+        if error_code == 0xc0000122:
+            log.error(f"This is usually due to a incorrect AD FQDN. The current AD FQDN you are using is: {server_name}")
+
+        log.debug("Parameter used in establish secure channel are:")
+        log.debug(f"  lp.netbios_name: {netbios_name}")
+        log.debug(f"  lp.realm: {realm}")
+        log.debug(f"  lp.server_string: {server_string}")
+        log.debug(f"  lp.workgroup: {workgroup}")
+        log.debug(f"  workstation: {workstation}")
+        log.debug(f"  username: {username}")
+        log.debug(f"  password: {utils.mask_password(password)}")
+        log.debug(f"  set_NT_hash_flag: True")
+        log.debug(f"  domain: {domain}")
+        log.debug(f"  server_name(ad_fqdn): {server_name}")
     except Exception as e:
         error_code = e.args[0]
         error_message = e.args[1]
-        print(f"Error in init secure connection: General, error_code={error_code}, error_message={error_message}.")
+        log.error(f"Error in init secure connection: ErrCode: {error_code}, {error_message}.")
     return global_vars.s_secure_channel_connection, global_vars.s_machine_cred, error_code, error_message
 
 
@@ -180,17 +190,21 @@ def transitive_login(account_username, challenge, nt_response, domain=None):
 
             nt_key = [x if isinstance(x, str) else hex(x)[2:].zfill(2) for x in info.base.key.key]
             nt_key_str = ''.join(nt_key)
-            print(f"  Successfully authenticated '{account_username}', NT_KEY is: '{utils.mask_password(nt_key_str)}'.")
+            log.debug(f"Successfully authenticated '{account_username}', NT_KEY is: '{utils.mask_password(nt_key_str)}'.")
             return nt_key_str.encode('utf-8').strip().decode('utf-8'), 0, info
         except NTSTATUSError as e:
             nt_error_code = e.args[0]
             nt_error_message = f"NT Error: code: {nt_error_code}, message: {str(e)}"
-            print(f"  Failed while authenticating user: '{account_username}' with NT Error: {e}.")
+            log.warning(f"Failed authenticating user: '{account_username}' with NT Error: {e}.")
+
+            if error_code == 0xc0000022:
+                log.warning("Is this machine account is shared by another ntlm_auth process (or another cluster node)?")
+
             global_vars.s_reconnect_id = global_vars.s_connection_id
             return nt_error_message, nt_error_code, None
         except Exception as e:
             global_vars.s_reconnect_id = global_vars.s_connection_id
-            print(f"  Failed while authenticating user: '{account_username}' with General Error: {e}.")
+            log.debug(f"Failed while authenticating user: '{account_username}' with General Error: {e}.")
             if isinstance(e.args, tuple) and len(e.args) > 0:
                 return f"General Error: code {e.args[0]}, {str(e)}", e.args[0], None
             else:

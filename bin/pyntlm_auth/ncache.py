@@ -7,6 +7,7 @@ import flags
 
 import utils
 import datetime
+import log
 
 NT_KEY_USER_LOCKED = "*"
 NT_KEY_USER_DISABLED = "-"
@@ -286,7 +287,7 @@ def device_miss_root_hit(domain, account_username, mac, challenge, nt_response, 
         cache_v_root = json.loads(c_root['value'])
         cache_v_device = cache_v_template(domain, account_username, mac)
     except Exception as e:
-        print(f"  Exception caught while handling cached authentication, error was: {e}")
+        log.warning(f"Exception caught while handling cached authentication, error was: {e}")
         return '', -1, None
 
     if is_ndl(cache_v_root['nt_status']):
@@ -357,7 +358,7 @@ def device_hit_root_hit(domain, account_username, mac, challenge, nt_response, c
         cache_v_root = json.loads(c_root['value'])
         cache_v_device = json.loads(c_device['value'])
     except Exception as e:
-        print(f"  Exception caught while handling cached authentication, error was: {e}")
+        log.warning(f"Exception caught while handling cached authentication, error was: {e}")
         return '', -1, None
 
     if is_ndl(cache_v_root['nt_status']):

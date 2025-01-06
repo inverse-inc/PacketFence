@@ -1,11 +1,17 @@
 import logging
 import pymysql
-from flask import Flask, g, request
+from flask import Flask, g
 from flaskext.mysql import MySQL
 
 import config_loader
 import global_vars
 import handlers
+import os
+
+
+class HealthCheckFilter(logging.Filter):
+    def filter(self, record):
+        return 'GET /ping' not in record.getMessage()
 
 
 def api():
@@ -14,13 +20,12 @@ def api():
     app = Flask(__name__)
 
     werkzeug_logger = logging.getLogger('werkzeug')
+    werkzeug_logger.addFilter(HealthCheckFilter())
 
-    @app.before_request
-    def register_logger():
-        if request.path.startswith("/ping"):
-            werkzeug_logger.setLevel(logging.CRITICAL)
-        else:
-            werkzeug_logger.setLevel(logging.INFO)
+    if app.logger.hasHandlers():
+        f = logging.Formatter('[%(asctime)s] %(levelname)s in %(module)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+        for handler in app.logger.handlers:
+            handler.setFormatter(f)
 
     for i in range(1):
         if not global_vars.c_nt_key_cache_enabled:
@@ -49,7 +54,8 @@ def api():
             except Exception as e:
                 e_code = e.args[0]
                 e_msg = str(e)
-                print(f"  error while init database: {e_code}, {e_msg}. Started without NT Key cache capability.")
+                app.logger.warning(f"error {e_code}: {e_msg} when initializing database.")
+                app.logger.warning(f"ntlm-auth-api@{os.getenv('IDENTIFIER')} started without NT Key cache capability.")
 
         @app.teardown_request
         def teardown_request(exception=None):
