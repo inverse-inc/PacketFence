@@ -51,6 +51,7 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
  * Track TLS certificate attributes per node (#8416)
  * Kafka UI Config (#8421)
  * Netdata Upgrade (#8399)
+ * Updated Cisco-WLC AireOS WiSM module (#8455)
 
 === Bug Fixes
 
