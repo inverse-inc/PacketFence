@@ -58,6 +58,7 @@ use pf::config qw(
     is_type_inline
     @radius_ints
     @dhcp_ints
+    @dhcplistener_ints
     @dns_ints
     netflow_enabled
 );
@@ -357,6 +358,10 @@ sub generate_filter_if_src_to_chain {
     foreach my $dhcp_interface ( @dhcp_ints ) {
         my $dev = $dhcp_interface->tag("int");
         $rules .= "-A INPUT --in-interface $dev --jump $FW_FILTER_INPUT_DHCP\n";
+    }
+    # 'dhcp listener' interfaces handling
+    foreach my $dhcp_interface ( @dhcplistener_ints ) {
+        $rules .= "-A INPUT --in-interface $dhcp_interface --jump $FW_FILTER_INPUT_DHCP\n";
     }
     # 'dns' interfaces handling
     foreach my $dns_interface ( @dns_ints ) {
