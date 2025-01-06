@@ -28,12 +28,11 @@ func (s *FortiAnalyserParser) Parse(line string) ([]ApiCall, error) {
 		}
 	}
 
-	for key, value := range attributes {
-		if key == "srcip" {
-			srcip = value
-		} else if key == "logid" {
-			logid = value
-		}
+	if value, ok := attributes["srcip"]; ok {
+		srcip = value
+	}
+	if value, ok := attributes["logid"]; ok {
+		logid = value
 	}
 
 	if srcip == "" || logid == "" {
