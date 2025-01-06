@@ -198,15 +198,16 @@ Given a MAC address, the endpoint attributes (from the collector) and the Finger
 sub record_result {
     my ($mac, $attributes, $query_result) = @_;
     my $timer = pf::StatsD::Timer->new({level => 7});
+    my %set = (
+        'device_type'   => $query_result->{'device'}{'name'},
+        'device_class'  => $query_result->{device_class},
+        'device_version' => $query_result->{'version'},
+        'device_score' => $query_result->{'score'},
+        'device_manufacturer' => $query_result->{'manufacturer'}->{'name'} // "",
+        map { $RECORD_RESULT_ATTR_MAP{$_} => $attributes->{$_} } grep { my $v = $attributes->{$_}; defined $v && length($v) } keys(%RECORD_RESULT_ATTR_MAP),
+    );
     pf::dal::node->update_items(
-        -set => {
-            'device_type'   => $query_result->{'device'}{'name'},
-            'device_class'  => $query_result->{device_class},
-            'device_version' => $query_result->{'version'},
-            'device_score' => $query_result->{'score'},
-            'device_manufacturer' => $query_result->{'manufacturer'}->{'name'} // "",
-            map { $RECORD_RESULT_ATTR_MAP{$_} => $attributes->{$_} } keys(%RECORD_RESULT_ATTR_MAP),
-        },
+        -set => \%set,
         -where => {
             mac => $mac,
         },
