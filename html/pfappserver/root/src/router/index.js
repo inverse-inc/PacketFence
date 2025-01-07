@@ -120,6 +120,9 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach((to, from) => {
+  if (to.path && !['/', '/login', '/logout', '/expire'].includes(to.path) && !/^\/configurator\//.test(to.path)) {
+    localStorage.setItem('last_uri', to.path)
+  }
   routeData.params = to.params
   routeData.query = to.query
   /**
