@@ -17,6 +17,7 @@ use warnings;
 
 use pf::constants;
 use pfconfig::cached_hash;
+use File::Slurp qw(read_file);
 
 tie our %passthroughs, 'pfconfig::cached_hash', 'resource::passthroughs';
 tie our %isolation_passthroughs, 'pfconfig::cached_hash', 'resource::isolation_passthroughs';
