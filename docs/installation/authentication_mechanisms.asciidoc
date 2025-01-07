@@ -63,13 +63,16 @@ NOTE: after version 14.0, the PacketFence domain.conf will be updated, domain id
 
 ==== Domain Joining on A PacketFence cluster
 
-We've changed the structure of `domain.conf` configuration file. Since v14.0, each node in a cluster will have their own section.
-They will find and store their domain configurations under sections starts with their hostnames. +
-This change allows each node in a cluster have their indivudual domain configuration. For example, a node doesn't have to use %h as part of the machine
-account created on the domain controller, they now have the ability to fully customize the machine account name. +
-However, due to the isolation of domain.conf on each of the node, they also lost the ability of sharing configuration across the nodes.
-If you are running PacketFence cluster of v14.0, you'll have to join Windows AD on each of the node - this will create a corresponding machine account
-for each of the node when you create the domain profile.
+We've updated the structure of `domain.conf` file since v14.0,
+the section name stored in `domain.conf` file has been changed from `domain identifier` to `hostname + domain identifier` combination.
+This change causes a node in a cluster to read domain settings from its own individual section identified by its unique hostname.
+Therefore, it is not required to use `%h` as (or as a prefix / suffix of) the machine account anymore and
+it's technically possible to have customized settings for a specific node.
+
+If you are running a PacketFence cluster of v14.0 and need a domain profile, you'll have to repeat the profile creation on each of the node because
+the domain profile creation will *only* create a profile (and add a machine account) for the node that you are working on (the node that handles the request).
+
+NOTE: It is required to use individual machine account for each node to avoid secure connection binding issues.
 
 Here is the steps you'll need to follow to create a domain profile in cluster after v14.0:
 Assuming that we have a PacketFence cluster of 3 nodes, and we are about to join "domain.com"
