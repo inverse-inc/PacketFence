@@ -98,6 +98,17 @@ sub _matches_wildcard_passthrough {
     return ($FALSE, []);
 }
 
+sub get_resolv_dns_servers {
+    my @servers;
+    my $resolvconf = read_file("/etc/resolv.conf");
+    for my $line (split(/\n/, $resolvconf)) {
+        if($line =~ /^\s*nameserver\s([0-9.]+)/) {
+            push @servers, $1;
+        }
+    }
+    return \@servers;
+}
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>

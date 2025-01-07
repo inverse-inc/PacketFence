@@ -21,6 +21,7 @@ use pf::UnifiedApi::Controller::Config;
 use pf::error qw(is_success);
 use pf::util;
 use File::Slurp qw(read_file write_file);
+use pf::util::dns;
 
 sub model {
     require pfappserver::Model::Config::System;
@@ -47,21 +48,9 @@ sub put_gateway {
     }
 }
 
-sub _get_dns_servers {
-    my ($self) = @_;
-    my @servers;
-    my $resolvconf = read_file("/etc/resolv.conf");
-    for my $line (split(/\n/, $resolvconf)) {
-        if($line =~ /^\s*nameserver\s([0-9.]+)/) {
-            push @servers, $1;
-        }
-    }
-    return \@servers;
-}
-
 sub get_dns_servers {
     my ($self) = @_;
-    $self->render(json => {dns_servers => $self->_get_dns_servers});
+    $self->render(json => {dns_servers => pf::util::dns::get_resolv_dns_servers()});
 }
 
 sub put_dns_servers {
