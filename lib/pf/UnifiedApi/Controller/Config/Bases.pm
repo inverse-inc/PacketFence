@@ -38,9 +38,6 @@ use pf::config qw(
     %Config
     %Doc_Config
 );
-use Data::UUID;
-
-my $GENERATOR = Data::UUID->new;
 
 sub _update_domain_networks_conf {
     my ($self) = @_;
