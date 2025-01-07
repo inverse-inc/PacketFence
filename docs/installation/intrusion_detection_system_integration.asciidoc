@@ -53,6 +53,34 @@ Action -
 
     modify_node:  mac, $mac, notes, $notes
 
+=== FortiGate DHCP Parser
+
+PacketFence is able to receive DHCP information from the FortiGate firewall.
+
+On the PacketFence server:
+
+Modify rsyslog configuration to allow incoming UDP packets by uncommenting the following two lines in [filename]`/etc/rsyslog.conf`:
+
+  $ModLoad imudp
+  $UDPServerRun 514
+
+Configure [filename]`/etc/rsyslog.d/fortigate.conf` so it contains the following which will redirect fortigate log entries and stop further processing of current matched message (in that case 192.168.40.1 is the ip of the FortiGate):
+
+  if $fromhost-ip=='192.168.40.1' then /usr/local/pf/var/fortigate
+  & ~
+
+Make sure the receiving alert pipe (FIFO) exists
+
+  mkfifo /usr/local/pf/var/fortigate
+
+Restart the rsyslog daemon
+
+  service rsyslog restart
+
+On the FortiGate side make sure to configure the syslog configuration as the following:
+
+image::fortigate_syslog.png[scaledwidth="100%",alt="FortiGate Syslog"]
+
 === Suricata IDS
 
 PacketFence already contains a event handler for Suricata. This is an example to raise a security event from a syslog alert on the Suricata SID.

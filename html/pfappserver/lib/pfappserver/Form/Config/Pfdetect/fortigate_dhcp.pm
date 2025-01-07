@@ -1,37 +1,27 @@
-package pf::constants::pfdetect;
+package pfappserver::Form::Config::Pfdetect::fortigate_dhcp;
 
 =head1 NAME
 
-pf::constants::pfdetect - constants for pfdetect object
-
-=cut
+pfappserver::Form::Config::Pfdetect::fortigate_dhcp - Web form for a pfdetect detector
 
 =head1 DESCRIPTION
 
-pf::constants::pfdetect
+Form definition to create or update a pfdetect detector.
 
 =cut
 
-use strict;
-use warnings;
+use HTML::FormHandler::Moose;
+extends 'pfappserver::Form::Config::Pfdetect';
+with qw(pfappserver::Base::Form::Role::PfdetectRateLimit);
 
-our @TYPES = qw(
-  dhcp
-  fortianalyser
-  fortigate_dhcp
-  nexpose
-  regex
-  security_onion
-  snort
-  suricata
-  suricata_md5
-);
+has_field '+type' =>
+  (
+   default => 'fortigate_dhcp',
+  );
 
-our $RATE_LIMIT_DEFAULT = '0s';
+=over
 
-=head1 AUTHOR
-
-Inverse inc. <info@inverse.ca>
+=back
 
 =head1 COPYRIGHT
 
@@ -39,7 +29,7 @@ Copyright (C) 2005-2024 Inverse inc.
 
 =head1 LICENSE
 
-This program is free software; you can redistribute it and::or
+This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
 of the License, or (at your option) any later version.
@@ -56,5 +46,5 @@ USA.
 
 =cut
 
+__PACKAGE__->meta->make_immutable unless $ENV{"PF_SKIP_MAKE_IMMUTABLE"};
 1;
-
