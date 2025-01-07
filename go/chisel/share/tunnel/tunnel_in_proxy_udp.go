@@ -32,13 +32,19 @@ import (
 // of time, so that when the exit node receives a response on 6345, it
 // knows to return it to 1111.
 func listenUDP(l *cio.Logger, sshTun sshTunnel, remote *settings.Remote) (*udpListener, error) {
-	a, err := net.ResolveUDPAddr("udp", remote.Local())
-	if err != nil {
-		return nil, l.Errorf("resolve: %s", err)
-	}
-	conn, err := net.ListenUDP("udp", a)
-	if err != nil {
-		return nil, l.Errorf("listen: %s", err)
+	var conn *net.UDPConn
+	if remote.ReusedUdpConn != nil {
+		conn = remote.ReusedUdpConn
+		remote.ReusedUdpConn = nil
+	} else {
+		a, err := net.ResolveUDPAddr("udp", remote.Local())
+		if err != nil {
+			return nil, l.Errorf("resolve: %s", err)
+		}
+		conn, err = net.ListenUDP("udp", a)
+		if err != nil {
+			return nil, l.Errorf("listen: %s", err)
+		}
 	}
 	//ready
 	u := &udpListener{
