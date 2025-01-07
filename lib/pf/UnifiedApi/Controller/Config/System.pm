@@ -64,7 +64,7 @@ sub put_dns_servers {
         my $tmpfile = File::Temp->new()->filename;
         write_file($tmpfile, $content);
         pf_run("cat $tmpfile | sudo tee /etc/resolv.conf");
-        my $saved_servers = $self->_get_dns_servers();
+        my $saved_servers = pf::util::dns::get_resolv_dns_servers();
         
         if(scalar(@$servers) != scalar(@$saved_servers)) {
             $self->render(json => {message => "DNS servers haven't been saved properly"}, status => 500);
