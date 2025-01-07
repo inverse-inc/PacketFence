@@ -334,11 +334,11 @@ sub find_user_by_psk {
     }
 
     my $ssid = $radius_request->{'Ruckus-Wlan-Name'};
-    my $bssid = pack("H*", sprintf("%v02x", $radius_request->{"Ruckus-BSSID"}) =~ s/\.//rg);
+    my $bssid = pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-BSSID"}));
     my $username = pack("H*", $radius_request->{'User-Name'});
-    my $anonce = pack('H*', sprintf("%v02x",$radius_request->{'Ruckus-DPSK-Anonce'}) =~ s/\.//rg);
-    my $snonce = pf::util::wpa::snonce_from_eapol_key_frame(pack("H*",sprintf("%v02x",$radius_request->{"Ruckus-DPSK-EAPOL-Key-Frame"}) =~ s/\.//rg));
-    my $eapol_key_frame = pack("H*", sprintf("%v02x",$radius_request->{"Ruckus-DPSK-EAPOL-Key-Frame"}) =~ s/\.//rg);
+    my $anonce = pack('H*', pf::util::wpa::strip_hex_prefix($radius_request->{'Ruckus-DPSK-Anonce'}));
+    my $snonce = pf::util::wpa::snonce_from_eapol_key_frame(pack("H*",pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-DPSK-EAPOL-Key-Frame"})));
+    my $eapol_key_frame = pack("H*", pf::util::wpa::strip_hex_prefix($radius_request->{"Ruckus-DPSK-EAPOL-Key-Frame"});
     my $cache = $self->cache;
     # Try first the pid of the mac address
     if (exists $args->{'owner'} && $args->{'owner'}->{'pid'} ne "" && exists $args->{'owner'}->{'psk'} && defined $args->{'owner'}->{'psk'} && $args->{'owner'}->{'psk'} ne "") {

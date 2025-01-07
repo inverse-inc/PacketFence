@@ -14,8 +14,7 @@ my $PKE = "Pairwise key expansion";
 
 sub strip_hex_prefix {
     my ($s) = @_;
-    $s =~ s/^0x//g;
-    return $s;
+    return sprintf("%v02x",$s) =~ s/\.//rg;
 }
 
 sub prf512 {
