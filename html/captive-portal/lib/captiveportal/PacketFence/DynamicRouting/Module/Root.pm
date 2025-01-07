@@ -116,6 +116,10 @@ sub handle_web_form_release {
             $switch = pf::SwitchFactory->instantiate($last_switch_id);
         }
     }
+    if (!$switch) {
+        return $FALSE;
+    }
+
     if (isenabled($switch->{_deauthOnPrevious})) {
         return $FALSE;
     }
