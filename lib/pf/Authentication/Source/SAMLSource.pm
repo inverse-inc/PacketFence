@@ -203,8 +203,9 @@ sub handle_response {
             return ($FALSE, "Can't find username in SAML response.")
         }
     };
-    if($@){
-        return ($FALSE, "Can't validate Identity provider return message : ".$@->{message});
+    if ($@) {
+        my $msg = ref($@) ? $@->{message} : $@;
+        return ($FALSE, "Can't validate Identity provider return message : $msg");
     }
 
     return ($result, $msg);
