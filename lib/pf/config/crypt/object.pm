@@ -27,7 +27,7 @@ sub THAW {
         $data = pf::config::crypt::pf_decrypt($data);
     }
 
-    return pf::config::crypt::string->new($data);
+    return $data;
 }
 
 sub TO_JSON {
