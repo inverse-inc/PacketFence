@@ -1520,24 +1520,24 @@ This structure change will allow each member to have its own configuration: Incl
 Now all the nodes will be able to join Windows AD using customized machine accounts and passwords without
 having to use %h as part of the machine account name.
 
-Here is an example of PacketFence cluster of 3 nodes, the hostnames of each node are: `pfv14-1`, `pfv14-2` and `pfv14-3`, they all joined "a.com" +
-You will see 3 individual machine accounts on Windows Domain Controller, named `pfv14-1`, `pfv14-2` and `pfv14-3` (assuming we are using %h as machine account name).
+Here is an example of PacketFence cluster of 3 nodes, the hostnames of each node are: `pf-node1`, `pf-node2` and `pf-node3`, they all joined "a.com" +
+You will see 3 individual machine accounts on Windows Domain Controller, named `pf-node1`, `pf-node2` and `pf-node3` (assuming we are using %h as machine account name).
 
 Now the `domain.conf` looks like the following:
 ----
-[pfv14-1 domainA]
+[pf-node1 domainA]
 ntlm_auth_port=5000
 server_name=node1
 dns_name=a.com
 ....
 
-[pfv14-2 domainA]
+[pf-node2 domainA]
 ntlm_auth_port=5000
 server_name=node2
 dns_name=a.com
 ....
 
-[pfv14-3 domainA]
+[pf-node3 domainA]
 ntlm_auth_port=5000
 server_name=node3
 dns_name=a.com
