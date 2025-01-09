@@ -180,8 +180,16 @@ sub handle_response {
         }
 
         my $assertion = $lassoLogin->get_assertion();
-        my @attribute_list = $assertion->AttributeStatement->Attribute;
-        
+        if (!$assertion) {
+            return ($FALSE, "No assertion found");
+        }
+
+        my $attribute_statement = $assertion->AttributeStatement;
+        if (!$attribute_statement) {
+            return ($FALSE, "No assertion statement found");
+        }
+
+        my @attribute_list = $attribute_statement->Attribute;
         my $username;
         # For debug
         foreach my $attribute (@attribute_list){
