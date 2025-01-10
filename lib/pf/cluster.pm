@@ -641,9 +641,9 @@ Returns the list of ConfigStore to synchronize between cluster members
 =cut
 
 sub stores_to_sync {
-    my @tmp_stores = pf::ConfigStore::All->all_stores();
+    my $tmp_stores = pf::ConfigStore::All->all_stores();
 
-    my @stores = grep { !Role::Tiny->is_role($_) && !$_->does('pf::ConfigStore::Group') && !$_->does('pf::ConfigStore::Filtered') } @tmp_stores;
+    my @stores = grep { !Role::Tiny->is_role($_) && !$_->does('pf::ConfigStore::Group') && !$_->does('pf::ConfigStore::Filtered') } @$tmp_stores;
     return \@stores;
 }
 
