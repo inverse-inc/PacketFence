@@ -254,3 +254,25 @@ function handle_devel_db_schema() {
       cp /usr/local/pf/db/pf-schema-X.Y.sql /usr/local/pf/db/pf-schema-$restoring_version.sql
     fi
 }
+
+function yum_upgrade_mariadb_server() {
+  installed=`rpm -q --whatprovides mysql-server 2> /dev/null`
+  if [ $? -eq 0 -a -n "$installed" ]; then
+    installed=`echo "$installed"|sed -n 1p`
+    version=`rpm -q --queryformat='%''{VERSION}' "$installed" 2>&1`
+    myversion=$(yum '--disablerepo=*' --enablerepo=packetfence --quiet list available --showduplicates MariaDB-server | grep -i mariadb-server | awk '{print $2}' | tail -1 2> /dev/null)
+
+    old_family=`echo $version   | sed -n -e 's,^\([1-9][0-9]*\.[0-9][0-9]*\)\..*$,\1,p'`
+    new_family=`echo $myversion | sed -n -e 's,^\([1-9][0-9]*\.[0-9][0-9]*\)\..*$,\1,p'`
+
+    if [ "$old_family" != "$new_family" ]; then
+      echo "Upgrade MariaDB-server from ${old_family} to ${new_family}"
+      systemctl stop packetfence-mariadb.service 
+      rpm -e --nodeps MariaDB-client MariaDB-common MariaDB-server MariaDB-shared
+      yum install -q -y MariaDB-server --enablerepo=packetfence
+      systemctl start packetfence-mariadb.service 
+      mariadb-upgrade
+    fi
+fi
+}
+

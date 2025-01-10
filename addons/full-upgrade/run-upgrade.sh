@@ -130,6 +130,7 @@ function yum_upgrade_packetfence_package() {
   set_upgrade_to
   yum localinstall -y https://www.inverse.ca/downloads/PacketFence/RHEL8/packetfence-release-$UPGRADE_TO.el8.noarch.rpm
   yum clean all --enablerepo=packetfence
+  yum_upgrade_mariadb_server
   if is_enabled $1; then
     yum update -y --enablerepo=packetfence --exclude=packetfence-upgrade --allowerasing
   else
