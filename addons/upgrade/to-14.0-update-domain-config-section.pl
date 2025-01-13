@@ -46,6 +46,9 @@ for my $section (grep {/^\S+/} $ini->Sections()) {
 
 if ($updated == 1) {
     $ini->RewriteConfig();
+    print("Note: if you are running PacketFence in cluster mode, after this upgrade script,");
+    print("You'll have to manually merge the domain.conf and do a forced configuration sync.");
+    print("Please see the official documention on Authentication / Windows AD section for detailed steps.");
 }
 
 

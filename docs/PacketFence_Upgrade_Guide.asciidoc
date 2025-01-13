@@ -1477,6 +1477,118 @@ Since 14.0 PacketFence is able to receive events from the FleetDM servers, which
 /usr/local/pf/addons/upgrade/to-14.0-adds-admin-roles-fleetdm.pl
 ----
 
+=== Domain configuration changes
+
+Since 14.0, we've changed the structure of `domain.conf`, added a `host identifier` prefix to each domain profile. +
+Here is an example of a node joined both domain "a.com" and "b.com". The hostname of the node is `pfv14`.
+
+`domain.conf` structure prior to v14.0.0:
+----
+[domainA]
+ntlm_auth_port=5000
+server_name=%h
+dns_name=a.com
+....
+
+[domainB]
+ntlm_auth_port=5001
+server_name=%h
+dns_name=b.com
+....
+----
+
+`domain.conf` structure after v14.0.0:
+----
+[pfv14 domainA]
+ntlm_auth_port=5000
+server_name=%h
+dns_name=a.com
+....
+
+[pfv14 domainB]
+ntlm_auth_port=5001
+server_name=%h
+dns_name=b.com
+....
+----
+
+For a standalone PacketFence, compared with the 2 versions of configuration file, the only change is the hostname prefix. +
+However, when it comes to a PacketFence cluster, you will notice that the content of `domain.conf` "duplicated" several times,
+depending on how many nodes there are in a cluster.
+
+This structure change will allow each member to have its own configuration: Including individual machine account, password, etc.
+Now all the nodes will be able to join Windows AD using customized machine accounts and passwords without
+having to use %h as part of the machine account name.
+
+Here is an example of PacketFence cluster of 3 nodes, the hostnames of each node are: `pf-node1`, `pf-node2` and `pf-node3`, they all joined "a.com" +
+You will see 3 individual machine accounts on Windows Domain Controller, named `pf-node1`, `pf-node2` and `pf-node3` (assuming we are using %h as machine account name).
+
+Now the `domain.conf` looks like the following:
+----
+[pf-node1 domainA]
+ntlm_auth_port=5000
+server_name=node1
+dns_name=a.com
+....
+
+[pf-node2 domainA]
+ntlm_auth_port=5000
+server_name=node2
+dns_name=a.com
+....
+
+[pf-node3 domainA]
+ntlm_auth_port=5000
+server_name=node3
+dns_name=a.com
+....
+----
+
+A node will try to find their configuration from the section starts with its hostname.
+
+During the upgrading process, the following script will be executed on each node. It will add the hostname prefix to each of the domain sections to match the new `domain.conf` structure.
+
+[source,bash]
+----
+/usr/local/pf/addons/upgrade/to-14.0-update-domain-config-section.pl
+----
+
+If you are upgrading a PacketFence standalone installation prior to v14.0.0, you don't have to do anything else after the
+upgrading script is done.
+
+However, if you are upgrading a PacketFence cluster, there are still several additional steps remaining:
+
+You *might* have to manually merge the domain configuration +
+or +
+You *might* need to check the joining status and re-join some nodes.
+
+It's because PacketFence can convert its own `domain.conf` to the new structure, but not able to access other nodes's configuration.
+If you already did a force configuration sync before merging the `domain.conf` on master node, the configuration the nodes that being synced is lost.
+
+We have 2 ways to do this:
+
+==== option 1: manually merge the domain.conf
+ 1. check the `domain.conf` on each of the node and make sure if all the nodes have both their own section and sections of other cluster members
+ 2. If there are missing parts, go to each of the node and copy-paste the corresponding part to master node's `domain.conf`.
+ 3. save the changes on master node, do a force configuration sync on other nodes.
+
+==== option 2: check and rejoin nodes later
+Note:
+You'll still have to use `%h` or `%h` with prefix or suffix as hostnames as you are upgrading from a previous version
+unless you specific individual machine account name for each of the node.
+
+ . Do a configuration sync after upgrade - so all the slave nodes lost their domain config.
+ . Open PacketFence Admin UI, go to "configuration" -> "Policies and Access Control" -> "Active Directory Domains"
+ . Take a note of the configuration if you need, we'll need to replicate all the settings on the slave nodes after.
+ . Use "API redirect" to switch between nodes or directly access the API using node's IP.
+   .. Using API redirect: You can find API redirect from "Admin UI" -> "Status" -> "Services" -> "API redirect" and select the node to handle API request.
+   .. Directly access the node using IP address: you can use "https://node_ip:1443/" to select the node to handle API request.
+   .. After you select a specific node to handle API request, the "Domain Joining" operation will be performed on the node you selected only.
+ . Using either API redirect or manually selection to switch across all the nodes
+ . Fill the identical domain information on each API node, and click "Create", this will create the domain.conf file and join the corresponding machine on Windows AD.
+ . repeat the joining steps on all the nodes to make sure all the nodes are having the same domain profile.
+
+
 === RedHat EL8
 
 In place upgrades are supported for Redhat EL8. You can follow up the current <<PacketFence_Upgrade_Guide.asciidoc#_upgrade_to_another_version_major_or_minor,Upgrade to another version (major or minor)>>.
