@@ -54,6 +54,7 @@ For a list of compatibility related changes see the <<PacketFence_Upgrade_Guide.
  * Updated Cisco-WLC AireOS WiSM module (#8455)
  * FortiGate syslog DHCP parser (#8459)
  * Improved regex for Forti-analyser (#8470)
+ * Update documentation for node-specific domain configuration file (#8437)
 
 === Bug Fixes
 
