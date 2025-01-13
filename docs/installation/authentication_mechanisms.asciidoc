@@ -198,6 +198,29 @@ You should now have the following realm configuration
 
 image::domain-realms-index.png[scaledwidth="100%",alt="Realms"]
 
+==== Windows subdomain joining limitations
+
+PacketFence supports multiple domain authentications as well as authentications performed against domains and subdomains.
+
+But please be aware that according to Windows Domain Controller's architecture and implementation,
+you can not join PacketFence on a subdomainif your subdomain shares the Domain Controller with the existing parent domain. +
+
+The only way to join PacketFence on a subdomain is to join it on a subdomain who has its own Domain Controller that belongs to a parent domain.
+
+Please check Microsoft's Learn, FAQ and discussions about subdomain computer joining. +
+https://learn.microsoft.com/en-us/answers/questions/342052/can-create-an-sub-domain-and-add-user-uder-the-cre
+
+
+==== Authenticating using Windows Trusted Domains
+PacketFence supports domain trust relations to be passed to the correct Domain Controller.
+However, there isn't a way to configure the trusted domain settings from the Admin UI.
+
+If you'd like to authentication resources on a trusted domain, please use the "--domain=" option in ntlm_auth_wrapper.
+You'll need to manually modify PacketFence's FreeRADIUS mschap module template file located at `/usr/local/pf/conf/radiusd/mschap.conf`
+Locate the best mschap section works for your situation and add a `--domain=_YOUR_DOMAIN_TRUST_SETTINGS_` to your ntlm_auth_wrapper executable path.
+
+After saving the changes, please re-generate the FreeRADIUS configuration by restarting radius services and test if it works.
+
 
 === OAuth2 Authentication
 
